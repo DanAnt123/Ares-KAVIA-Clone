@@ -25,517 +25,229 @@
 
 {% block body %}
 
-<div class="workout-creation-wrapper">
+<div class="simple-workout-creation">
     
-    <!-- Page Header Section -->
-    <section class="creation-page-header">
-        <div class="page-header-content">
-            <div class="header-visual-section">
-                <div class="header-icon-wrapper">
-                    <div class="header-icon-bg"></div>
-                    <div class="header-icon-main">
-                        <i class="fa-solid fa-plus"></i>
-                    </div>
-                </div>
-                <div class="header-decorative-elements">
-                    <div class="deco-element deco-1"></div>
-                    <div class="deco-element deco-2"></div>
-                    <div class="deco-element deco-3"></div>
-                </div>
-            </div>
-            <div class="header-text-section">
-                <h1 class="page-main-title">Create New Workout</h1>
-                <p class="page-subtitle">Design your perfect training session with personalized exercises</p>
-                <div class="page-meta-badges">
-                    <div class="meta-badge">
-                        <i class="fa-solid fa-clock"></i>
-                        <span>Quick Setup</span>
-                    </div>
-                    <div class="meta-badge">
-                        <i class="fa-solid fa-magic"></i>
-                        <span>Fully Customizable</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Progress Steps -->
-    <section class="creation-progress-steps">
-        <div class="steps-container">
-            <div class="progress-step step-active" data-step="details">
-                <div class="step-indicator">
-                    <div class="step-number">1</div>
-                    <div class="step-icon">
-                        <i class="fa-solid fa-info-circle"></i>
-                    </div>
-                </div>
-                <div class="step-label">
-                    <span class="step-title">Workout Details</span>
-                    <small class="step-subtitle">Name & Category</small>
-                </div>
-            </div>
-            <div class="step-divider"></div>
-            <div class="progress-step" data-step="exercises">
-                <div class="step-indicator">
-                    <div class="step-number">2</div>
-                    <div class="step-icon">
-                        <i class="fa-solid fa-list-check"></i>
-                    </div>
-                </div>
-                <div class="step-label">
-                    <span class="step-title">Add Exercises</span>
-                    <small class="step-subtitle">Build Routine</small>
-                </div>
-            </div>
-            <div class="step-divider"></div>
-            <div class="progress-step" data-step="finalize">
-                <div class="step-indicator">
-                    <div class="step-number">3</div>
-                    <div class="step-icon">
-                        <i class="fa-solid fa-check-circle"></i>
-                    </div>
-                </div>
-                <div class="step-label">
-                    <span class="step-title">Review & Save</span>
-                    <small class="step-subtitle">Finalize</small>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Simple Page Header -->
+    <header class="simple-header">
+        <h1 class="simple-title">Create New Workout</h1>
+        <p class="simple-subtitle">Add a new workout to your routine</p>
+    </header>
 
     <!-- Alert Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <section class="alerts-section">
+            <div class="simple-alerts">
                 {% for category, message in messages %}
                     {% if category == "error" %}
-                        <div class="alert-message alert-error" role="alert" aria-live="polite">
-                            <div class="alert-icon">
-                                <i class="fa-solid fa-exclamation-triangle"></i>
-                            </div>
-                            <div class="alert-content">
-                                <span class="alert-text">{{ message }}</span>
-                            </div>
-                            <button type="button" class="alert-dismiss" aria-label="Close alert">
+                        <div class="simple-alert simple-alert-error" role="alert" aria-live="polite">
+                            <i class="fa-solid fa-exclamation-triangle"></i>
+                            <span>{{ message }}</span>
+                            <button type="button" class="alert-close" aria-label="Close alert">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                         </div>
                     {% else %}
-                        <div class="alert-message alert-success" role="alert" aria-live="polite">
-                            <div class="alert-icon">
-                                <i class="fa-solid fa-check-circle"></i>
-                            </div>
-                            <div class="alert-content">
-                                <span class="alert-text">{{ message }}</span>
-                            </div>
-                            <button type="button" class="alert-dismiss" aria-label="Close alert">
+                        <div class="simple-alert simple-alert-success" role="alert" aria-live="polite">
+                            <i class="fa-solid fa-check-circle"></i>
+                            <span>{{ message }}</span>
+                            <button type="button" class="alert-close" aria-label="Close alert">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                         </div>
                     {% endif %}
                 {% endfor %}
-            </section>
+            </div>
         {% endif %}
     {% endwith %}
 
-    <!-- Main Content Form -->
-    <form id="workout" method="POST" class="workout-creation-form" autocomplete="off">
+    <!-- Main Form -->
+    <form id="workout" method="POST" class="simple-workout-form" autocomplete="off">
         
-        <div class="form-sections-grid">
+        <!-- Workout Information Section -->
+        <section class="form-section">
+            <h2 class="section-title">Workout Information</h2>
             
-            <!-- Left Column: Basic Information -->
-            <div class="form-section form-section-primary">
-                
-                <!-- Workout Basic Details Card -->
-                <div class="section-card details-card">
-                    <div class="card-header-section">
-                        <div class="card-icon">
-                            <i class="fa-solid fa-dumbbell"></i>
-                        </div>
-                        <div class="card-header-text">
-                            <h2 class="card-section-title">Workout Information</h2>
-                            <p class="card-section-description">Set up your workout basics</p>
-                        </div>
-                        <div class="card-accent-line"></div>
-                    </div>
-                    
-                    <div class="card-body-section">
-                        <div class="form-group-container">
-                            <div class="input-field-group primary-field">
-                                <label for="workout_name" class="field-label">
-                                    <i class="fa-solid fa-tag"></i>
-                                    <span>Workout Name</span>
-                                    <span class="required-indicator">*</span>
-                                </label>
-                                <div class="input-container">
-                                    <input 
-                                        id="workout_name" 
-                                        name="workout_name" 
-                                        type="text" 
-                                        class="form-field-input" 
-                                        placeholder="e.g., Push Day, Full Body Strength" 
-                                        maxlength="12" 
-                                        required 
-                                        autocomplete="off"
-                                        aria-describedby="workout_name_help"
-                                    >
-                                    <div class="input-focus-indicator"></div>
-                                </div>
-                                <small id="workout_name_help" class="field-help-text">
-                                    <i class="fa-solid fa-info-circle"></i>
-                                    Maximum 12 characters
-                                </small>
-                            </div>
-
-                            <div class="input-field-group">
-                                <label for="workout_description" class="field-label">
-                                    <i class="fa-solid fa-align-left"></i>
-                                    <span>Description</span>
-                                    <span class="optional-indicator">(optional)</span>
-                                </label>
-                                <div class="input-container">
-                                    <input 
-                                        id="workout_description" 
-                                        name="workout_description" 
-                                        type="text" 
-                                        class="form-field-input" 
-                                        placeholder="Brief description of workout focus" 
-                                        maxlength="18" 
-                                        autocomplete="off"
-                                        aria-describedby="workout_description_help"
-                                    >
-                                    <div class="input-focus-indicator"></div>
-                                </div>
-                                <small id="workout_description_help" class="field-help-text">
-                                    <i class="fa-solid fa-info-circle"></i>
-                                    Maximum 18 characters
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Category Selection Card -->
-                <div class="section-card category-card">
-                    <div class="card-header-section">
-                        <div class="card-icon">
-                            <i class="fa-solid fa-folder"></i>
-                        </div>
-                        <div class="card-header-text">
-                            <h2 class="card-section-title">Category</h2>
-                            <p class="card-section-description">Organize your workout</p>
-                        </div>
-                        <div class="card-accent-line"></div>
-                    </div>
-                    
-                    <div class="card-body-section">
-                        <div class="form-group-container">
-                            <div class="input-field-group">
-                                <label for="category_id" class="field-label">
-                                    <i class="fa-solid fa-tags"></i>
-                                    <span>Select Category</span>
-                                    <span class="required-indicator">*</span>
-                                </label>
-                                <div class="select-container">
-                                    <select id="category_id" name="category_id" class="form-field-select" required aria-describedby="category_help">
-                                        <option value="" disabled selected>Choose a category...</option>
-                                        {% for category in categories %}
-                                            <option value="{{ category.id }}">{{ category.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <div class="select-dropdown-icon">
-                                        <i class="fa-solid fa-chevron-down"></i>
-                                    </div>
-                                </div>
-                                <small id="category_help" class="field-help-text">
-                                    <i class="fa-solid fa-info-circle"></i>
-                                    Categorize for better organization
-                                </small>
-                            </div>
-
-                            <div class="section-divider">
-                                <div class="divider-line"></div>
-                                <span class="divider-label">Or create new</span>
-                                <div class="divider-line"></div>
-                            </div>
-
-                            <div class="new-category-group">
-                                <div class="input-fields-row">
-                                    <div class="input-field-group">
-                                        <label for="new_category_name" class="field-label">
-                                            <i class="fa-solid fa-plus"></i>
-                                            <span>New Category</span>
-                                        </label>
-                                        <div class="input-container">
-                                            <input 
-                                                id="new_category_name" 
-                                                name="new_category_name" 
-                                                type="text" 
-                                                class="form-field-input" 
-                                                placeholder="e.g., Strength, Cardio" 
-                                                maxlength="50" 
-                                                autocomplete="off"
-                                                aria-describedby="new_category_help"
-                                            >
-                                            <div class="input-focus-indicator"></div>
-                                        </div>
-                                        <small id="new_category_help" class="field-help-text">
-                                            <i class="fa-solid fa-info-circle"></i>
-                                            Maximum 50 characters
-                                        </small>
-                                    </div>
-
-                                    <div class="input-field-group">
-                                        <label for="new_category_description" class="field-label">
-                                            <i class="fa-solid fa-file-text"></i>
-                                            <span>Category Description</span>
-                                        </label>
-                                        <div class="input-container">
-                                            <input 
-                                                id="new_category_description" 
-                                                name="new_category_description" 
-                                                type="text" 
-                                                class="form-field-input" 
-                                                placeholder="Brief category description" 
-                                                maxlength="100" 
-                                                autocomplete="off"
-                                                aria-describedby="new_category_desc_help"
-                                            >
-                                            <div class="input-focus-indicator"></div>
-                                        </div>
-                                        <small id="new_category_desc_help" class="field-help-text">
-                                            <i class="fa-solid fa-info-circle"></i>
-                                            Maximum 100 characters
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+            <div class="form-group">
+                <label for="workout_name" class="form-label">
+                    Workout Name <span class="required">*</span>
+                </label>
+                <input 
+                    id="workout_name" 
+                    name="workout_name" 
+                    type="text" 
+                    class="form-input" 
+                    placeholder="Enter workout name (max 12 characters)" 
+                    maxlength="12" 
+                    required 
+                    autocomplete="off"
+                    aria-describedby="workout_name_help"
+                >
+                <small id="workout_name_help" class="form-help">
+                    Maximum 12 characters
+                </small>
             </div>
 
-            <!-- Right Column: Exercises -->
-            <div class="form-section form-section-secondary">
-                
-                <!-- Exercises Management Card -->
-                <div class="section-card exercises-card">
-                    <div class="card-header-section">
-                        <div class="card-icon">
-                            <i class="fa-solid fa-list-check"></i>
-                        </div>
-                        <div class="card-header-text">
-                            <h2 class="card-section-title">Exercises</h2>
-                            <p class="card-section-description">Build your workout routine</p>
-                        </div>
-                        <div class="exercise-count-badge">
-                            <span id="exercise-count">1</span>
-                            <i class="fa-solid fa-dumbbell"></i>
-                        </div>
-                        <div class="card-accent-line"></div>
-                    </div>
-                    
-                    <div class="card-body-section">
-                        <!-- Exercise Template (Hidden) -->
-                        <div id="template" class="exercise-template" hidden>
-                            <div class="exercise-edit">
-                                <div class="exercise-item-wrapper">
-                                    <div class="exercise-item-header">
-                                        <div class="exercise-position-number">
-                                            <span class="exercise-index">1</span>
-                                        </div>
-                                        <div class="exercise-drag-handle">
-                                            <i class="handle fa-solid fa-grip-lines" title="Drag to reorder"></i>
-                                        </div>
-                                        <div class="exercise-input-section">
-                                            <input 
-                                                class="exercise-edit-name" 
-                                                type="text" 
-                                                name="exercise_name" 
-                                                placeholder="Exercise name (e.g., Bench Press)" 
-                                                maxlength="45" 
-                                                required 
-                                                disabled
-                                                aria-label="Exercise name"
-                                            >
-                                        </div>
-                                        <button type="button" class="exercise-remove-btn" title="Remove exercise" disabled>
-                                            <i class="delete fa-solid fa-xmark"></i>
-                                        </button>
-                                    </div>
-                                    <div class="exercise-options-section">
-                                        <input class="include_details_hidden" type="hidden" value="0" name="include_details" disabled>
-                                        <label class="exercise-option-toggle">
-                                            <input class="include_details" type="checkbox" value="1" name="include_details" disabled>
-                                            <span class="toggle-checkmark"></span>
-                                            <span class="toggle-label">
-                                                <i class="fa-solid fa-chart-line"></i>
-                                                Include tracking details (weight, reps, sets)
-                                            </span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Exercises List Container -->
-                        <div id="exercises" class="exercises-list-container">
-                            <div class="exercise-edit">
-                                <div class="exercise-item-wrapper">
-                                    <div class="exercise-item-header">
-                                        <div class="exercise-position-number">
-                                            <span class="exercise-index">1</span>
-                                        </div>
-                                        <div class="exercise-drag-handle">
-                                            <i class="handle fa-solid fa-grip-lines" title="Drag to reorder"></i>
-                                        </div>
-                                        <div class="exercise-input-section">
-                                            <input 
-                                                class="exercise-edit-name" 
-                                                type="text" 
-                                                name="exercise_name" 
-                                                placeholder="Exercise name (e.g., Bench Press)" 
-                                                maxlength="45" 
-                                                required
-                                                aria-label="Exercise name"
-                                            >
-                                        </div>
-                                        <button type="button" class="exercise-remove-btn" title="Remove exercise">
-                                            <i class="delete fa-solid fa-xmark"></i>
-                                        </button>
-                                    </div>
-                                    <div class="exercise-options-section">
-                                        <input class="include_details_hidden" type="hidden" value="0" name="include_details">
-                                        <label class="exercise-option-toggle">
-                                            <input class="include_details" type="checkbox" value="1" name="include_details">
-                                            <span class="toggle-checkmark"></span>
-                                            <span class="toggle-label">
-                                                <i class="fa-solid fa-chart-line"></i>
-                                                Include tracking details (weight, reps, sets)
-                                            </span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Add Exercise Action -->
-                        <div class="add-exercise-action">
-                            <button type="button" class="add-exercise-button" id="add_exercise">
-                                <div class="button-icon">
-                                    <i class="fa-solid fa-plus"></i>
-                                </div>
-                                <span class="button-text">Add Another Exercise</span>
-                            </button>
-                            <p class="add-exercise-hint">
-                                <i class="fa-solid fa-hand-paper"></i>
-                                Drag exercises to reorder them
-                            </p>
-                        </div>
-
-                        <!-- Exercise Templates Section -->
-                        <div class="exercise-quick-templates">
-                            <div class="templates-header">
-                                <h3 class="templates-title">
-                                    <i class="fa-solid fa-magic"></i>
-                                    Quick Templates
-                                </h3>
-                            </div>
-                            <div class="template-options">
-                                <button type="button" class="template-option" data-exercises="Push-ups,Squats,Lunges">
-                                    <div class="template-icon">
-                                        <i class="fa-solid fa-fire"></i>
-                                    </div>
-                                    <span class="template-name">Bodyweight</span>
-                                </button>
-                                <button type="button" class="template-option" data-exercises="Bench Press,Deadlift,Squats">
-                                    <div class="template-icon">
-                                        <i class="fa-solid fa-dumbbell"></i>
-                                    </div>
-                                    <span class="template-name">Strength</span>
-                                </button>
-                                <button type="button" class="template-option" data-exercises="Running,Cycling,Jump Rope">
-                                    <div class="template-icon">
-                                        <i class="fa-solid fa-heart"></i>
-                                    </div>
-                                    <span class="template-name">Cardio</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tips & Guidance Card -->
-                <div class="section-card tips-card">
-                    <div class="card-header-section">
-                        <div class="card-icon tips-icon">
-                            <i class="fa-solid fa-lightbulb"></i>
-                        </div>
-                        <div class="card-header-text">
-                            <h2 class="card-section-title">Pro Tips</h2>
-                            <p class="card-section-description">Make the most of your workout</p>
-                        </div>
-                        <div class="card-accent-line tips-accent"></div>
-                    </div>
-                    <div class="card-body-section">
-                        <div class="tips-list">
-                            <div class="tip-item">
-                                <div class="tip-icon">
-                                    <i class="fa-solid fa-check-circle"></i>
-                                </div>
-                                <span class="tip-text">Use descriptive names for easy identification</span>
-                            </div>
-                            <div class="tip-item">
-                                <div class="tip-icon">
-                                    <i class="fa-solid fa-check-circle"></i>
-                                </div>
-                                <span class="tip-text">Group similar exercises together</span>
-                            </div>
-                            <div class="tip-item">
-                                <div class="tip-icon">
-                                    <i class="fa-solid fa-check-circle"></i>
-                                </div>
-                                <span class="tip-text">Enable details for exercises you want to track</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+            <div class="form-group">
+                <label for="workout_description" class="form-label">
+                    Description <span class="optional">(optional)</span>
+                </label>
+                <input 
+                    id="workout_description" 
+                    name="workout_description" 
+                    type="text" 
+                    class="form-input" 
+                    placeholder="Brief description (max 18 characters)" 
+                    maxlength="18" 
+                    autocomplete="off"
+                    aria-describedby="workout_description_help"
+                >
+                <small id="workout_description_help" class="form-help">
+                    Maximum 18 characters
+                </small>
             </div>
-        </div>
 
-        <!-- Form Actions Section -->
-        <section class="form-actions-section">
-            <div class="actions-container">
-                <div class="primary-actions">
-                    <button type="submit" class="primary-action-button" form="workout">
-                        <div class="button-icon">
-                            <i class="fa-solid fa-rocket"></i>
-                        </div>
-                        <span class="button-text">Create Workout</span>
-                        <div class="button-highlight"></div>
-                    </button>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="category_id" class="form-label">
+                        Category <span class="required">*</span>
+                    </label>
+                    <select id="category_id" name="category_id" class="form-select" required aria-describedby="category_help">
+                        <option value="" disabled selected>Choose a category...</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="category_help" class="form-help">
+                        Select an existing category
+                    </small>
                 </div>
-                <div class="secondary-actions">
-                    <a href="/" class="secondary-action-button cancel-button">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        <span>Cancel</span>
-                    </a>
-                    <button type="button" class="secondary-action-button preview-button">
-                        <i class="fa-solid fa-eye"></i>
-                        <span>Preview</span>
-                    </button>
+
+                <div class="form-group">
+                    <label for="new_category_name" class="form-label">
+                        Or Create New Category
+                    </label>
+                    <input 
+                        id="new_category_name" 
+                        name="new_category_name" 
+                        type="text" 
+                        class="form-input" 
+                        placeholder="New category name" 
+                        maxlength="50" 
+                        autocomplete="off"
+                        aria-describedby="new_category_help"
+                    >
+                    <small id="new_category_help" class="form-help">
+                        Leave blank to use selected category
+                    </small>
                 </div>
-                <div class="actions-help-section">
-                    <div class="help-text">
-                        <i class="fa-solid fa-info-circle"></i>
-                        <span>Your workout will be saved and ready to use immediately</span>
-                    </div>
-                </div>
+            </div>
+
+            <div class="form-group" id="new-category-description" style="display: none;">
+                <label for="new_category_description" class="form-label">
+                    New Category Description
+                </label>
+                <input 
+                    id="new_category_description" 
+                    name="new_category_description" 
+                    type="text" 
+                    class="form-input" 
+                    placeholder="Description for new category" 
+                    maxlength="100" 
+                    autocomplete="off"
+                >
             </div>
         </section>
+
+        <!-- Exercises Section -->
+        <section class="form-section">
+            <div class="section-header">
+                <h2 class="section-title">Exercises</h2>
+                <span class="exercise-count-display">
+                    <span id="exercise-count">1</span> exercise(s)
+                </span>
+            </div>
+
+            <!-- Exercise Template (Hidden) -->
+            <div id="template" class="exercise-template" hidden>
+                <div class="exercise-item">
+                    <div class="exercise-header">
+                        <span class="exercise-number">1</span>
+                        <input 
+                            class="exercise-name-input" 
+                            type="text" 
+                            name="exercise_name" 
+                            placeholder="Exercise name (e.g., Bench Press)" 
+                            maxlength="45" 
+                            required 
+                            disabled
+                            aria-label="Exercise name"
+                        >
+                        <button type="button" class="exercise-remove-btn" title="Remove exercise" disabled>
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="exercise-options">
+                        <input class="include_details_hidden" type="hidden" value="0" name="include_details" disabled>
+                        <label class="checkbox-label">
+                            <input class="include_details" type="checkbox" value="1" name="include_details" disabled>
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">
+                                Include tracking details (weight, reps, sets)
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercises List -->
+            <div id="exercises" class="exercises-list">
+                <div class="exercise-item">
+                    <div class="exercise-header">
+                        <span class="exercise-number">1</span>
+                        <input 
+                            class="exercise-name-input" 
+                            type="text" 
+                            name="exercise_name" 
+                            placeholder="Exercise name (e.g., Bench Press)" 
+                            maxlength="45" 
+                            required
+                            aria-label="Exercise name"
+                        >
+                        <button type="button" class="exercise-remove-btn" title="Remove exercise">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="exercise-options">
+                        <input class="include_details_hidden" type="hidden" value="0" name="include_details">
+                        <label class="checkbox-label">
+                            <input class="include_details" type="checkbox" value="1" name="include_details">
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">
+                                Include tracking details (weight, reps, sets)
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Exercise Button -->
+            <button type="button" class="add-exercise-btn" id="add_exercise">
+                <i class="fa-solid fa-plus"></i>
+                <span>Add Exercise</span>
+            </button>
+        </section>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn-primary btn-save" form="workout">
+                <i class="fa-solid fa-check"></i>
+                <span>Save Workout</span>
+            </button>
+            <a href="/" class="btn-secondary btn-cancel">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Cancel</span>
+            </a>
+        </div>
 
     </form>
 
