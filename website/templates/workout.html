@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 
+{% block title %}
+    {% if displayRequested and requested_workout %}
+        {{ user.workouts | selectattr('id', 'equalto', requested_workout | int) | first | attr('name') }} - Workout
+    {% else %}
+        Workout - Ares
+    {% endif %}
+{% endblock %}
+
 {% block active %}
 <li class="nav-item" role="none">
     <a class="nav-link" href="/" role="menuitem">
@@ -24,107 +32,418 @@
 {% block body %}
 
 {% if not user.workouts %}
-    <div class="no-workouts">
-        <div class="no-workouts-text">
-            <h2 class="title">Create your first workout</h2>
-            <p class="welcome-lead">You don't have any workouts yet, start now!</p>
+    <!-- Modern Empty State with Hero Design -->
+    <div class="workout-empty-state">
+        <div class="empty-state-content">
+            <div class="empty-state-icon">
+                <i class="fa-solid fa-dumbbell"></i>
+            </div>
+            <h2 class="empty-state-title">No workouts found</h2>
+            <p class="empty-state-description">
+                Create your first workout to start tracking your fitness journey. 
+                Add exercises, set weights, and monitor your progress.
+            </p>
+            <div class="empty-state-actions">
+                <a class="btn btn-primary btn-cta" href="/new-workout" role="button">
+                    <i class="fa-solid fa-plus"></i>
+                    Create First Workout
+                </a>
+            </div>
         </div>
-        <a class="btn btn-secondary" href="/new-workout" role="button">Add workout</a>
+        
+        <!-- Decorative elements -->
+        <div class="empty-state-decoration">
+            <div class="decoration-circle circle-1"></div>
+            <div class="decoration-circle circle-2"></div>
+        </div>
     </div>
+
 {% else %}
 
-    <div class="container">
-
-        <!-- Select workout -->
-        <label for="select_workout" class="visually-hidden">Select workout</label>
-        <select aria-label="Select workout" id="select_workout">
-            {% for workout in user.workouts %}
-                <option value="{{ workout.id }}">{{ workout.name }}</option>
-            {% endfor %}
-        </select>
+    <!-- Modern Workout Dashboard -->
+    <div class="workout-dashboard">
         
-        <!-- Exercises -->
-        {% for workout in user.workouts %}
-            <div class="workout {{ workout.id }}" hidden>
-                <form method="POST" autocomplete="off">
-                    <div class="exercises">
-                        {% for exercise in workout.exercises %}
-                            <div class="exercise">
-                                <h2 class="exercise-name">{{ exercise.name }}</h2>
-                                <div class="exercise-values">
-                                    <div class="weight-span">
-                                        <span class="weight-value text-primary">
-                                            {% if (exercise.weight | float | is_integer) and (exercise.weight) or (exercise.weight == 0) %}
-                                                {{ exercise.weight | int }}
-                                            {% elif (exercise.weight == None) %}
-                                                —
-                                            {% else %}
-                                                {{ exercise.weight }}
-                                            {% endif %}
-                                        </span>
-                                        <span class="weight-unit">kg</span>
-                                    </div>
-                                    <div class="weight-input" hidden>
-                                        <label for="weight-{{ workout.id }}-{{ loop.index0 }}" class="visually-hidden">Weight for {{ exercise.name }}</label>
-                                        <input id="weight-{{ workout.id }}-{{ loop.index0 }}" class="weight-value" type="number" step="0.01" pattern="[0-9]+([\\.,][0-9]+)?" placeholder="-" name="weight" value="{{ (exercise.weight | int) if (exercise.weight | float | is_integer) and (exercise.weight) or (exercise.weight == 0) else (exercise.weight) }}" maxlength="5">
-                                        <span class="weight-unit">kg</span>
-                                    </div>
-                                    {% if exercise.include_details %}
-                                        <label for="details-{{ workout.id }}-{{ loop.index0 }}" class="visually-hidden">Details for {{ exercise.name }}</label>
-                                        <input id="details-{{ workout.id }}-{{ loop.index0 }}" class="details" type="text" placeholder="-" name="details" value="{{ exercise.details }}" maxlength="5" hidden>
-                                        <span class="details">{{ exercise.details or "—" }}</span>
-                                    {% else %}
-                                        <input type="hidden" name="details" value="">
-                                    {% endif %}
-                                </div>
+        <!-- Workout Header Section -->
+        <header class="workout-header">
+            <div class="workout-header-content">
+                <div class="workout-selector-section">
+                    <h1 class="workout-page-title">
+                        <i class="fa-solid fa-dumbbell"></i>
+                        Active Workout
+                    </h1>
+                    
+                    <div class="workout-selector-wrapper">
+                        <label for="select_workout" class="selector-label">Choose workout:</label>
+                        <div class="custom-select">
+                            <select id="select_workout" class="workout-select" aria-label="Select workout">
+                                {% for workout in user.workouts %}
+                                    <option value="{{ workout.id }}" data-category="{{ workout.category.name if workout.category else 'Uncategorized' }}" data-exercises="{{ workout.exercises|length }}">
+                                        {{ workout.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="select-arrow">
+                                <i class="fa-solid fa-chevron-down"></i>
                             </div>
-                        {% endfor %}
+                        </div>
                     </div>
-                    <button type="button" class="btn btn-primary edit {{ workout.id }}">Edit</button>
-                    <button type="submit" class="btn btn-primary save {{ workout.id }}" hidden>Save changes</button>
-                    <input type="hidden" name="workout" value="{{ workout.id }}">
-                    <input type="hidden" name="request_type" value="save">
-                </form>
-                <form method="POST">
-                    <div class="buttons">
-                        <button type="submit" class="btn btn-tertiary cancel {{ workout.id }}" name="workout" value="{{ workout.id }}" hidden>Cancel</button>
+                </div>
+                
+                <div class="workout-stats-summary">
+                    <div class="stat-card">
+                        <span class="stat-number">{{ user.workouts|length }}</span>
+                        <span class="stat-label">Total Workouts</span>
                     </div>
-                    <input type="hidden" name="request_type" value="cancel">
-                </form>
+                </div>
             </div>
-        {% endfor %}
+        </header>
 
+        <!-- Workout Content Area -->
+        <main class="workout-main">
+            {% for workout in user.workouts %}
+                <div class="workout-container workout-{{ workout.id }}" data-workout-id="{{ workout.id }}" hidden>
+                    
+                    <!-- Workout Info Card -->
+                    <div class="workout-info-card">
+                        <div class="workout-info-header">
+                            <div class="workout-title-section">
+                                <h2 class="current-workout-name">{{ workout.name }}</h2>
+                                {% if workout.description %}
+                                    <p class="current-workout-description">{{ workout.description }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="workout-metadata">
+                                {% if workout.category %}
+                                    <span class="workout-category-badge">
+                                        <i class="fa-solid fa-tag"></i>
+                                        {{ workout.category.name }}
+                                    </span>
+                                {% endif %}
+                                <span class="exercise-count-badge">
+                                    <i class="fa-solid fa-list"></i>
+                                    {{ workout.exercises|length }} exercise{{ 's' if workout.exercises|length != 1 else '' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exercises Grid -->
+                    <div class="exercises-grid">
+                        <form method="POST" autocomplete="off" class="workout-form">
+                            {% for exercise in workout.exercises %}
+                                <article class="exercise-card" data-exercise-index="{{ loop.index0 }}">
+                                    <div class="exercise-card-header">
+                                        <div class="exercise-number">
+                                            <span class="exercise-index">{{ loop.index }}</span>
+                                        </div>
+                                        <h3 class="exercise-name">{{ exercise.name }}</h3>
+                                    </div>
+                                    
+                                    <div class="exercise-card-body">
+                                        <div class="exercise-metrics">
+                                            
+                                            <!-- Weight Section -->
+                                            <div class="metric-group weight-group">
+                                                <label class="metric-label">Weight</label>
+                                                
+                                                <!-- Display Mode -->
+                                                <div class="metric-display weight-display">
+                                                    <span class="metric-value weight-value">
+                                                        {% if (exercise.weight | float | is_integer) and (exercise.weight is not none) %}
+                                                            {{ exercise.weight | int }}
+                                                        {% elif exercise.weight is none %}
+                                                            —
+                                                        {% else %}
+                                                            {{ exercise.weight }}
+                                                        {% endif %}
+                                                    </span>
+                                                    <span class="metric-unit">kg</span>
+                                                </div>
+                                                
+                                                <!-- Edit Mode -->
+                                                <div class="metric-input weight-input" hidden>
+                                                    <div class="input-group">
+                                                        <input 
+                                                            id="weight-{{ workout.id }}-{{ loop.index0 }}" 
+                                                            class="metric-input-field" 
+                                                            type="number" 
+                                                            step="0.01" 
+                                                            placeholder="0" 
+                                                            name="weight" 
+                                                            value="{% if exercise.weight is not none %}{{ (exercise.weight | int) if (exercise.weight | float | is_integer) else exercise.weight }}{% endif %}"
+                                                            min="0"
+                                                            max="999.99"
+                                                            aria-label="Weight for {{ exercise.name }}"
+                                                        >
+                                                        <span class="input-unit">kg</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Details Section (if applicable) -->
+                                            {% if exercise.include_details %}
+                                                <div class="metric-group details-group">
+                                                    <label class="metric-label">Details</label>
+                                                    
+                                                    <!-- Display Mode -->
+                                                    <div class="metric-display details-display">
+                                                        <span class="metric-value details-value">
+                                                            {{ exercise.details or "—" }}
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    <!-- Edit Mode -->
+                                                    <div class="metric-input details-input" hidden>
+                                                        <input 
+                                                            id="details-{{ workout.id }}-{{ loop.index0 }}" 
+                                                            class="metric-input-field details-field" 
+                                                            type="text" 
+                                                            placeholder="e.g., 3x8, seat 5" 
+                                                            name="details" 
+                                                            value="{{ exercise.details or '' }}" 
+                                                            maxlength="50"
+                                                            aria-label="Details for {{ exercise.name }}"
+                                                        >
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <input type="hidden" name="details" value="">
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Exercise Status Indicator -->
+                                    <div class="exercise-status">
+                                        {% if exercise.weight is not none and exercise.weight > 0 %}
+                                            <div class="status-indicator completed">
+                                                <i class="fa-solid fa-check-circle"></i>
+                                                <span class="status-text">Logged</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="status-indicator pending">
+                                                <i class="fa-regular fa-circle"></i>
+                                                <span class="status-text">Pending</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </article>
+                            {% endfor %}
+
+                            <!-- Form Controls -->
+                            <input type="hidden" name="workout" value="{{ workout.id }}">
+                            <input type="hidden" name="request_type" value="save">
+                        </form>
+                    </div>
+
+                    <!-- Workout Action Controls -->
+                    <div class="workout-controls">
+                        <div class="control-group primary-controls">
+                            <button type="button" class="btn btn-primary workout-edit-btn edit-{{ workout.id }}" data-workout-id="{{ workout.id }}">
+                                <i class="fa-solid fa-edit"></i>
+                                <span>Edit Workout</span>
+                            </button>
+                            <button type="submit" form="workout-form-{{ workout.id }}" class="btn btn-primary workout-save-btn save-{{ workout.id }}" hidden data-workout-id="{{ workout.id }}">
+                                <i class="fa-solid fa-save"></i>
+                                <span>Save Changes</span>
+                            </button>
+                        </div>
+                        
+                        <div class="control-group secondary-controls">
+                            <form method="POST" class="inline-form">
+                                <button type="submit" class="btn btn-tertiary workout-cancel-btn cancel-{{ workout.id }}" name="workout" value="{{ workout.id }}" hidden data-workout-id="{{ workout.id }}">
+                                    <i class="fa-solid fa-times"></i>
+                                    <span>Cancel</span>
+                                </button>
+                                <input type="hidden" name="request_type" value="cancel">
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Workout Progress Summary -->
+                    <div class="workout-progress-card">
+                        <div class="progress-header">
+                            <h3 class="progress-title">
+                                <i class="fa-solid fa-chart-line"></i>
+                                Progress Summary
+                            </h3>
+                        </div>
+                        <div class="progress-stats">
+                            <div class="progress-stat">
+                                <span class="progress-stat-value" id="completed-exercises-{{ workout.id }}">
+                                    {{ workout.exercises | selectattr('weight') | selectattr('weight', 'greaterthan', 0) | list | length }}
+                                </span>
+                                <span class="progress-stat-label">Completed</span>
+                            </div>
+                            <div class="progress-stat">
+                                <span class="progress-stat-value">{{ workout.exercises|length }}</span>
+                                <span class="progress-stat-label">Total</span>
+                            </div>
+                            <div class="progress-stat">
+                                <span class="progress-stat-value" id="completion-percentage-{{ workout.id }}">
+                                    {% set completed_count = workout.exercises | selectattr('weight') | selectattr('weight', 'greaterthan', 0) | list | length %}
+                                    {% set total_count = workout.exercises|length %}
+                                    {{ ((completed_count / total_count * 100) | round(0) | int) if total_count > 0 else 0 }}%
+                                </span>
+                                <span class="progress-stat-label">Complete</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill-{{ workout.id }}" 
+                                 style="width: {% set completed_count = workout.exercises | selectattr('weight') | selectattr('weight', 'greaterthan', 0) | list | length %}{% set total_count = workout.exercises|length %}{{ ((completed_count / total_count * 100) | round(0) | int) if total_count > 0 else 0 }}%">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            {% endfor %}
+        </main>
     </div>
 
 {% endif %}
 
-    <!-- JavaScript -->
-    {% if displayRequested %}
-        <script>
-            /* Select requested workout */
-            var select_workout = document.getElementById("select_workout")
-            var requested_workout = "{{ requested_workout }}"
-            select_workout.value = requested_workout
-        </script>
-    {% endif %}
+<!-- Enhanced JavaScript -->
+<script>
+    // Workout selection and management
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectWorkout = document.getElementById('select_workout');
+        
+        {% if displayRequested and requested_workout %}
+            // Select requested workout
+            if (selectWorkout) {
+                selectWorkout.value = "{{ requested_workout }}";
+                showSelectedWorkout("{{ requested_workout }}");
+            }
+        {% else %}
+            // Show first workout by default
+            if (selectWorkout && selectWorkout.options.length > 0) {
+                const firstWorkoutId = selectWorkout.options[0].value;
+                showSelectedWorkout(firstWorkoutId);
+            }
+        {% endif %}
 
-    {% for workout in user.workouts %}
-        <script>
-            /* Listen for clicks on edit button and enable editing */
-            document.getElementsByClassName("edit {{ workout.id }}")[0].addEventListener("click", function() {
-                document.getElementsByClassName("edit {{ workout.id }}")[0].hidden = true
-                document.getElementsByClassName("save {{ workout.id }}")[0].hidden = false
-                document.getElementsByClassName("cancel {{ workout.id }}")[0].hidden = false
-                for (let i = 0; i < document.getElementsByClassName("workout {{ workout.id }}")[0].querySelectorAll(".weight-input, input.details").length; i++) {
-                    document.getElementsByClassName("workout {{ workout.id }}")[0].querySelectorAll(".weight-input, input.details")[i].hidden = false
-                }
-                for (let i = 0; i < document.getElementsByClassName("workout {{ workout.id }}")[0].querySelectorAll(".weight-span, span.details").length; i++) {
-                    document.getElementsByClassName("workout {{ workout.id }}")[0].querySelectorAll(".weight-span, span.details")[i].hidden = true
-                }
-            })
-        </script>
-    {% endfor %}
+        // Handle workout selection change
+        if (selectWorkout) {
+            selectWorkout.addEventListener('change', function() {
+                const selectedWorkoutId = this.value;
+                showSelectedWorkout(selectedWorkoutId);
+            });
+        }
 
-    <script type="text/javascript" src="/static/js/workout.js"></script>
+        // Initialize edit functionality for all workouts
+        {% for workout in user.workouts %}
+            initializeWorkoutControls({{ workout.id }});
+        {% endfor %}
+    });
+
+    function showSelectedWorkout(workoutId) {
+        // Hide all workouts
+        const allWorkouts = document.querySelectorAll('.workout-container');
+        allWorkouts.forEach(workout => {
+            workout.hidden = true;
+        });
+
+        // Show selected workout
+        const selectedWorkout = document.querySelector(`.workout-${workoutId}`);
+        if (selectedWorkout) {
+            selectedWorkout.hidden = false;
+            // Update form ID for proper submission
+            const form = selectedWorkout.querySelector('.workout-form');
+            if (form) {
+                form.id = `workout-form-${workoutId}`;
+            }
+        }
+    }
+
+    function initializeWorkoutControls(workoutId) {
+        const editBtn = document.querySelector(`.edit-${workoutId}`);
+        const saveBtn = document.querySelector(`.save-${workoutId}`);
+        const cancelBtn = document.querySelector(`.cancel-${workoutId}`);
+        const workoutContainer = document.querySelector(`.workout-${workoutId}`);
+
+        if (!editBtn || !saveBtn || !cancelBtn || !workoutContainer) return;
+
+        // Edit button click handler
+        editBtn.addEventListener('click', function() {
+            enableEditMode(workoutId);
+        });
+
+        // Save button form submission handler
+        const form = workoutContainer.querySelector('.workout-form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // Form will submit naturally, but we can add validation here if needed
+                updateProgressDisplay(workoutId);
+            });
+        }
+
+        // Cancel button click handler  
+        cancelBtn.addEventListener('click', function() {
+            disableEditMode(workoutId);
+        });
+    }
+
+    function enableEditMode(workoutId) {
+        const workoutContainer = document.querySelector(`.workout-${workoutId}`);
+        if (!workoutContainer) return;
+
+        // Toggle button visibility
+        const editBtn = workoutContainer.querySelector(`.edit-${workoutId}`);
+        const saveBtn = workoutContainer.querySelector(`.save-${workoutId}`);
+        const cancelBtn = workoutContainer.querySelector(`.cancel-${workoutId}`);
+
+        if (editBtn) editBtn.hidden = true;
+        if (saveBtn) saveBtn.hidden = false;
+        if (cancelBtn) cancelBtn.hidden = false;
+
+        // Show input fields, hide display values
+        const displayElements = workoutContainer.querySelectorAll('.metric-display');
+        const inputElements = workoutContainer.querySelectorAll('.metric-input');
+
+        displayElements.forEach(el => el.hidden = true);
+        inputElements.forEach(el => el.hidden = false);
+
+        // Add edit mode class for styling
+        workoutContainer.classList.add('edit-mode');
+
+        // Focus first input
+        const firstInput = workoutContainer.querySelector('.metric-input-field');
+        if (firstInput) {
+            setTimeout(() => firstInput.focus(), 100);
+        }
+    }
+
+    function disableEditMode(workoutId) {
+        const workoutContainer = document.querySelector(`.workout-${workoutId}`);
+        if (!workoutContainer) return;
+
+        // Toggle button visibility
+        const editBtn = workoutContainer.querySelector(`.edit-${workoutId}`);
+        const saveBtn = workoutContainer.querySelector(`.save-${workoutId}`);
+        const cancelBtn = workoutContainer.querySelector(`.cancel-${workoutId}`);
+
+        if (editBtn) editBtn.hidden = false;
+        if (saveBtn) saveBtn.hidden = true;
+        if (cancelBtn) cancelBtn.hidden = true;
+
+        // Hide input fields, show display values
+        const displayElements = workoutContainer.querySelectorAll('.metric-display');
+        const inputElements = workoutContainer.querySelectorAll('.metric-input');
+
+        displayElements.forEach(el => el.hidden = false);
+        inputElements.forEach(el => el.hidden = true);
+
+        // Remove edit mode class
+        workoutContainer.classList.remove('edit-mode');
+    }
+
+    function updateProgressDisplay(workoutId) {
+        // This function can be called to update progress indicators
+        // Implementation would depend on specific requirements
+        console.log(`Progress updated for workout ${workoutId}`);
+    }
+</script>
+
+<script type="text/javascript" src="/static/js/workout.js"></script>
 
 {% endblock %}
