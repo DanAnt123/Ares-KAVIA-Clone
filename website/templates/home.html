@@ -13,73 +13,145 @@
 {% endblock %}
 
 {% block body %}
-    
+
 {% if not user.workouts %}
-    <div class="no-workouts">
-        <div class="homepage-branding-stack">
-            <img class="homepage-logo" src="/static/images/logo-nobg.png" alt="Ares Workout Logo" />
-            <h1 class="homepage-title">Ares Workout Tracker</h1>
+    <!-- Modern Empty State with Hero Design -->
+    <div class="hero-section">
+        <div class="hero-content">
+            <div class="hero-branding">
+                <div class="logo-container">
+                    <img class="hero-logo" src="/static/images/logo-nobg.png" alt="Ares Workout Logo" />
+                    <div class="logo-glow"></div>
+                </div>
+                <h1 class="hero-title">Ares Workout Tracker</h1>
+                <p class="hero-subtitle">Your fitness journey starts here</p>
+            </div>
+            
+            <div class="hero-cta-section">
+                <h2 class="cta-heading">Create your first workout</h2>
+                <p class="cta-description">
+                    Track your exercises, weights, and progress with our minimalist approach. 
+                    Focus on what matters most - your performance.
+                </p>
+                <div class="cta-actions">
+                    <a class="btn btn-primary btn-cta" href="/new-workout" role="button">
+                        <i class="fa-solid fa-plus"></i>
+                        Create Workout
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="no-workouts-text">
-            <h2 class="homepage-prompt">Create your first workout</h2>
-            <p class="welcome-lead">You don't have any workouts yet, start now!</p>
+        
+        <!-- Decorative elements -->
+        <div class="hero-decoration">
+            <div class="decoration-circle circle-1"></div>
+            <div class="decoration-circle circle-2"></div>
+            <div class="decoration-circle circle-3"></div>
         </div>
-        <a class="btn btn-secondary" href="/new-workout" role="button">Add workout</a>
     </div>
+
 {% else %}
 
-<div class="container">
-    <!-- Homepage intro/branding block -->
-    <div class="homepage-intro-stack">
-        <img class="homepage-logo" src="/static/images/logo-nobg.png" alt="Ares Workout Logo" />
-        <h1 class="homepage-title">Welcome back to Ares</h1>
-        <p class="homepage-lead">
-            See your saved workouts and track your progress below.<br>
-            Keep striving for your best every session!
-        </p>
-    </div>
-
-    <!-- Workouts List -->
-    <div>
-        {% for workout in user.workouts %}
-            <div class="workout-wrapper">
-                <form action="/workout" method="POST">
-                    {% if workout.description %}
-                        <button type="submit" class="btn btn-primary btn-workout" name="workout" value="{{ workout.id }}">
-                            <h2>{{ workout.name }}</h2>
-                            <p class="workout-lead">{{ workout.description }}</p>
-                            {% if workout.category %}
-                                <p class="workout-lead"><i class="fa-solid fa-tag"></i> {{ workout.category.name }}</p>
-                            {% endif %}
-                        </button>
-                    {% else %}
-                        <button type="submit" class="btn btn-primary btn-workout no-description" name="workout" value="{{ workout.id }}">
-                            <h2>{{ workout.name }}</h2>
-                            {% if workout.category %}
-                                <p class="workout-lead"><i class="fa-solid fa-tag"></i> {{ workout.category.name }}</p>
-                            {% endif %}
-                        </button>
-                    {% endif %}
-                </form>
-                <form action="/edit-workout" method="POST" style="display:inline;">
-                    <button title="Edit Workout" type="submit" class="btn-edit" name="workout" value="{{ workout.id }}">
-                        <i class="fa-solid fa-pen"></i>
-                    </button>
-                </form>
-                <form action="{{ url_for('views.duplicate_workout', workout_id=workout.id) }}" method="GET" style="display:inline;">
-                    <button title="Duplicate Workout" type="submit" class="btn-edit" style="margin-left:0.5rem;">
-                        <i class="fa-solid fa-copy"></i>
-                    </button>
-                </form>
+    <!-- Modern Dashboard Layout -->
+    <div class="dashboard-container">
+        
+        <!-- Welcome Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="header-branding">
+                    <img class="dashboard-logo" src="/static/images/logo-nobg.png" alt="Ares Logo" />
+                    <div class="header-text">
+                        <h1 class="dashboard-title">Welcome back</h1>
+                        <p class="dashboard-subtitle">Ready to crush your next workout?</p>
+                    </div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ user.workouts|length }}</span>
+                        <span class="stat-label">Workout{{ 's' if user.workouts|length != 1 else '' }}</span>
+                    </div>
+                </div>
             </div>
-        {% endfor %}
-    </div>
+        </header>
 
-    <!-- Buttons -->
-    <div class="buttons" style="margin-bottom:2.5rem;">
-        <a class="btn btn-secondary" href="/new-workout" role="button">Add workout</a>
+        <!-- Main Content Area -->
+        <main class="dashboard-main">
+            
+            <!-- Quick Actions -->
+            <section class="quick-actions">
+                <h2 class="section-title">Quick Actions</h2>
+                <div class="action-buttons">
+                    <a class="btn btn-primary action-btn" href="/new-workout" role="button">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>New Workout</span>
+                    </a>
+                    <a class="btn btn-secondary action-btn" href="/workout" role="button">
+                        <i class="fa-solid fa-play"></i>
+                        <span>Start Training</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Workouts Grid -->
+            <section class="workouts-section">
+                <div class="section-header">
+                    <h2 class="section-title">Your Workouts</h2>
+                    <span class="workout-count">{{ user.workouts|length }} total</span>
+                </div>
+                
+                <div class="workouts-grid">
+                    {% for workout in user.workouts %}
+                        <article class="workout-card" data-workout-id="{{ workout.id }}">
+                            <div class="card-header">
+                                <h3 class="workout-name">{{ workout.name }}</h3>
+                                <div class="card-actions">
+                                    <form action="/edit-workout" method="POST" class="inline-form">
+                                        <button title="Edit Workout" type="submit" class="card-btn edit-btn" name="workout" value="{{ workout.id }}">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    </form>
+                                    <form action="{{ url_for('views.duplicate_workout', workout_id=workout.id) }}" method="GET" class="inline-form">
+                                        <button title="Duplicate Workout" type="submit" class="card-btn duplicate-btn">
+                                            <i class="fa-solid fa-copy"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <div class="card-content">
+                                {% if workout.description %}
+                                    <p class="workout-description">{{ workout.description }}</p>
+                                {% endif %}
+                                
+                                <div class="workout-meta">
+                                    {% if workout.category %}
+                                        <span class="workout-category">
+                                            <i class="fa-solid fa-tag"></i>
+                                            {{ workout.category.name }}
+                                        </span>
+                                    {% endif %}
+                                    <span class="exercise-count">
+                                        <i class="fa-solid fa-dumbbell"></i>
+                                        {{ workout.exercises|length }} exercise{{ 's' if workout.exercises|length != 1 else '' }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="card-footer">
+                                <form action="/workout" method="POST" class="workout-form">
+                                    <button type="submit" class="btn btn-primary workout-start-btn" name="workout" value="{{ workout.id }}">
+                                        <i class="fa-solid fa-play"></i>
+                                        Start Workout
+                                    </button>
+                                </form>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </section>
+
+        </main>
     </div>
-</div>
 
 {% endif %}
 
