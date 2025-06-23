@@ -719,6 +719,96 @@ input.weight-value { -moz-appearance: textfield; }
   padding: var(--space-lg);
 }
 
+/* HOMEPAGE: branding intro, workout list (ensure good sizing and mobile layout) */
+.intro.homepage-intro {
+  margin-bottom: 2rem;
+}
+.intro-image.homepage-img {
+  max-width: 320px;
+  width: 60vw;
+  min-width: 120px;
+  height: auto;
+  border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
+}
+@media (max-width: 768px) {
+  .intro.homepage-intro {
+    margin-bottom: 1.2rem;
+    padding: var(--space-md);
+  }
+}
+@media (max-width: 480px) {
+  .intro.homepage-intro {
+    margin-bottom: 1.1rem;
+    padding: var(--space-sm);
+  }
+}
+
+.workout-wrapper {
+  background: var(--secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px #0001;
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+.btn-workout {
+  min-width: 210px;
+  flex-grow: 1;
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  text-align: left;
+  margin-right: var(--space-xs);
+  box-shadow: 0 1px 10px #fc273338;
+}
+.btn-workout h2 {
+  font-size: var(--fs-md);
+  margin: 0 0 0.25em 0;
+}
+.btn-workout .workout-lead {
+  font-size: var(--fs-xs);
+  margin: 0 0.3em 0 0;
+  color: var(--text-on-primary);
+}
+.btn-edit {
+  min-width: 2.2em;
+  min-height: 2.2em;
+  margin-left: 0.2em;
+  padding: var(--space-xs);
+  font-size: var(--fs-md);
+  color: var(--primary-light);
+  background: var(--dark);
+  border: 1.5px solid var(--primary-light);
+  border-radius: var(--radius-md);
+  transition: background 0.15s, color 0.15s, border 0.15s;
+}
+.btn-edit:hover, .btn-edit:focus {
+  background: var(--primary-light);
+  color: var(--dark);
+  border-color: var(--primary-light);
+}
+@media (max-width: 900px) {
+  .workout-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-xs);
+  }
+}
+@media (max-width: 480px) {
+  .workout-wrapper {
+    padding: var(--space-xs);
+    margin-bottom: var(--space-xs);
+  }
+  .btn-workout {
+    min-width: 145px;
+    font-size: var(--fs-sm);
+    padding: var(--space-xs) var(--space-sm);
+  }
+}
+
+
 /* Exercise, Exercise Edit */
 .exercise-edit, .exercise {
   background-color: var(--secondary);
