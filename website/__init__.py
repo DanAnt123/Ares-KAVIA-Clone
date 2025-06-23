@@ -44,10 +44,8 @@ def create_app():
     app.register_blueprint(auth, url_prefix="/")
     app.register_blueprint(views, url_prefix="/")
 
-    # Call on first request, using shared function, register after app created
-    @app.before_first_request
-    def ensure_default_categories():
-        # PUBLIC_INTERFACE USAGE
+    # Ensures default categories are seeded on app creation (address factory/CLI pattern issues)
+    with app.app_context():
         seed_categories_if_empty()
 
     login_manager = LoginManager()
