@@ -102,8 +102,13 @@
                         <input type="hidden" name="request_type" value="cancel">
                     </div>
                 </form>
-                <div class="buttons">
+                <div class="buttons" style="display: flex; align-items: center; gap: 1rem;">
                     <a class="modal-open {{ workout.id }}" type="button">Delete workout</a>
+                    <form action="{{ url_for('views.duplicate_workout', workout_id=workout.id) }}" method="GET" target="_blank" style="display:inline;">
+                        <button type="submit" class="btn btn-secondary" style="margin-left:0;" title="Duplicate this workout">
+                            <i class="fa-solid fa-copy"></i> Duplicate workout
+                        </button>
+                    </form>
                 </div>
             </div>
             <div class="modal-container {{ workout.id }}">
