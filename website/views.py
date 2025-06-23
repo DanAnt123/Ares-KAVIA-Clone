@@ -7,6 +7,108 @@ from flask_login import login_required, current_user
 views = Blueprint('views', __name__)
 
 # PUBLIC_INTERFACE
+@views.route("/duplicate-workout/<int:workout_id>", methods=["GET", "POST"])
+@login_required
+def duplicate_workout(workout_id):
+    """
+    Duplicates an existing workout along with its exercises for the current user,
+    allowing renaming and modification before creation.
+    - GET: Shows the duplication form pre-filled with workout/exercise info.
+    - POST: Creates a new workout for the user, copying exercises.
+    """
+    from sqlalchemy.exc import SQLAlchemyError
+
+    # Fetch the original workout and its exercises
+    orig_workout = Workout.query.filter_by(id=workout_id).first()
+    if not orig_workout:
+        flash("The workout you are trying to duplicate does not exist.", category="error")
+        return redirect(url_for("views.home"))
+
+    categories = Category.query.all()
+
+    if request.method == "POST":
+        workout_name = request.form.get("workout_name")
+        workout_description = request.form.get("workout_description")
+        category_id = request.form.get("category_id")
+        new_category_name = request.form.get("new_category_name")
+        new_category_description = request.form.get("new_category_description")
+        exercise_names = request.form.getlist("exercise_name")
+        include_details = request.form.getlist("include_details")
+        
+        # If needed, handle category creation inline
+        category = None
+        if new_category_name:
+            category = get_or_create_category(new_category_name, new_category_description)
+            category_id = category.id
+        elif category_id:
+            category = Category.query.filter_by(id=category_id).first()
+        else:
+            category = None
+
+        exercise_names = [exercise.upper() for exercise in exercise_names]
+
+        if not workout_name:
+            flash("Must provide a workout name.", category="error")
+        elif "" in exercise_names:
+            flash("Must name all exercises.", category="error")
+        elif not category:
+            flash("Please choose or create a category.", category="error")
+        else:
+            try:
+                new_workout = Workout(
+                    user_id=current_user.id,
+                    name=workout_name,
+                    description=workout_description,
+                    category_id=category.id if category else None,
+                )
+                db.session.add(new_workout)
+                db.session.commit()
+                # Copy exercises based on edited names/fields, not blindly from original
+                for i in range(len(exercise_names)):
+                    new_exercise = Exercise(
+                        name=exercise_names[i],
+                        include_details=int(include_details[i]),
+                        workout_id=new_workout.id,
+                        details="", # Start details blank
+                    )
+                    db.session.add(new_exercise)
+                db.session.commit()
+                flash("Workout duplicated successfully!", category="success")
+                return redirect(url_for("views.home"))
+            except SQLAlchemyError as e:
+                db.session.rollback()
+                flash("Database error: " + str(e), category="error")
+        # On failure, fall through and re-display form (errors shown via flash)
+        # Repopulate form values.
+        return render_template(
+            "new-workout.html",
+            categories=categories,
+            workout_name=workout_name,
+            workout_description=workout_description,
+            exercise_names=exercise_names,
+            include_details=include_details,
+            duplicate_mode=True,  # Custom flag for template if needed
+        )
+
+    # For GET, show the fillable form with data from orig_workout
+    # Prefill values: name (suffix " (copy)" or similar), desc, exercises list
+    prefilled_name = orig_workout.name[:7] + " (Copy)" if len(orig_workout.name) <= 7 else orig_workout.name[:9] + " (C)" # 12 chars max
+    prefilled_name = prefilled_name[:12]
+    exercises = orig_workout.exercises
+    exercise_names = [e.name for e in exercises]
+    include_details = [int(e.include_details) for e in exercises]
+
+    return render_template(
+        "new-workout.html",
+        categories=categories,
+        workout_name=prefilled_name,
+        workout_description=orig_workout.description,
+        exercise_names=exercise_names,
+        include_details=include_details,
+        duplicate_mode=True,
+    )
+
+# PUBLIC_INTERFACE
 def get_or_create_category(name, description=None):
     """
     Retrieves or creates a category by name.
