@@ -23,26 +23,10 @@ def create_app():
     app.register_blueprint(auth, url_prefix="/")
     app.register_blueprint(views, url_prefix="/")
 
-    # Seeding default categories: allow this as a reusable function for other contexts too (e.g. CLI, test)
-    def seed_categories_if_empty():
-        from .models import Category
-        default_categories = [
-            {"name": "Strength", "description": "Strength training workouts"},
-            {"name": "Cardio", "description": "Cardiovascular workouts"},
-            {"name": "Flexibility", "description": "Flexibility and stretching"},
-            {"name": "Other", "description": "Other types of workouts"},
-        ]
-        if Category.query.count() == 0:
-            for cat in default_categories:
-                exists = Category.query.filter_by(name=cat["name"]).first()
-                if not exists:
-                    new_cat = Category(name=cat["name"], description=cat["description"])
-                    db.session.add(new_cat)
-            db.session.commit()
-
-    # Call on first request
+    # Call on first request, using shared function
     @app.before_first_request
     def ensure_default_categories():
+        # PUBLIC_INTERFACE USAGE
         seed_categories_if_empty()
 
     login_manager = LoginManager()
