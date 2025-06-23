@@ -161,8 +161,16 @@ def workout():
 @login_required
 def new_workout():
     from sqlalchemy.exc import SQLAlchemyError
+    from . import seed_categories_if_empty
 
+    # Ensure default categories if table is empty (for robustness in case before_first_request did not fire)
+    seed_categories_if_empty()
     categories = Category.query.all()
+
+    if not categories:
+        # If categories is still empty, fallback to allow inline creation or inform user
+        flash("No workout categories exist! Please create a category below or contact support.", category="error")
+
     if request.method == "POST":
         workout_name = request.form.get("workout_name")
         workout_description = request.form.get("workout_description")
@@ -220,7 +228,12 @@ def new_workout():
 @login_required
 def edit_workout():
     from sqlalchemy.exc import SQLAlchemyError
+    from . import seed_categories_if_empty
+    seed_categories_if_empty()
     categories = Category.query.all()  # For category dropdown
+    if not categories:
+        flash("No workout categories exist! Please create a new category below or contact support.", category="error")
+
     if request.method == "POST":
         request_type = request.form.get("request_type")
         if request_type == "save":

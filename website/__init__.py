@@ -23,9 +23,8 @@ def create_app():
     app.register_blueprint(auth, url_prefix="/")
     app.register_blueprint(views, url_prefix="/")
 
-    # Initialize default categories on the very first request if they are missing
-    @app.before_first_request
-    def ensure_default_categories():
+    # Seeding default categories: allow this as a reusable function for other contexts too (e.g. CLI, test)
+    def seed_categories_if_empty():
         from .models import Category
         default_categories = [
             {"name": "Strength", "description": "Strength training workouts"},
@@ -33,12 +32,18 @@ def create_app():
             {"name": "Flexibility", "description": "Flexibility and stretching"},
             {"name": "Other", "description": "Other types of workouts"},
         ]
-        # Only add if zero categories exist in DB
         if Category.query.count() == 0:
             for cat in default_categories:
-                new_cat = Category(name=cat["name"], description=cat["description"])
-                db.session.add(new_cat)
+                exists = Category.query.filter_by(name=cat["name"]).first()
+                if not exists:
+                    new_cat = Category(name=cat["name"], description=cat["description"])
+                    db.session.add(new_cat)
             db.session.commit()
+
+    # Call on first request
+    @app.before_first_request
+    def ensure_default_categories():
+        seed_categories_if_empty()
 
     login_manager = LoginManager()
     login_manager.login_view = "auth.signin"
@@ -56,3 +61,24 @@ def create_app():
         return redirect(url_for("auth.signin"))
 
     return app
+
+# PUBLIC_INTERFACE
+def seed_categories_if_empty():
+    """
+    Ensures the Category table contains default categories if empty.
+    """
+    from .models import Category
+    default_categories = [
+        {"name": "Strength", "description": "Strength training workouts"},
+        {"name": "Cardio", "description": "Cardiovascular workouts"},
+        {"name": "Flexibility", "description": "Flexibility and stretching"},
+        {"name": "Other", "description": "Other types of workouts"},
+    ]
+    if Category.query.count() == 0:
+        from . import db
+        for cat in default_categories:
+            exists = Category.query.filter_by(name=cat["name"]).first()
+            if not exists:
+                new_cat = Category(name=cat["name"], description=cat["description"])
+                db.session.add(new_cat)
+        db.session.commit()
