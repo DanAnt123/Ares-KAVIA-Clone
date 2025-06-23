@@ -9,11 +9,23 @@ class User(db.Model, UserMixin):
     workouts = db.relationship("Workout")
 
 
+# PUBLIC_INTERFACE
+class Category(db.Model):
+    """
+    Category model for categorizing workouts.
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.String(200), nullable=True)
+    workouts = db.relationship("Workout", backref="category", lazy=True)
+
+
 class Workout(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(12))
     description = db.Column(db.String(18))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    category_id = db.Column(db.Integer, db.ForeignKey("category.id"), nullable=True)
     exercises = db.relationship("Exercise")
 
 
