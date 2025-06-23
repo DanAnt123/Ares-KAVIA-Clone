@@ -1,5 +1,28 @@
 {% extends "base.html" %}
 
+{% block title %}Edit Workout - Ares{% endblock %}
+
+{% block active %}
+<li class="nav-item" role="none">
+    <a class="nav-link" href="/" role="menuitem">
+        <i class="fa-solid fa-home nav-icon"></i>
+        <span class="nav-text">Home</span>
+    </a>
+</li>
+<li class="nav-item" role="none">
+    <a class="nav-link" href="/workout" role="menuitem">
+        <i class="fa-solid fa-dumbbell nav-icon"></i>
+        <span class="nav-text">Workout</span>
+    </a>
+</li>
+<li class="nav-item" role="none">
+    <a class="nav-link" href="/new-workout" role="menuitem">
+        <i class="fa-solid fa-plus nav-icon"></i>
+        <span class="nav-text">New Workout</span>
+    </a>
+</li>
+{% endblock %}
+
 {% block body %}
 
     <div class="container">
