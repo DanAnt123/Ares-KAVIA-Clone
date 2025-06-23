@@ -653,6 +653,48 @@ input.weight-value { -moz-appearance: textfield; }
   text-align: center;
   margin: var(--space-md) auto;
 }
+
+/* Responsive / login-specific intro image resizing and adjustments */
+.login-intro-image {
+  max-width: 320px;
+  width: 67vw;
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 16px #3d001133;
+}
+
+@media (max-width: 768px) {
+  .login-intro-image {
+    max-width: 60vw;
+    min-width: 160px;
+    margin-bottom: var(--space-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .login-intro-image {
+    max-width: 92vw;
+    min-width: 120px;
+    margin-top: var(--space-xs);
+    margin-bottom: var(--space-xs);
+    border-radius: var(--radius-md);
+  }
+
+  .intro-content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.intro-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
 .welcome-lead, .workout-lead {
   color: var(--text-on-primary);
   font-size: var(--fs-md);
