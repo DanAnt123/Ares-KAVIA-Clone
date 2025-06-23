@@ -164,17 +164,22 @@ input[type="submit"],
   border-radius: var(--radius-md);
   padding: var(--btn-padding-y) var(--btn-padding-x);
   cursor: pointer;
-  transition: background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    border-color 0.18s,
+    box-shadow 0.18s,
+    transform 0.13s cubic-bezier(.4,0,.2,1);
   min-width: 2.5rem;
   min-height: 2.5rem;
   line-height: 1.15em;
 }
-
 button:focus, .btn:focus, .btn-edit:focus {
   background: var(--primary);
   color: var(--text-on-primary);
   border-color: var(--focus-outline);
   box-shadow: 0 0 0 3px #ffe59999;
+  transform: scale(1.04);
 }
 button:hover, .btn:hover, .btn-edit:hover {
   background: var(--primary-light);
@@ -182,11 +187,30 @@ button:hover, .btn:hover, .btn-edit:hover {
   border-color: var(--primary-light);
   text-decoration: underline;
   box-shadow: 0 2px 8px #76000022;
+  transform: scale(1.05);
 }
 button:active, .btn:active, .btn-edit:active {
   background: var(--primary-dark);
   color: var(--light);
   border-color: var(--primary-dark);
+  transform: scale(0.97);
+}
+@media (prefers-reduced-motion: reduce) {
+  button,
+  .btn,
+  .btn-edit,
+  button:focus,
+  button:hover,
+  button:active,
+  .btn:focus,
+  .btn:hover,
+  .btn:active,
+  .btn-edit:focus,
+  .btn-edit:hover,
+  .btn-edit:active {
+    transition: none !important;
+    transform: none !important;
+  }
 }
 
 /* Button variants */
@@ -348,7 +372,7 @@ input.weight-value::-webkit-inner-spin-button {
 }
 input.weight-value { -moz-appearance: textfield; }
 
-/* Alerts: accessibility and color/contrast */
+/* Alerts: accessibility, color/contrast, and animation */
 .alert {
   opacity: 0;
   pointer-events: none;
@@ -364,12 +388,38 @@ input.weight-value { -moz-appearance: textfield; }
   position: absolute;
   text-align: start;
   font-size: var(--fs-sm);
-  transition: opacity .18s;
+  transform: translateY(-12px);
+  transition:
+    opacity 0.36s cubic-bezier(0.4,0,0.2,1),
+    transform 0.38s cubic-bezier(0.4,0,0.2,1);
 }
 .alert.show {
   opacity: 1;
   pointer-events: auto;
   position: static;
+  transform: translateY(0);
+}
+/* Reduced motion for alerts */
+@media (prefers-reduced-motion: reduce) {
+  .alert,
+  .alert.show {
+    transition: none !important;
+  }
+}
+
+/* Alert exit animation helper class (slide out) */
+.alert.alert-hide {
+  opacity: 0 !important;
+  transform: translateY(-16px) scale(0.96) !important;
+  pointer-events: none !important;
+  transition:
+    opacity 0.18s cubic-bezier(0.4,0,0.2,1),
+    transform 0.28s cubic-bezier(0.4,0,0.2,1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .alert.alert-hide {
+    transition: none !important;
+  }
 }
 .alert-success {
   background-color: var(--success-bg);
@@ -397,6 +447,26 @@ input.weight-value { -moz-appearance: textfield; }
 .alert span {
   color: var(--text-on-primary);
   font-size: var(--fs-xs);
+}
+
+/* Form error shake animation */
+@keyframes accessible-shake {
+  0% { transform: translateX(0); }
+  17% { transform: translateX(-9px); }
+  33% { transform: translateX(10px); }
+  50% { transform: translateX(-7px); }
+  67% { transform: translateX(7px); }
+  83% { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
+}
+/* Attach this class to any element you want to shake on invalid/error */
+.form-error-animate {
+  animation: accessible-shake 0.46s cubic-bezier(.28,.82,.5,1.25) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .form-error-animate {
+    animation: none !important;
+  }
 }
 .alert i, .alert button i {
   color: var(--input-label);
@@ -460,20 +530,41 @@ input.weight-value { -moz-appearance: textfield; }
   position: fixed;
   top: 0; width: 100%;
   z-index: 20;
-  transition: all 0.1s;
+  transition:
+    opacity 0.32s cubic-bezier(0.4,0,0.2,1);
 }
 .modal-container.show { opacity: 1; pointer-events: auto; }
+
 .modal {
   background-color: var(--dark);
   border-radius: var(--radius-lg);
-  transition: all 0.4s;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
   padding: var(--space-lg);
   text-align: start;
   width: min(100%, 28rem);
+
+  /* Animation: fade & scale */
+  opacity: 0;
+  transform: scale(0.96) translateY(-20px);
+  transition:
+    opacity 0.39s cubic-bezier(0.4,0,0.2,1),
+    transform 0.38s cubic-bezier(0.4,0,0.2,1);
+  will-change: opacity, transform;
 }
+.modal-container.show .modal {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .modal-container,
+  .modal,
+  .modal-container.show .modal {
+    transition: none !important;
+  }
+}
+
 .modal-title { font-size: var(--fs-lg); font-weight: var(--fw-semibold); color: var(--light);}
 .modal-text  { font-size: var(--fs-sm); color: var(--text-on-dark); }
 .modal-buttons { display: flex; gap: var(--space-md); }

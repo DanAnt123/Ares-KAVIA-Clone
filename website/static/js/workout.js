@@ -26,9 +26,9 @@ if (select_workout) {
     });
 }
 
-/* === (Potential future modals/dynamic overlays: focus/ARIA/ESC support) === */
+/* === (Modals/future overlays: focus/ARIA/ESC support, now with animation) === */
 document.querySelectorAll('.modal-container').forEach(function(container) {
-    // Add ARIA/keyboard support for any present/future modals here
+    // Add ARIA/keyboard support for any present/future modals
     container.setAttribute("role", "dialog");
     container.setAttribute("aria-modal", "true");
     container.setAttribute("tabindex", "-1");
@@ -112,3 +112,50 @@ document.querySelectorAll('.modal-container').forEach(function(container) {
         }
     });
 });
+
+/* ==== Accessible animations and transitions (UI feedback) ==== */
+/* --- Alert Fade/Slide --- */
+function animateAlertDisappearance(alertEl) {
+    if (!alertEl) return;
+    alertEl.classList.add('alert-hide');
+    setTimeout(() => {
+        alertEl.classList.remove('show', 'alert-hide');
+        alertEl.style.display = 'none';
+    }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 10 : 320);
+}
+document.querySelectorAll('.alert .alert-close').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const alertEl = btn.closest('.alert');
+        animateAlertDisappearance(alertEl);
+    });
+});
+document.querySelectorAll('.alert.show:not(.alert-error)').forEach(alertEl => {
+    setTimeout(() => animateAlertDisappearance(alertEl), 4100);
+});
+
+/* --- Button interaction --- */
+document.querySelectorAll('button, .btn, .btn-edit').forEach(btn => {
+    btn.addEventListener('pointerdown', function () {
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            btn.style.transform = 'scale(0.97)';
+        }
+    });
+    btn.addEventListener('pointerup', function () {
+        btn.style.transform = '';
+    });
+    btn.addEventListener('pointerleave', function () {
+        btn.style.transform = '';
+    });
+});
+
+/* --- Form Error Shake (apply .form-error-animate on error node) --- */
+function triggerFormErrorAnimation(el) {
+    if (!el) return;
+    el.classList.remove('form-error-animate');
+    void el.offsetWidth;
+    el.classList.add('form-error-animate');
+    setTimeout(() => {
+        el.classList.remove('form-error-animate');
+    }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 10 : 520);
+}
+// Example: triggerFormErrorAnimation(document.querySelector(".alert-error"));

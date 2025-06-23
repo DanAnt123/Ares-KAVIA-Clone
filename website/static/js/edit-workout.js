@@ -54,10 +54,6 @@ document.querySelectorAll('form[action*="duplicate_workout"], button[title="Dupl
 
 /* === Modal accessibility enhancement === */
 
-/**
- * Trap focus within modal when open (accessibility requirement)
- * @param {HTMLElement} modalContainer
- */
 function trapFocus(modalContainer) {
     const focusableSelectors = [
         'a[href]', 'area[href]', 'input:not([disabled])', 'select:not([disabled])',
@@ -86,7 +82,6 @@ function trapFocus(modalContainer) {
                 }
             }
         } else if (e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27) {
-            // Close with ESC
             closeModal(modalContainer);
         }
     }
@@ -96,22 +91,12 @@ function trapFocus(modalContainer) {
     // On close, remove event
     modalContainer.__trapHandler = handleFocusTrap;
 }
-
-/**
- * Remove trapFocus handlers and ARIA on modal container.
- * @param {HTMLElement} modalContainer
- */
 function untrapFocus(modalContainer) {
     if (modalContainer.__trapHandler) {
         modalContainer.removeEventListener('keydown', modalContainer.__trapHandler);
         delete modalContainer.__trapHandler;
     }
 }
-
-/**
- * Show modal with ARIA and focus management.
- * @param {HTMLElement} modalContainer
- */
 function openModal(modalContainer) {
     modalContainer.classList.add('show');
     modalContainer.setAttribute("aria-modal", "true");
@@ -134,28 +119,21 @@ function openModal(modalContainer) {
     trapFocus(modalContainer);
     document.body.setAttribute("aria-hidden", "true");
 }
-
-/**
- * Hide modal and restore main document accessibility.
- * @param {HTMLElement} modalContainer
- */
 function closeModal(modalContainer) {
+    // Animate modal out (handled by CSS transitions)
     modalContainer.classList.remove('show');
     modalContainer.removeAttribute("aria-modal");
     modalContainer.removeAttribute("role");
     untrapFocus(modalContainer);
     document.body.removeAttribute("aria-hidden");
-    // Optionally, restore focus to the button that opened the modal
     if (modalContainer.__opener) {
         modalContainer.__opener.focus();
     }
 }
 
 document.querySelectorAll('[class^="modal-open"]').forEach(function(openBtn) {
-    // Button that opens modal: e.g., Delete workout
     const classes = openBtn.className.split(/\s+/);
     for (let i = 0; i < classes.length; i++) {
-        // Each modal-container shares a class for the relevant workout
         let modalSelector = `.modal-container.${classes[i]}`;
         let modalContainer = document.querySelector(modalSelector);
         if (modalContainer) {
@@ -164,24 +142,20 @@ document.querySelectorAll('[class^="modal-open"]').forEach(function(openBtn) {
                 modalContainer.__opener = openBtn;
                 openModal(modalContainer);
             });
-            // Find and wire up close buttons inside modal
             const closeBtn = modalContainer.querySelector('.modal-close');
             if (closeBtn) {
                 closeBtn.addEventListener('click', function() {
                     closeModal(modalContainer);
                 });
             }
-            // Also close when clicking the overlay (outside the actual modal box)
             modalContainer.addEventListener('mousedown', function(e) {
                 if (e.target === modalContainer) {
                     closeModal(modalContainer);
                 }
             });
-            // Ensure ARIA role for the modal and dynamic ARIA attributes
             modalContainer.setAttribute("role", "dialog");
             modalContainer.setAttribute("aria-modal", "true");
             modalContainer.setAttribute("tabindex", "-1");
-            // Set ARIA-labelledby if a title is present
             let modalTitle = modalContainer.querySelector('.modal-title');
             if (modalTitle && modalTitle.id) {
                 modalContainer.setAttribute('aria-labelledby', modalTitle.id);
@@ -192,3 +166,51 @@ document.querySelectorAll('[class^="modal-open"]').forEach(function(openBtn) {
         }
     }
 });
+
+/* ==== Accessible animations and transitions (UI feedback) ==== */
+/* --- Alert Fade/Slide --- */
+function animateAlertDisappearance(alertEl) {
+    if (!alertEl) return;
+    alertEl.classList.add('alert-hide');
+    setTimeout(() => {
+        alertEl.classList.remove('show', 'alert-hide');
+        alertEl.style.display = 'none';
+    }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 10 : 320);
+}
+document.querySelectorAll('.alert .alert-close').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const alertEl = btn.closest('.alert');
+        animateAlertDisappearance(alertEl);
+    });
+});
+// Auto-fade info/success alerts after 4s
+document.querySelectorAll('.alert.show:not(.alert-error)').forEach(alertEl => {
+    setTimeout(() => animateAlertDisappearance(alertEl), 4100);
+});
+
+/* --- Button interaction --- */
+document.querySelectorAll('button, .btn, .btn-edit').forEach(btn => {
+    btn.addEventListener('pointerdown', function () {
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            btn.style.transform = 'scale(0.97)';
+        }
+    });
+    btn.addEventListener('pointerup', function () {
+        btn.style.transform = '';
+    });
+    btn.addEventListener('pointerleave', function () {
+        btn.style.transform = '';
+    });
+});
+
+/* --- Form Error Shake (apply .form-error-animate on error node) --- */
+function triggerFormErrorAnimation(el) {
+    if (!el) return;
+    el.classList.remove('form-error-animate');
+    void el.offsetWidth;
+    el.classList.add('form-error-animate');
+    setTimeout(() => {
+        el.classList.remove('form-error-animate');
+    }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 10 : 520);
+}
+// Example: triggerFormErrorAnimation(document.querySelector(".alert-error"));

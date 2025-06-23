@@ -67,21 +67,16 @@ if (typeof Sortable !== "undefined") {
     });
 }
 
-/* ==== MODAL ACCESSIBILITY SUPPORT: For any dynamic containers, e.g. custom modals support ==== */
-/* If 'modal-open' buttons and modals are present, activate full ARIA/focus trapping */
-
+/* ==== MODAL ACCESSIBILITY SUPPORT ==== */
 document.querySelectorAll('[class^="modal-open"]').forEach(function(openBtn) {
-    // Button that opens modal: e.g., Delete workout (if new modal present in other future templates)
     const classes = openBtn.className.split(/\s+/);
     for (let i = 0; i < classes.length; i++) {
         let modalSelector = `.modal-container.${classes[i]}`;
         let modalContainer = document.querySelector(modalSelector);
         if (modalContainer) {
-            // Modal ARIA roles/attributes
             modalContainer.setAttribute("role", "dialog");
             modalContainer.setAttribute("aria-modal", "true");
             modalContainer.setAttribute("tabindex", "-1");
-            // If modal has title, ensure aria-labelledby
             let modalTitle = modalContainer.querySelector('.modal-title');
             if (modalTitle && modalTitle.id) {
                 modalContainer.setAttribute('aria-labelledby', modalTitle.id);
@@ -89,7 +84,6 @@ document.querySelectorAll('[class^="modal-open"]').forEach(function(openBtn) {
                 modalTitle.id = "modal-title-" + Math.random().toString(36).substr(2, 8);
                 modalContainer.setAttribute('aria-labelledby', modalTitle.id);
             }
-            // Open handler
             openBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 modalContainer.classList.add('show');
@@ -102,7 +96,6 @@ document.querySelectorAll('[class^="modal-open"]').forEach(function(openBtn) {
                 document.body.setAttribute("aria-hidden", "true");
                 trapFocus(modalContainer);
             });
-            // Close handlers
             let closeBtn = modalContainer.querySelector('.modal-close');
             if (closeBtn) {
                 closeBtn.addEventListener('click', function() {
@@ -117,8 +110,6 @@ document.querySelectorAll('[class^="modal-open"]').forEach(function(openBtn) {
         }
     }
 });
-
-/* Trap keyboard focus in modal and ESC support */
 function trapFocus(modalContainer) {
     const focusableSelectors = [
         'a[href]', 'area[href]', 'input:not([disabled])', 'select:not([disabled])',
@@ -127,10 +118,8 @@ function trapFocus(modalContainer) {
     ];
     const focusableElements = modalContainer.querySelectorAll(focusableSelectors.join(', '));
     if (focusableElements.length === 0) return;
-
     let firstEl = focusableElements[0];
     let lastEl = focusableElements[focusableElements.length - 1];
-
     function handleFocusTrap(e) {
         if (e.key === 'Tab' || e.keyCode === 9) {
             if (e.shiftKey) {
@@ -167,3 +156,50 @@ function closeModal(modalContainer) {
         modalContainer.__opener.focus();
     }
 }
+
+/* ==== Accessible animations and transitions (UI feedback) ==== */
+/* --- Alert Fade/Slide --- */
+function animateAlertDisappearance(alertEl) {
+    if (!alertEl) return;
+    alertEl.classList.add('alert-hide');
+    setTimeout(() => {
+        alertEl.classList.remove('show', 'alert-hide');
+        alertEl.style.display = 'none';
+    }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 10 : 320);
+}
+document.querySelectorAll('.alert .alert-close').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const alertEl = btn.closest('.alert');
+        animateAlertDisappearance(alertEl);
+    });
+});
+document.querySelectorAll('.alert.show:not(.alert-error)').forEach(alertEl => {
+    setTimeout(() => animateAlertDisappearance(alertEl), 4100);
+});
+
+/* --- Button interaction --- */
+document.querySelectorAll('button, .btn, .btn-edit').forEach(btn => {
+    btn.addEventListener('pointerdown', function () {
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            btn.style.transform = 'scale(0.97)';
+        }
+    });
+    btn.addEventListener('pointerup', function () {
+        btn.style.transform = '';
+    });
+    btn.addEventListener('pointerleave', function () {
+        btn.style.transform = '';
+    });
+});
+
+/* --- Form Error Shake (apply .form-error-animate on error node) --- */
+function triggerFormErrorAnimation(el) {
+    if (!el) return;
+    el.classList.remove('form-error-animate');
+    void el.offsetWidth;
+    el.classList.add('form-error-animate');
+    setTimeout(() => {
+        el.classList.remove('form-error-animate');
+    }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 10 : 520);
+}
+// Example: triggerFormErrorAnimation(document.querySelector(".alert-error"));
