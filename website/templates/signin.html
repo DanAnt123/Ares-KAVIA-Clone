@@ -1,84 +1,154 @@
-{% extends "base.html" %} {% block navbar %}{% endblock %} {% block body %}
+{% extends "base.html" %}
+{% block navbar %}{% endblock %}
+{% block body %}
 
-<div class="container two-columns full-height">
-	<div class="intro">
-		<div class="intro-content">
-			<img class="intro-image login-intro-image" src="/static/images/intro.png" alt="Man working out" />
-			<h1 class="title">Never lose track</h1>
-			<p class="intro-lead">
-				For those who want to focus only on performing their absolute best. Have your
-				exercises, weights, and machine adjustments for multiple workouts, all in one place,
-				so you can get straight to work!
-			</p>
-		</div>
-	</div>
+<div class="auth-container">
+    <!-- Background decorative elements -->
+    <div class="auth-decoration">
+        <div class="decoration-circle circle-1"></div>
+        <div class="decoration-circle circle-2"></div>
+        <div class="decoration-circle circle-3"></div>
+    </div>
 
-	<div class="welcome">
-		<div class="welcome-top">
-			<img class="welcome-image" src="/static/images/logo-nobg.png" alt="Ares Workout Logo" />
-			<div class="welcome-headline">
-				<h1 class="title">Sign in to Ares</h1>
-				<p class="welcome-lead">Welcome back! Please enter your details.</p>
-			</div>
-			<form class="welcome-form" method="POST" autocomplete="on">
-				{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
-				{% for category, message in messages %} {% if category == "error" %}
-				<div class="alert alert-error show" role="alert">
-					<span>{{ message }}</span>
-					<button type="button" class="alert-close">
-						<i class="fa-solid fa-xmark"></i>
-					</button>
-				</div>
-				{% else %}
-				<div class="alert alert-success show" role="alert">
-					<span>{{ message }}</span>
-					<button type="button" class="alert-close">
-						<i class="fa-solid fa-xmark"></i>
-					</button>
-				</div>
-				{% endif %} {% endfor %} {% endif %} {% endwith %}
-				<div class="input-with-icon">
-					<label for="signin-email" class="visually-hidden">Email</label>
-					<input
-						id="signin-email"
-						class="text-input"
-						type="email"
-						placeholder="Email"
-						name="email"
-						maxlength="50"
-						required
-						autocomplete="username"
-						aria-label="Email"
-					/>
-					<i class="input-icon fa-solid fa-envelope"></i>
-				</div>
-				<div class="input-with-icon">
-					<label for="signin-password" class="visually-hidden">Password</label>
-					<input
-						id="signin-password"
-						class="text-input"
-						type="password"
-						placeholder="Password"
-						name="password"
-						maxlength="50"
-						required
-						autocomplete="current-password"
-						aria-label="Password"
-					/>
-					<i class="input-icon fa-solid fa-lock"></i>
-				</div>
-				<button class="btn btn-primary" type="submit">Sign in</button>
-			</form>
-			<form class="welcome-form" method="POST">
-				<button class="btn btn-tertiary" name="demo_user" type="submit">
-					Sign in with Demo User
-				</button>
-			</form>
-		</div>
-		<div class="welcome-bottom">
-			<p>Don't have an account? <a class="text-primary" href="/signup">Sign up</a></p>
-		</div>
-	</div>
+    <!-- Main authentication card -->
+    <div class="auth-card">
+        <!-- Brand section -->
+        <div class="auth-brand">
+            <div class="brand-logo-container">
+                <img class="brand-logo" src="/static/images/logo-nobg.png" alt="Ares Workout Logo" />
+                <div class="brand-logo-glow"></div>
+            </div>
+            <h1 class="brand-title">Welcome to Ares</h1>
+            <p class="brand-subtitle">Sign in to continue your fitness journey</p>
+        </div>
+
+        <!-- Alert messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == "error" %}
+                        <div class="alert alert-error show" role="alert" aria-live="polite">
+                            <div class="alert-content">
+                                <i class="alert-icon fa-solid fa-exclamation-triangle"></i>
+                                <span class="alert-message">{{ message }}</span>
+                            </div>
+                            <button type="button" class="alert-close" aria-label="Close alert">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success show" role="alert" aria-live="polite">
+                            <div class="alert-content">
+                                <i class="alert-icon fa-solid fa-check-circle"></i>
+                                <span class="alert-message">{{ message }}</span>
+                            </div>
+                            <button type="button" class="alert-close" aria-label="Close alert">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Sign in form -->
+        <div class="auth-form-section">
+            <form class="auth-form" method="POST" autocomplete="on">
+                <div class="form-group">
+                    <label for="signin-email" class="form-label">Email Address</label>
+                    <div class="input-wrapper">
+                        <input
+                            id="signin-email"
+                            class="form-input"
+                            type="email"
+                            placeholder="Enter your email"
+                            name="email"
+                            maxlength="50"
+                            required
+                            autocomplete="username"
+                            aria-describedby="email-help"
+                        />
+                        <i class="input-icon fa-solid fa-envelope"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signin-password" class="form-label">Password</label>
+                    <div class="input-wrapper">
+                        <input
+                            id="signin-password"
+                            class="form-input"
+                            type="password"
+                            placeholder="Enter your password"
+                            name="password"
+                            maxlength="50"
+                            required
+                            autocomplete="current-password"
+                            aria-describedby="password-help"
+                        />
+                        <i class="input-icon fa-solid fa-lock"></i>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary auth-submit-btn" type="submit">
+                    <i class="fa-solid fa-sign-in-alt"></i>
+                    Sign In
+                </button>
+            </form>
+
+            <!-- Demo user option -->
+            <div class="auth-divider">
+                <span class="divider-text">or</span>
+            </div>
+
+            <form class="auth-form" method="POST">
+                <button class="btn btn-secondary auth-demo-btn" name="demo_user" type="submit">
+                    <i class="fa-solid fa-user-circle"></i>
+                    Try Demo Account
+                </button>
+            </form>
+        </div>
+
+        <!-- Sign up link -->
+        <div class="auth-footer">
+            <p class="auth-footer-text">
+                Don't have an account? 
+                <a href="/signup" class="auth-link">Create one here</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Info panel for larger screens -->
+    <div class="auth-info-panel">
+        <div class="info-content">
+            <div class="info-image-container">
+                <img class="info-image" src="/static/images/intro.png" alt="Workout motivation" />
+                <div class="info-image-overlay"></div>
+            </div>
+            <div class="info-text">
+                <h2 class="info-title">Never lose track</h2>
+                <p class="info-description">
+                    Focus on performing your absolute best. Keep your exercises, weights, 
+                    and machine adjustments organized across multiple workouts—all in one place, 
+                    so you can get straight to work and achieve your fitness goals.
+                </p>
+                <div class="info-features">
+                    <div class="feature-item">
+                        <i class="fa-solid fa-dumbbell"></i>
+                        <span>Track workouts</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Monitor progress</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fa-solid fa-target"></i>
+                        <span>Achieve goals</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- JavaScript -->
