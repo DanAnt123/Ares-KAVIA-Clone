@@ -65,17 +65,19 @@ def duplicate_workout(workout_id):
                 db.session.commit()
                 # Copy exercises based on edited names/fields, not blindly from original
                 for i in range(len(exercise_names)):
+                    # Avoid IndexError if include_details is missing or malformed
+                    include_flag = int(include_details[i]) if i < len(include_details) and include_details[i] not in [None, ""] else 0
                     new_exercise = Exercise(
                         name=exercise_names[i],
-                        include_details=int(include_details[i]),
+                        include_details=include_flag,
                         workout_id=new_workout.id,
-                        details="", # Start details blank
+                        details="",  # Start details blank
                     )
                     db.session.add(new_exercise)
                 db.session.commit()
                 flash("Workout duplicated successfully!", category="success")
                 return redirect(url_for("views.home"))
-            except SQLAlchemyError as e:
+            except Exception as e:
                 db.session.rollback()
                 flash("Database error: " + str(e), category="error")
         # On failure, fall through and re-display form (errors shown via flash)
