@@ -39,6 +39,11 @@
                         {% endwith %}   
                         <input class="text-input" type="text" name="workout_name" placeholder="Workout name" value="{{ workout.name }}" maxlength="12" required>
                         <input class="text-input" type="text" name="workout_description" placeholder="Description" value="{{ workout.description }}" maxlength="18">
+
+                        {# Inline new category creation #}
+                        <input class="text-input" type="text" name="new_category_name" placeholder="Or add new category (optional)" maxlength="50" autocomplete="off">
+                        <input class="text-input" type="text" name="new_category_description" placeholder="Category description (optional)" maxlength="100" autocomplete="off">
+                        
                         {# Category selection dropdown #}
                         <select class="text-input" name="category_id" required>
                             <option value="" disabled>Select category</option>

@@ -23,9 +23,22 @@ def create_app():
     app.register_blueprint(auth, url_prefix="/")
     app.register_blueprint(views, url_prefix="/")
 
-    # You may safely remove db.create_all(); migrations handle table creation.
-    # with app.app_context():
-    #     db.create_all()
+    # Initialize default categories on the very first request if they are missing
+    @app.before_first_request
+    def ensure_default_categories():
+        from .models import Category
+        default_categories = [
+            {"name": "Strength", "description": "Strength training workouts"},
+            {"name": "Cardio", "description": "Cardiovascular workouts"},
+            {"name": "Flexibility", "description": "Flexibility and stretching"},
+            {"name": "Other", "description": "Other types of workouts"},
+        ]
+        # Only add if zero categories exist in DB
+        if Category.query.count() == 0:
+            for cat in default_categories:
+                new_cat = Category(name=cat["name"], description=cat["description"])
+                db.session.add(new_cat)
+            db.session.commit()
 
     login_manager = LoginManager()
     login_manager.login_view = "auth.signin"
