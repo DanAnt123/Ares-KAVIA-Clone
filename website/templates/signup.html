@@ -36,15 +36,18 @@
                     {% endif %}
                 {% endwith %}
                 <div class="input-with-icon">
-                    <input class="text-input" type="email" placeholder="Email" name="email" maxlength="50" required>
+                    <label for="signup-email" class="visually-hidden">Email</label>
+                    <input id="signup-email" class="text-input" type="email" placeholder="Email" name="email" maxlength="50" required autocomplete="username" aria-label="Email">
                     <i class="input-icon fa-solid fa-envelope"></i>
                 </div>
                 <div class="input-with-icon">
-                    <input class="text-input" type="password" placeholder="Password" name="password" minlength="8" maxlength="50" required>
+                    <label for="signup-password" class="visually-hidden">Password</label>
+                    <input id="signup-password" class="text-input" type="password" placeholder="Password" name="password" minlength="8" maxlength="50" required autocomplete="new-password" aria-label="Password">
                     <i class="input-icon fa-solid fa-lock"></i>
                 </div>
                 <div class="input-with-icon">
-                    <input class="text-input" type="password" placeholder="Confirm password" minlength="8" name="confirmation" maxlength="50" required>
+                    <label for="signup-confirmation" class="visually-hidden">Confirm Password</label>
+                    <input id="signup-confirmation" class="text-input" type="password" placeholder="Confirm password" minlength="8" name="confirmation" maxlength="50" required autocomplete="new-password" aria-label="Confirm password">
                     <i class="input-icon fa-solid fa-lock"></i>
                 </div>
                 <button class="btn btn-primary" type="submit">Sign up</button>

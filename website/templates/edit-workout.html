@@ -37,15 +37,20 @@
                                 {% endfor %}
                             {% endif %}
                         {% endwith %}   
-                        <input class="text-input" type="text" name="workout_name" placeholder="Workout name" value="{{ workout.name }}" maxlength="12" required>
-                        <input class="text-input" type="text" name="workout_description" placeholder="Description" value="{{ workout.description }}" maxlength="18">
+                        <label for="edit-workout_name-{{ workout.id }}" class="visually-hidden">Workout name</label>
+                        <input id="edit-workout_name-{{ workout.id }}" class="text-input" type="text" name="workout_name" placeholder="Workout name" value="{{ workout.name }}" maxlength="12" required autocomplete="off" aria-label="Workout name">
+                        <label for="edit-workout_description-{{ workout.id }}" class="visually-hidden">Description</label>
+                        <input id="edit-workout_description-{{ workout.id }}" class="text-input" type="text" name="workout_description" placeholder="Description" value="{{ workout.description }}" maxlength="18" autocomplete="off" aria-label="Description">
 
                         {# Inline new category creation #}
-                        <input class="text-input" type="text" name="new_category_name" placeholder="Or add new category (optional)" maxlength="50" autocomplete="off">
-                        <input class="text-input" type="text" name="new_category_description" placeholder="Category description (optional)" maxlength="100" autocomplete="off">
+                        <label for="edit-new_category_name-{{ workout.id }}" class="visually-hidden">Add new category</label>
+                        <input id="edit-new_category_name-{{ workout.id }}" class="text-input" type="text" name="new_category_name" placeholder="Or add new category (optional)" maxlength="50" autocomplete="off" aria-label="Add new category">
+                        <label for="edit-new_category_description-{{ workout.id }}" class="visually-hidden">Category description</label>
+                        <input id="edit-new_category_description-{{ workout.id }}" class="text-input" type="text" name="new_category_description" placeholder="Category description (optional)" maxlength="100" autocomplete="off" aria-label="Category description">
                         
                         {# Category selection dropdown #}
-                        <select class="text-input" name="category_id" required>
+                        <label for="edit-category_id-{{ workout.id }}" class="visually-hidden">Category</label>
+                        <select id="edit-category_id-{{ workout.id }}" class="text-input" name="category_id" required aria-label="Category">
                             <option value="" disabled>Select category</option>
                             {% for category in categories %}
                                 <option value="{{ category.id }}" {% if workout.category_id == category.id %}selected{% endif %}>

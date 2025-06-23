@@ -20,7 +20,7 @@
 				<h1 class="title">Sign in to Ares</h1>
 				<p class="welcome-lead">Welcome back! Please enter your details.</p>
 			</div>
-			<form class="welcome-form" method="POST">
+			<form class="welcome-form" method="POST" autocomplete="on">
 				{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
 				{% for category, message in messages %} {% if category == "error" %}
 				<div class="alert alert-error show" role="alert">
@@ -38,24 +38,32 @@
 				</div>
 				{% endif %} {% endfor %} {% endif %} {% endwith %}
 				<div class="input-with-icon">
+					<label for="signin-email" class="visually-hidden">Email</label>
 					<input
+						id="signin-email"
 						class="text-input"
 						type="email"
 						placeholder="Email"
 						name="email"
 						maxlength="50"
 						required
+						autocomplete="username"
+						aria-label="Email"
 					/>
 					<i class="input-icon fa-solid fa-envelope"></i>
 				</div>
 				<div class="input-with-icon">
+					<label for="signin-password" class="visually-hidden">Password</label>
 					<input
+						id="signin-password"
 						class="text-input"
 						type="password"
 						placeholder="Password"
 						name="password"
 						maxlength="50"
 						required
+						autocomplete="current-password"
+						aria-label="Password"
 					/>
 					<i class="input-icon fa-solid fa-lock"></i>
 				</div>

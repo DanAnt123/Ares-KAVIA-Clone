@@ -29,19 +29,19 @@
 
 	<body>
 		{% block navbar %}
-		<nav class="navbar">
+		<nav class="navbar" role="navigation" aria-label="Main navigation">
 			<a href="/" class="nav-branding no-hover">Ares</a>
 			<input type="checkbox" id="nav-toggle" class="nav-toggle" />
-			<ul class="nav-menu">
+			<ul class="nav-menu" role="menubar">
 				{% block active %}
-				<li class="nav-item">
-					<a class="nav-link" href="/">Home</a>
+				<li class="nav-item" role="none">
+					<a class="nav-link" href="/" role="menuitem">Home</a>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/workout">Workout</a>
+				<li class="nav-item" role="none">
+					<a class="nav-link" href="/workout" role="menuitem">Workout</a>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/logout">Logout</a>
+				<li class="nav-item" role="none">
+					<a class="nav-link" href="/logout" role="menuitem">Logout</a>
 				</li>
 				{% endblock %}
 			</ul>

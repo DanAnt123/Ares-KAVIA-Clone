@@ -688,3 +688,16 @@ a, select, button, .nav-toggle-label { cursor: pointer; text-decoration: none; }
 }
 
 .no-hover:hover { filter: none; background: none !important; }
+
+/* Visually hidden - for accessibility */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px); /* IE6, IE7 */
+  clip: rect(1px 1px 1px 1px);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: -1px;
+}

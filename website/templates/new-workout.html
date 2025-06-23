@@ -28,14 +28,19 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}   
-                <input class="text-input" type="text" name="workout_name" placeholder="Workout name" maxlength="12" required>
-                <input class="text-input" type="text" name="workout_description" placeholder="Description" maxlength="18">
+                <label for="workout_name" class="visually-hidden">Workout name</label>
+                <input id="workout_name" class="text-input" type="text" name="workout_name" placeholder="Workout name" maxlength="12" required autocomplete="off" aria-label="Workout name">
+                <label for="workout_description" class="visually-hidden">Description</label>
+                <input id="workout_description" class="text-input" type="text" name="workout_description" placeholder="Description" maxlength="18" autocomplete="off" aria-label="Description">
                 {# Inline new category creation #}
-                <input class="text-input" type="text" name="new_category_name" placeholder="Or add new category (optional)" maxlength="50" autocomplete="off">
-                <input class="text-input" type="text" name="new_category_description" placeholder="Category description (optional)" maxlength="100" autocomplete="off">
+                <label for="new_category_name" class="visually-hidden">Add new category</label>
+                <input id="new_category_name" class="text-input" type="text" name="new_category_name" placeholder="Or add new category (optional)" maxlength="50" autocomplete="off" aria-label="Add new category">
+                <label for="new_category_description" class="visually-hidden">Category description</label>
+                <input id="new_category_description" class="text-input" type="text" name="new_category_description" placeholder="Category description (optional)" maxlength="100" autocomplete="off" aria-label="Category description">
 
                 {# Category selection dropdown #}
-                <select class="text-input" name="category_id" required>
+                <label for="category_id" class="visually-hidden">Category</label>
+                <select id="category_id" class="text-input" name="category_id" required aria-label="Category">
                     <option value="" disabled selected>Select category</option>
                     {% for category in categories %}
                         <option value="{{ category.id }}">{{ category.name }}</option>
