@@ -30,6 +30,13 @@
                 {% endwith %}   
                 <input class="text-input" type="text" name="workout_name" placeholder="Workout name" maxlength="12" required>
                 <input class="text-input" type="text" name="workout_description" placeholder="Description" maxlength="18">
+                {# Category selection dropdown #}
+                <select class="text-input" name="category_id" required>
+                    <option value="" disabled selected>Select category</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div id="template">
                 <div class="exercise-edit" hidden>

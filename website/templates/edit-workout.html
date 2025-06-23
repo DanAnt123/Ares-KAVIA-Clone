@@ -39,6 +39,15 @@
                         {% endwith %}   
                         <input class="text-input" type="text" name="workout_name" placeholder="Workout name" value="{{ workout.name }}" maxlength="12" required>
                         <input class="text-input" type="text" name="workout_description" placeholder="Description" value="{{ workout.description }}" maxlength="18">
+                        {# Category selection dropdown #}
+                        <select class="text-input" name="category_id" required>
+                            <option value="" disabled>Select category</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}" {% if workout.category_id == category.id %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="exercises-edit {{ workout.id }}">
                         <div class="template {{ workout.id }}">

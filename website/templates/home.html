@@ -34,10 +34,16 @@
                         <button type="submit" class="btn btn-primary btn-workout" name="workout" value="{{ workout.id }}">
                             <h2>{{ workout.name }}</h2>
                             <p class="workout-lead">{{ workout.description }}</p>
+                            {% if workout.category %}
+                                <p class="workout-lead"><i class="fa-solid fa-tag"></i> {{ workout.category.name }}</p>
+                            {% endif %}
                         </button>
                     {% else %}
                         <button type="submit" class="btn btn-primary btn-workout no-description" name="workout" value="{{ workout.id }}">
                             <h2>{{ workout.name }}</h2>
+                            {% if workout.category %}
+                                <p class="workout-lead"><i class="fa-solid fa-tag"></i> {{ workout.category.name }}</p>
+                            {% endif %}
                         </button>
                     {% endif %}
                 </form>
