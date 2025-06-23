@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}New Workout - Ares{% endblock %}
+{% block title %}Create New Workout - Ares{% endblock %}
 
 {% block active %}
 <li class="nav-item" role="none">
@@ -25,92 +25,295 @@
 
 {% block body %}
 
-    <div class="container">
-
-        <!-- Workout form -->
-        <form id="workout" autocomplete="off" method="POST">
-            <div class="workout-inputs">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            {% if category == "error" %}
-                                <div class="alert alert-error show" role="alert">
-                                    <span>{{ message }}</span>
-                                    <button type="button" class="alert-close">
-                                        <i class="fa-solid fa-xmark"></i>
-                                    </button>
-                                </div>
-                            {% else %}
-                                <div class="alert alert-success show" role="alert">
-                                    <span>{{ message }}</span>
-                                    <button type="button" class="alert-close">
-                                        <i class="fa-solid fa-xmark"></i>
-                                    </button>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}   
-                <label for="workout_name" class="visually-hidden">Workout name</label>
-                <input id="workout_name" class="text-input" type="text" name="workout_name" placeholder="Workout name" maxlength="12" required autocomplete="off" aria-label="Workout name">
-                <label for="workout_description" class="visually-hidden">Description</label>
-                <input id="workout_description" class="text-input" type="text" name="workout_description" placeholder="Description" maxlength="18" autocomplete="off" aria-label="Description">
-                {# Inline new category creation #}
-                <label for="new_category_name" class="visually-hidden">Add new category</label>
-                <input id="new_category_name" class="text-input" type="text" name="new_category_name" placeholder="Or add new category (optional)" maxlength="50" autocomplete="off" aria-label="Add new category">
-                <label for="new_category_description" class="visually-hidden">Category description</label>
-                <input id="new_category_description" class="text-input" type="text" name="new_category_description" placeholder="Category description (optional)" maxlength="100" autocomplete="off" aria-label="Category description">
-
-                {# Category selection dropdown #}
-                <label for="category_id" class="visually-hidden">Category</label>
-                <select id="category_id" class="text-input" name="category_id" required aria-label="Category">
-                    <option value="" disabled selected>Select category</option>
-                    {% for category in categories %}
-                        <option value="{{ category.id }}">{{ category.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div id="template">
-                <div class="exercise-edit" hidden>
-                    <input class="exercise-edit-name" type="text" name="exercise_name" placeholder="Exercise name" maxlength="45" required disabled>
-                    <div class="exercise-edit-options">
-                        <input class="include_details_hidden" type="hidden" value="0" name="include_details" disabled>
-                        <label class="checkbox">
-                            <input class="include_details" type="checkbox" value="1" name="include_details" disabled>
-                            <span>Include details</span>
-                        </label>
-                        <i class="handle fa-solid fa-grip-lines"></i>
-                        <i class="delete fa-solid fa-xmark"></i>
-                    </div>
+<div class="workout-creation-container">
+    
+    <!-- Hero Header Section -->
+    <header class="creation-header">
+        <div class="creation-header-content">
+            <div class="header-icon-container">
+                <div class="header-icon">
+                    <i class="fa-solid fa-plus"></i>
                 </div>
+                <div class="header-icon-glow"></div>
             </div>
-            <div id="exercises" class="exercises-edit">
-                <div class="exercise-edit">
-                    <input class="exercise-edit-name" type="text" name="exercise_name" placeholder="Exercise name" maxlength="45" required>
-                    <div class="exercise-edit-options">
-                        <input class="include_details_hidden" type="hidden" value="0" name="include_details">
-                        <label class="checkbox">
-                            <input class="include_details" type="checkbox" value="1" name="include_details">
-                            <span>Include details</span>
-                        </label>
-                        <i class="handle fa-solid fa-grip-lines"></i>
-                        <i class="delete fa-solid fa-xmark"></i>
-                    </div>
-                </div>
-            </div>
-            <button type="button" class="btn btn-secondary" id="add_exercise" title="Add exercise">
-                <i class="fa-solid fa-plus"></i>
-            </button>
-        </form>
-        <div class="buttons">
-            <button type="submit" class="btn btn-primary" form="workout">Save workout</button>
-            <a href="/" class="btn btn-tertiary cancel">Cancel</a>
+            <h1 class="creation-title">Create New Workout</h1>
+            <p class="creation-subtitle">Design your perfect training session with custom exercises and details</p>
         </div>
+    </header>
 
-    </div>
+    <!-- Alert Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alerts-container">
+                {% for category, message in messages %}
+                    {% if category == "error" %}
+                        <div class="alert alert-error show" role="alert" aria-live="polite">
+                            <div class="alert-content">
+                                <i class="alert-icon fa-solid fa-exclamation-triangle"></i>
+                                <span class="alert-message">{{ message }}</span>
+                            </div>
+                            <button type="button" class="alert-close" aria-label="Close alert">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success show" role="alert" aria-live="polite">
+                            <div class="alert-content">
+                                <i class="alert-icon fa-solid fa-check-circle"></i>
+                                <span class="alert-message">{{ message }}</span>
+                            </div>
+                            <button type="button" class="alert-close" aria-label="Close alert">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
-    <!-- JavaScript -->
-    <script type="text/javascript" src="/static/js/new-workout.js"></script>
-    <script type="text/javascript" src="/static/js/alert.js"></script>
+    <!-- Main Form -->
+    <form id="workout" autocomplete="off" method="POST" class="workout-creation-form">
+        
+        <!-- Workout Details Card -->
+        <section class="creation-card workout-details-card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fa-solid fa-info-circle"></i>
+                    Workout Details
+                </h2>
+                <p class="card-description">Give your workout a name and description to help you identify it later</p>
+            </div>
+            
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="workout_name" class="form-label">Workout Name *</label>
+                    <div class="input-wrapper">
+                        <input 
+                            id="workout_name" 
+                            class="form-input" 
+                            type="text" 
+                            name="workout_name" 
+                            placeholder="e.g., Push Day, Full Body, Cardio Blast" 
+                            maxlength="12" 
+                            required 
+                            autocomplete="off" 
+                            aria-describedby="workout_name_help"
+                        >
+                        <i class="input-icon fa-solid fa-dumbbell"></i>
+                    </div>
+                    <small id="workout_name_help" class="form-help">Maximum 12 characters</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="workout_description" class="form-label">Description</label>
+                    <div class="input-wrapper">
+                        <input 
+                            id="workout_description" 
+                            class="form-input" 
+                            type="text" 
+                            name="workout_description" 
+                            placeholder="Brief description of your workout focus" 
+                            maxlength="18" 
+                            autocomplete="off"
+                            aria-describedby="workout_description_help"
+                        >
+                        <i class="input-icon fa-solid fa-file-text"></i>
+                    </div>
+                    <small id="workout_description_help" class="form-help">Maximum 18 characters (optional)</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category Selection Card -->
+        <section class="creation-card category-selection-card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fa-solid fa-tags"></i>
+                    Category
+                </h2>
+                <p class="card-description">Choose an existing category or create a new one for better organization</p>
+            </div>
+            
+            <div class="card-body">
+                <div class="category-options">
+                    <div class="form-group">
+                        <label for="category_id" class="form-label">Select Category *</label>
+                        <div class="select-wrapper">
+                            <select id="category_id" class="form-select" name="category_id" required aria-describedby="category_help">
+                                <option value="" disabled selected>Choose a category...</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <i class="select-arrow fa-solid fa-chevron-down"></i>
+                        </div>
+                        <small id="category_help" class="form-help">Categorize your workout for better organization</small>
+                    </div>
+
+                    <div class="divider-text">
+                        <span>Or create new category</span>
+                    </div>
+
+                    <div class="new-category-section">
+                        <div class="form-group">
+                            <label for="new_category_name" class="form-label">New Category Name</label>
+                            <div class="input-wrapper">
+                                <input 
+                                    id="new_category_name" 
+                                    class="form-input" 
+                                    type="text" 
+                                    name="new_category_name" 
+                                    placeholder="e.g., Strength, Cardio, Flexibility" 
+                                    maxlength="50" 
+                                    autocomplete="off"
+                                    aria-describedby="new_category_name_help"
+                                >
+                                <i class="input-icon fa-solid fa-tag"></i>
+                            </div>
+                            <small id="new_category_name_help" class="form-help">Maximum 50 characters</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new_category_description" class="form-label">Category Description</label>
+                            <div class="input-wrapper">
+                                <input 
+                                    id="new_category_description" 
+                                    class="form-input" 
+                                    type="text" 
+                                    name="new_category_description" 
+                                    placeholder="Brief description of this category" 
+                                    maxlength="100" 
+                                    autocomplete="off"
+                                    aria-describedby="new_category_description_help"
+                                >
+                                <i class="input-icon fa-solid fa-info"></i>
+                            </div>
+                            <small id="new_category_description_help" class="form-help">Maximum 100 characters (optional)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercises Management Card -->
+        <section class="creation-card exercises-management-card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fa-solid fa-list"></i>
+                    Exercises
+                </h2>
+                <p class="card-description">Add exercises to your workout. You can reorder them by dragging and include additional details</p>
+            </div>
+            
+            <div class="card-body">
+                <!-- Exercise Template (Hidden) -->
+                <div id="template" class="exercise-template" hidden>
+                    <div class="exercise-edit">
+                        <div class="exercise-item">
+                            <div class="exercise-header">
+                                <div class="exercise-handle">
+                                    <i class="handle fa-solid fa-grip-lines" title="Drag to reorder"></i>
+                                </div>
+                                <div class="exercise-input-group">
+                                    <input 
+                                        class="exercise-edit-name" 
+                                        type="text" 
+                                        name="exercise_name" 
+                                        placeholder="Exercise name (e.g., Bench Press, Squats)" 
+                                        maxlength="45" 
+                                        required 
+                                        disabled
+                                        aria-label="Exercise name"
+                                    >
+                                </div>
+                                <button type="button" class="exercise-delete" title="Remove exercise" disabled>
+                                    <i class="delete fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                            <div class="exercise-options">
+                                <input class="include_details_hidden" type="hidden" value="0" name="include_details" disabled>
+                                <label class="checkbox-wrapper">
+                                    <input class="include_details" type="checkbox" value="1" name="include_details" disabled>
+                                    <span class="checkbox-label">
+                                        <i class="fa-solid fa-plus-circle"></i>
+                                        Include details (weight, reps, sets)
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercises Container -->
+                <div id="exercises" class="exercises-list">
+                    <div class="exercise-edit">
+                        <div class="exercise-item">
+                            <div class="exercise-header">
+                                <div class="exercise-handle">
+                                    <i class="handle fa-solid fa-grip-lines" title="Drag to reorder"></i>
+                                </div>
+                                <div class="exercise-input-group">
+                                    <input 
+                                        class="exercise-edit-name" 
+                                        type="text" 
+                                        name="exercise_name" 
+                                        placeholder="Exercise name (e.g., Bench Press, Squats)" 
+                                        maxlength="45" 
+                                        required
+                                        aria-label="Exercise name"
+                                    >
+                                </div>
+                                <button type="button" class="exercise-delete" title="Remove exercise">
+                                    <i class="delete fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                            <div class="exercise-options">
+                                <input class="include_details_hidden" type="hidden" value="0" name="include_details">
+                                <label class="checkbox-wrapper">
+                                    <input class="include_details" type="checkbox" value="1" name="include_details">
+                                    <span class="checkbox-label">
+                                        <i class="fa-solid fa-plus-circle"></i>
+                                        Include details (weight, reps, sets)
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Exercise Button -->
+                <div class="add-exercise-section">
+                    <button type="button" class="btn btn-secondary add-exercise-btn" id="add_exercise">
+                        <i class="fa-solid fa-plus"></i>
+                        Add Another Exercise
+                    </button>
+                    <p class="add-exercise-help">You can add multiple exercises and reorder them by dragging</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <section class="creation-actions">
+            <div class="action-buttons-container">
+                <button type="submit" class="btn btn-primary btn-cta creation-save-btn" form="workout">
+                    <i class="fa-solid fa-save"></i>
+                    Create Workout
+                </button>
+                <a href="/" class="btn btn-tertiary creation-cancel-btn">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Cancel
+                </a>
+            </div>
+            <p class="actions-help">Your workout will be saved and ready to use immediately</p>
+        </section>
+
+    </form>
+
+</div>
+
+<!-- JavaScript -->
+<script type="text/javascript" src="/static/js/new-workout.js"></script>
+<script type="text/javascript" src="/static/js/alert.js"></script>
 
 {% endblock %}
