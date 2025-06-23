@@ -33,6 +33,8 @@ class Exercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(45))
     weight = db.Column(db.Float(5))
+    sets = db.Column(db.Integer)
+    reps = db.Column(db.String(20))  # Support ranges like "8-12" or "10"
     details = db.Column(db.String(5))
     include_details = db.Column(db.Boolean)
     workout_id = db.Column(db.Integer, db.ForeignKey("workout.id"))

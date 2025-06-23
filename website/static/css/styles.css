@@ -2907,6 +2907,76 @@ body.nav-menu-open {
   box-shadow: var(--shadow-md);
 }
 
+/* Exercise Tracking Details */
+.exercise-tracking-details {
+  background: var(--surface);
+  border: 1px solid var(--tertiary);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-top: var(--space-3);
+  animation: slideIn 0.3s ease-out;
+}
+
+.tracking-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: var(--space-4);
+}
+
+.tracking-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.tracking-label {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tracking-input {
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--tertiary);
+  border-radius: var(--radius-md);
+  background: var(--dark-elevated);
+  color: var(--text-primary);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+  transition: all var(--transition-fast);
+}
+
+.tracking-input:focus {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px var(--primary-subtle);
+  outline: none;
+  background: var(--surface-elevated);
+}
+
+.tracking-input::placeholder {
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .tracking-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
 .exercise-header {
   display: flex;
   align-items: center;

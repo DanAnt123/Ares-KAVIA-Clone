@@ -70,12 +70,37 @@ if (typeof window.duplicate_mode !== "undefined" && window.duplicate_mode) {
     document.body.classList.add('duplication-mode');
 }
 
-/* Handle first hidden input for include_details, if at least two checkboxes */
-if (checkboxes.length > 1 && hidden_inputs.length > 1) {
-    checkboxes[1].addEventListener("change", function() {
-        hidden_inputs[1].disabled = checkboxes[1].checked;
-    });
+/* Handle tracking details visibility for all exercises */
+function setupTrackingToggle(exerciseContainer) {
+    var checkbox = exerciseContainer.querySelector('.include_details');
+    var hiddenInput = exerciseContainer.querySelector('.include_details_hidden');
+    var trackingDetails = exerciseContainer.querySelector('.exercise-tracking-details');
+    var trackingInputs = exerciseContainer.querySelectorAll('.tracking-input');
+    
+    if (checkbox && hiddenInput && trackingDetails) {
+        checkbox.addEventListener('change', function() {
+            hiddenInput.disabled = checkbox.checked;
+            
+            if (checkbox.checked) {
+                trackingDetails.style.display = 'block';
+                trackingInputs.forEach(function(input) {
+                    input.disabled = false;
+                });
+            } else {
+                trackingDetails.style.display = 'none';
+                trackingInputs.forEach(function(input) {
+                    input.disabled = true;
+                    input.value = '';
+                });
+            }
+        });
+    }
 }
+
+/* Initialize tracking toggle for existing exercises */
+document.querySelectorAll('.exercise-item').forEach(function(exerciseItem) {
+    setupTrackingToggle(exerciseItem);
+});
 
 /* Enhanced delete functionality with animation */
 function enableDeleteButtons(context) {
@@ -139,14 +164,8 @@ add_exercise.addEventListener("click", function() {
         clone.style.opacity = '1';
     }, 10);
     
-    // Set up checkbox functionality
-    var localCheckbox = clone.querySelector(".include_details");
-    var localHidden = clone.querySelector(".include_details_hidden");
-    if (localCheckbox && localHidden) {
-        localCheckbox.addEventListener("change", function() {
-            localHidden.disabled = localCheckbox.checked;
-        });
-    }
+    // Set up checkbox and tracking functionality
+    setupTrackingToggle(clone);
     
     // Focus on the new exercise name input
     var newInput = clone.querySelector('.exercise-name-input');

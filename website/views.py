@@ -34,6 +34,9 @@ def duplicate_workout(workout_id):
         new_category_description = request.form.get("new_category_description")
         exercise_names = request.form.getlist("exercise_name")
         include_details = request.form.getlist("include_details")
+        exercise_sets = request.form.getlist("exercise_sets")
+        exercise_reps = request.form.getlist("exercise_reps")
+        exercise_weights = request.form.getlist("exercise_weight")
         
         # If needed, handle category creation inline
         category = None
@@ -67,10 +70,34 @@ def duplicate_workout(workout_id):
                 for i in range(len(exercise_names)):
                     # Avoid IndexError if include_details is missing or malformed
                     include_flag = int(include_details[i]) if i < len(include_details) and include_details[i] not in [None, ""] else 0
+                    
+                    # Get tracking data if available
+                    sets_value = None
+                    reps_value = None
+                    weight_value = None
+                    
+                    if i < len(exercise_sets) and exercise_sets[i]:
+                        try:
+                            sets_value = int(exercise_sets[i])
+                        except (ValueError, TypeError):
+                            sets_value = None
+                    
+                    if i < len(exercise_reps) and exercise_reps[i]:
+                        reps_value = exercise_reps[i]
+                    
+                    if i < len(exercise_weights) and exercise_weights[i]:
+                        try:
+                            weight_value = float(exercise_weights[i])
+                        except (ValueError, TypeError):
+                            weight_value = None
+                    
                     new_exercise = Exercise(
                         name=exercise_names[i],
                         include_details=include_flag,
                         workout_id=new_workout.id,
+                        sets=sets_value,
+                        reps=reps_value,
+                        weight=weight_value,
                         details="",  # Start details blank
                     )
                     db.session.add(new_exercise)
@@ -179,6 +206,9 @@ def new_workout():
         new_category_description = request.form.get("new_category_description")
         exercise_names = request.form.getlist("exercise_name")
         include_details = request.form.getlist("include_details")
+        exercise_sets = request.form.getlist("exercise_sets")
+        exercise_reps = request.form.getlist("exercise_reps")
+        exercise_weights = request.form.getlist("exercise_weight")
 
         exercise_names = [exercise.upper() for exercise in exercise_names]
 
@@ -210,10 +240,33 @@ def new_workout():
                 db.session.commit()
 
                 for i in range(len(exercise_names)):
+                    # Get tracking data if available
+                    sets_value = None
+                    reps_value = None
+                    weight_value = None
+                    
+                    if i < len(exercise_sets) and exercise_sets[i]:
+                        try:
+                            sets_value = int(exercise_sets[i])
+                        except (ValueError, TypeError):
+                            sets_value = None
+                    
+                    if i < len(exercise_reps) and exercise_reps[i]:
+                        reps_value = exercise_reps[i]
+                    
+                    if i < len(exercise_weights) and exercise_weights[i]:
+                        try:
+                            weight_value = float(exercise_weights[i])
+                        except (ValueError, TypeError):
+                            weight_value = None
+                    
                     new_exercise = Exercise(
                         name=exercise_names[i],
                         include_details=int(include_details[i]),
                         workout_id=new_workout.id,
+                        sets=sets_value,
+                        reps=reps_value,
+                        weight=weight_value,
                         details="",
                     )
                     db.session.add(new_exercise)
@@ -247,6 +300,9 @@ def edit_workout():
             include_details = request.form.getlist("include_details")
             weight_list = request.form.getlist("weight")
             details_list = request.form.getlist("details")
+            exercise_sets = request.form.getlist("exercise_sets")
+            exercise_reps = request.form.getlist("exercise_reps")
+            exercise_weights = request.form.getlist("exercise_weight")
             exercise_names = [exercise.upper() for exercise in exercise_names]
 
             # Handle category assignment or creation
@@ -284,21 +340,41 @@ def edit_workout():
                     db.session.commit()
 
                     for i in range(len(exercise_names)):
-                        if weight_list[i] == "None":
-                            new_exercise = Exercise(
-                                name=exercise_names[i],
-                                include_details=int(include_details[i]),
-                                workout_id=new_workout.id,
-                                details=details_list[i],
-                            )
-                        else:
-                            new_exercise = Exercise(
-                                name=exercise_names[i],
-                                include_details=int(include_details[i]),
-                                workout_id=new_workout.id,
-                                weight=weight_list[i],
-                                details=details_list[i],
-                            )
+                        # Get tracking data if available
+                        sets_value = None
+                        reps_value = None
+                        weight_value = None
+                        
+                        if i < len(exercise_sets) and exercise_sets[i]:
+                            try:
+                                sets_value = int(exercise_sets[i])
+                            except (ValueError, TypeError):
+                                sets_value = None
+                        
+                        if i < len(exercise_reps) and exercise_reps[i]:
+                            reps_value = exercise_reps[i]
+                        
+                        # Use new weight data if available, otherwise fall back to old weight_list
+                        if i < len(exercise_weights) and exercise_weights[i]:
+                            try:
+                                weight_value = float(exercise_weights[i])
+                            except (ValueError, TypeError):
+                                weight_value = None
+                        elif i < len(weight_list) and weight_list[i] and weight_list[i] != "None":
+                            try:
+                                weight_value = float(weight_list[i])
+                            except (ValueError, TypeError):
+                                weight_value = None
+                        
+                        new_exercise = Exercise(
+                            name=exercise_names[i],
+                            include_details=int(include_details[i]),
+                            workout_id=new_workout.id,
+                            sets=sets_value,
+                            reps=reps_value,
+                            weight=weight_value,
+                            details=details_list[i] if i < len(details_list) else "",
+                        )
                         db.session.add(new_exercise)
                     db.session.commit()
                     return redirect(url_for("views.home"))
