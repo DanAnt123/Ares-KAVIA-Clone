@@ -712,12 +712,102 @@ input.weight-value { -moz-appearance: textfield; }
 .no-workouts {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
-  min-height: 40vh;
+  gap: var(--space-lg);
+  min-height: 56vh;
   align-items: center;
   justify-content: center;
-  padding: var(--space-lg);
+  padding: var(--space-xl) var(--space-lg) var(--space-xl) var(--space-lg);
 }
+
+/* Homepage Branding Stack for Logo + Title */
+.homepage-branding-stack,
+.homepage-intro-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  margin-bottom: var(--space-lg);
+}
+
+/* Logo styling: responsive and harmonious */
+.homepage-logo {
+  width: 82px;
+  height: 82px;
+  max-width: 19vw;
+  min-width: 56px;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 0.3rem;
+  margin-top: 0.5rem;
+  box-shadow: 0 2px 18px #de003033, 0 1px 0 rgba(255,255,255,0.03);
+  border-radius: 1.8rem;
+  background: #191719;
+}
+
+/* Homepage main title */
+.homepage-title {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: var(--fw-bold);
+  color: var(--primary-light);
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin: 0.1rem 0 0.3rem 0;
+  line-height: 1.15;
+}
+
+/* Homepage intro/prompt */
+.homepage-prompt {
+  font-size: clamp(1.3rem, 2.4vw, 2rem);
+  font-weight: var(--fw-bold);
+  color: var(--primary-light);
+  text-align: center;
+  margin: 0.1rem 0;
+  line-height: 1.2;
+}
+
+.homepage-lead {
+  color: var(--text-on-primary);
+  text-align: center;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-regular);
+  margin-bottom: 0.2rem;
+}
+
+/* Adjust the main no-workouts call to action for more visual balance */
+.no-workouts-text {
+  margin-bottom: var(--space-md);
+}
+
+/* Responsive adjustments for logo/prompt/title spacing on the home */
+@media (max-width: 900px) {
+  .homepage-logo {
+    width: 63px;
+    height: 63px;
+    min-width: 38px;
+  }
+  .homepage-title {
+    font-size: clamp(1.35rem, 5vw, 1.8rem);
+  }
+}
+@media (max-width: 600px) {
+  .homepage-logo {
+    width: 48px;
+    height: 48px;
+    min-width: 30px;
+  }
+  .homepage-title, .homepage-prompt {
+    font-size: clamp(1.1rem, 7vw, 1.2rem);
+  }
+  .homepage-branding-stack,
+  .homepage-intro-stack {
+    gap: 0.7rem;
+  }
+  .no-workouts {
+    padding: var(--space-lg) var(--space-xs);
+  }
+}
+
 
 /* HOMEPAGE: branding intro, workout list (ensure good sizing and mobile layout) */
 .intro.homepage-intro {

@@ -16,8 +16,12 @@
     
 {% if not user.workouts %}
     <div class="no-workouts">
+        <div class="homepage-branding-stack">
+            <img class="homepage-logo" src="/static/images/logo-nobg.png" alt="Ares Workout Logo" />
+            <h1 class="homepage-title">Ares Workout Tracker</h1>
+        </div>
         <div class="no-workouts-text">
-            <h2 class="title">Create your first workout</h2>
+            <h2 class="homepage-prompt">Create your first workout</h2>
             <p class="welcome-lead">You don't have any workouts yet, start now!</p>
         </div>
         <a class="btn btn-secondary" href="/new-workout" role="button">Add workout</a>
@@ -26,14 +30,13 @@
 
 <div class="container">
     <!-- Homepage intro/branding block -->
-    <div class="intro" style="margin-bottom: 2.5rem;">
-        <div class="intro-content">
-            <img class="intro-image login-intro-image" src="/static/images/intro.png" alt="Man working out" />
-            <h1 class="title" style="margin-top: 1.3rem; margin-bottom: 0.7rem;">Welcome back to Ares</h1>
-            <p class="intro-lead">
-                See your saved workouts and track your progress below. Keep striving for your best every session!
-            </p>
-        </div>
+    <div class="homepage-intro-stack">
+        <img class="homepage-logo" src="/static/images/logo-nobg.png" alt="Ares Workout Logo" />
+        <h1 class="homepage-title">Welcome back to Ares</h1>
+        <p class="homepage-lead">
+            See your saved workouts and track your progress below.<br>
+            Keep striving for your best every session!
+        </p>
     </div>
 
     <!-- Workouts List -->
