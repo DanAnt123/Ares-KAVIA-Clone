@@ -22,6 +22,7 @@ def create_app():
     app.register_blueprint(views, url_prefix="/")
 
     with app.app_context():
+        # Ensure all tables, including Category, are created.
         db.create_all()
 
     login_manager = LoginManager()
