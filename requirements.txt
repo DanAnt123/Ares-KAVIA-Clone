@@ -2,6 +2,7 @@ Faker
 flask
 flask_login
 flask_sqlalchemy
+flask-migrate
 gunicorn
 psycopg2-binary
 python-environ

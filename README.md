@@ -33,10 +33,33 @@ Ares is a minimalist workout tracker built with Flask, Python, SQLAlchemy, JavaS
 -   [Python](https://www.python.org/)
 -   [JavaScript](https://www.javascript.com/)
 -   [SQLAlchemy](https://www.sqlalchemy.org/)
+-   [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/)
 -   [PostgreSQL](https://www.postgresql.org/)
 -   [Figma](https://www.figma.com/ui-design-tool/)
 
-## Video Demo
+## Database Migrations
+
+This project uses [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) to handle database schema changes. 
+
+### Common Commands
+
+```bash
+# Set the FLASK_APP environment variable to your app's entry point
+export FLASK_APP=app.py
+
+# Initialize migration environment (run once per project)
+flask db init
+
+# Generate a new migration file after model changes
+flask db migrate -m "Describe your change"
+
+# Apply the migration to your database
+flask db upgrade
+
+# (Optional) View migration history
+flask db history
+```
+
 
 https://user-images.githubusercontent.com/97703272/176287446-cadcaab4-0c77-41ae-b85c-5afe05d0465a.mp4
 
