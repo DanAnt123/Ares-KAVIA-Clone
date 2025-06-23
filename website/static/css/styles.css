@@ -59,13 +59,14 @@
 /* Resets and global styles */
 * {
 	-webkit-tap-highlight-color: transparent;
-	border: 0;
 	box-sizing: border-box;
 	color: var(--light);
 	font-family: 'AvertaStd', sans-serif;
 	margin: 0;
 	padding: 0;
 	text-decoration: none;
+	border-width: initial;
+	border-style: none;
 }
 
 *:focus {
@@ -169,11 +170,11 @@ select:active,
 /* All buttons: stronger color, improved border, visible focus/hover states */
 .btn,
 .btn-edit {
-	min-width: 2.5rem;
-	min-height: 2.5rem;
+	min-width: 2.25rem;
+	min-height: 2.25rem;
 	cursor: pointer;
-	border-radius: 0.75rem;
-	font-size: var(--fs-14);
+	border-radius: 0.5rem; /* Restore button shape to more neutral pill/square */
+	font-size: var(--fs-16); /* Slightly increase for better button visibility */
 	font-weight: var(--fw-semibold);
 	background: var(--secondary); /* default to secondary, override below */
 	border: 2px solid var(--primary-light);
@@ -385,13 +386,13 @@ select,
 
 select {
 	color: var(--text-on-dark);
-	font-size: var(--fs-18);
+	font-size: var(--fs-16);
 	font-weight: var(--fw-semibold);
 	border: 2px solid var(--primary-light);
 	background: var(--secondary);
-	padding: 0.625rem 1.25rem;
+	padding: 0.5rem 1rem;
 	display: block;
-	margin: 0 auto 2.5rem auto;
+	margin: 0 auto 1.5rem auto;
 	transition: border 0.18s, background 0.18s;
 }
 
@@ -458,8 +459,8 @@ input.weight-value {
 	border-radius: 0.75rem;
 	display: flex;
 	flex-direction: column;
-	padding: 1.25rem;
-	gap: 0.75rem;
+	padding: 1rem; /* slightly less for compacter card */
+	gap: 0.5rem;
 }
 
 .exercise {
@@ -467,8 +468,8 @@ input.weight-value {
 	border-radius: 0.75rem;
 	display: flex;
 	flex-direction: column;
-	gap: 0.625rem;
-	padding: 1rem 1.25rem;
+	gap: 0.5rem;
+	padding: 0.85rem 1rem;
 	text-align: start;
 }
 
@@ -499,10 +500,10 @@ input.weight-value {
 	transition: all 0.4s;
 	display: flex;
 	flex-direction: column;
-	gap: 1.5rem;
-	padding: 1.5rem;
+	gap: 1rem;
+	padding: 1.15rem 1.15rem 1.35rem 1.15rem;
 	text-align: start;
-	width: min(100%, 32rem);
+	width: min(100%, 28rem);
 }
 
 .modal-title {
@@ -571,8 +572,12 @@ input.weight-value {
 	font-size: 16px;
 }
 
+body {
+	font-size: var(--fs-14); /* Set root body font a bit larger, readable size */
+}
+
 p, a {
-	font-size: var(--fs-12);
+	font-size: var(--fs-13);
 }
 
 a {
@@ -617,7 +622,7 @@ input::placeholder,
    ============== */
 /* ... rest of the layout and responsive CSS was unchanged from original ... */
 .container {
-	padding: 0 2.5rem;
+	padding: 0 1.5rem;
 }
 .full-height {
 	height: 100%;
