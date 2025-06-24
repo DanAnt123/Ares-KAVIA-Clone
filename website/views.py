@@ -1,6 +1,6 @@
 from . import db
-from .models import Workout, Exercise, Category
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from .models import Workout, Exercise, Category, WorkoutSession, ExerciseSession
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 
 # Define blueprint
@@ -400,3 +400,133 @@ def edit_workout():
             categories=categories
         )
     return render_template("edit-workout.html", user=current_user, categories=categories)
+
+
+# PUBLIC_INTERFACE
+@views.route("/workout/<int:workout_id>/complete", methods=["POST"])
+@login_required
+def complete_workout(workout_id):
+    """
+    Mark a workout as completed for a user, record the session details and participant exercises.
+    Expects JSON or form data with completed exercise details.
+    ---
+    post:
+      summary: Mark a workout as complete and log results
+      description: Records a completed workout session, including all exercise results, for tracking history and statistics.
+      parameters:
+      - in: path
+        name: workout_id
+        schema:
+          type: integer
+        required: true
+        description: ID of the workout to record completion for
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            exercises:
+              type: array
+              description: Array of exercise records with their details performed in this session
+              items:
+                type: object
+                properties:
+                  exercise_id:
+                    type: integer
+                  weight:
+                    type: number
+                  reps:
+                    type: integer
+                  detail:
+                    type: string
+      responses:
+        200:
+          description: Workout session recorded successfully
+        400:
+          description: Invalid data provided
+        404:
+          description: Workout not found
+        401:
+          description: User not authorized
+    tags:
+      - Workout
+    """
+    # Validate workout and user context
+    if not current_user.is_authenticated:
+        flash("Not authorized.", "error")
+        return redirect(url_for("auth.signin"))
+    workout = Workout.query.filter_by(id=workout_id, user_id=current_user.id).first()
+    if not workout:
+        flash("Workout not found.", "error")
+        return redirect(url_for("views.home"))
+
+    # Accept data as JSON (API) or from a standard form POST
+    if request.is_json:
+        data = request.get_json()
+    else:
+        # Convert standard form data to expected dicts
+        data = request.form.to_dict(flat=False)
+        exercises = []
+        if "exercise_id" in data:
+            ex_ids = data.get("exercise_id")
+            weights = data.get("weight", [])
+            reps = data.get("reps", [])
+            details = data.get("detail", [])
+            for idx, ex_id in enumerate(ex_ids):
+                exercises.append({
+                    "exercise_id": int(ex_id),
+                    "weight": float(weights[idx]) if idx < len(weights) and weights[idx] not in (None, "") else None,
+                    "reps": int(reps[idx]) if idx < len(reps) and reps[idx] not in (None, "") else None,
+                    "detail": details[idx] if idx < len(details) else None
+                })
+            data = { "exercises": exercises }
+        elif "exercises" in data:
+            data["exercises"] = data["exercises"]
+        else:
+            data = {}
+
+    try:
+        exercises_data = data.get("exercises", [])
+        if not isinstance(exercises_data, list) or not exercises_data:
+            flash("No exercise details provided.", "error")
+            return redirect(url_for("views.workout", id=workout_id))
+
+        # Create the workout session record
+        workout_session = WorkoutSession(
+            workout_id=workout_id,
+            user_id=current_user.id,
+            timestamp=db.func.now()
+        )
+        db.session.add(workout_session)
+        db.session.flush()  # get workout_session.id
+
+        # Log each exercise performed in this session
+        for exercise in exercises_data:
+            exercise_id = exercise.get("exercise_id")
+            w = exercise.get("weight")
+            r = exercise.get("reps")
+            d = exercise.get("detail")
+
+            # Ensure exercise belongs to this workout
+            db_ex = Exercise.query.filter_by(id=exercise_id, workout_id=workout_id).first()
+            if not db_ex:
+                continue  # skip invalid
+
+            ex_session = ExerciseSession(
+                workout_session_id=workout_session.id,
+                exercise_id=exercise_id,
+                weight=w,
+                reps=r,
+                detail=d
+            )
+            db.session.add(ex_session)
+
+        db.session.commit()
+        flash("Workout session recorded! Great job!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Failed to log workout session: {str(e)}", "error")
+        return redirect(url_for("views.workout", id=workout_id))
+
+    return redirect(url_for("views.workout", id=workout_id))
