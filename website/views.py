@@ -167,6 +167,45 @@ def workout():
     return render_template("workout.html", user=current_user)
 
 
+# PUBLIC_INTERFACE
+@views.route("/history")
+@login_required
+def history():
+    """
+    Renders the 'View your Progress' page showing all past workout sessions and their details for the logged-in user.
+    """
+    # Fetch all workout sessions for current user, most recent first
+    from flask import Markup
+    sessions = (
+        WorkoutSession.query
+        .filter_by(user_id=current_user.id)
+        .order_by(WorkoutSession.timestamp.desc())
+        .all()
+    )
+    # Collect all user's workouts for filter dropdown
+    all_workouts = (
+        Workout.query.filter_by(user_id=current_user.id)
+        .order_by(Workout.name.asc())
+        .all()
+    )
+    # If a filter is requested (by workout_id)
+    selected_workout = None
+    workout_filter = None
+    if "workout_id" in request.args and request.args.get("workout_id", "").isdigit():
+        workout_filter = int(request.args["workout_id"])
+        sessions = [s for s in sessions if s.workout_id == workout_filter]
+        selected_workout = workout_filter
+    else:
+        workout_filter = None
+
+    return render_template(
+        "history.html",
+        user=current_user,
+        sessions=sessions,
+        workouts=all_workouts,
+        selected_workout=selected_workout,
+    )
+
 @views.route("/new-workout", methods=["GET", "POST"])
 @login_required
 def new_workout():
