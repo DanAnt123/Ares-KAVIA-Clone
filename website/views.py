@@ -1,10 +1,93 @@
 from . import db
-from .models import Workout, Exercise
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from .models import Workout, Exercise, WorkoutSession, ExerciseLog
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 
 # Define blueprint
 views = Blueprint('views', __name__)
+
+# PUBLIC_INTERFACE
+@views.route("/api/workout/history", methods=["GET"])
+@login_required
+def get_workout_history():
+    """
+    Retrieve all workout sessions for the current user, including all exercise logs.
+    Returns JSON with session datetime, workout name, and exercise details for each session.
+    """
+    sessions = WorkoutSession.query.filter_by(user_id=current_user.id).order_by(WorkoutSession.timestamp.desc()).all()
+    out = []
+    for s in sessions:
+        exercises = []
+        for log in s.exercise_logs:
+            exercises.append({
+                "exercise_name": log.exercise_name,
+                "set_number": log.set_number,
+                "reps": log.reps,
+                "weight": log.weight,
+                "details": log.details,
+                "include_details": log.include_details,
+            })
+        out.append({
+            "session_id": s.id,
+            "timestamp": s.timestamp.isoformat(),
+            "workout_id": s.workout_id,
+            "workout_name": s.workout.name if s.workout else "",
+            "exercises": exercises,
+        })
+    return jsonify(out)
+
+
+# PUBLIC_INTERFACE
+@views.route("/api/workout/history", methods=["POST"])
+@login_required
+def log_workout_session():
+    """
+    Record a new workout session for the current user. Expects JSON body:
+    {
+        "workout_id": int,
+        "exercises": [
+            {
+                "exercise_name": str,
+                "set_number": int (optional),
+                "reps": int (optional),
+                "weight": float (optional),
+                "details": str (optional),
+                "include_details": bool (optional)
+            },
+            ...
+        ]
+    }
+    Returns: JSON with created session ID and timestamp.
+    """
+    data = request.get_json()
+    workout_id = data.get("workout_id")
+    exercises = data.get("exercises", [])
+    if not workout_id or not exercises:
+        return jsonify({"error": "Missing workout_id or exercises"}), 400
+    # Create new session object
+    session = WorkoutSession(user_id=current_user.id, workout_id=workout_id)
+    db.session.add(session)
+    db.session.commit()  # session.id now exists
+    logs = []
+    for item in exercises:
+        log = ExerciseLog(
+            session_id=session.id,
+            exercise_name=item.get("exercise_name", ""),
+            set_number=item.get("set_number"),
+            reps=item.get("reps"),
+            weight=item.get("weight"),
+            details=item.get("details"),
+            include_details=item.get("include_details"),
+        )
+        db.session.add(log)
+        logs.append(log)
+    db.session.commit()
+    return jsonify({
+        "session_id": session.id,
+        "timestamp": session.timestamp.isoformat(),
+        "workout_id": session.workout_id,
+        "exercises_logged": len(logs),
+    }), 201
 
 
 @views.route("/")
