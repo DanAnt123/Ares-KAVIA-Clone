@@ -295,6 +295,29 @@
                         </div>
                     </div>
 
+                    <!-- Complete Workout Form/Button (NEW) -->
+                    <div class="complete-workout-log">
+                        <form method="POST" action="{{ url_for('website.complete_workout', workout_id=workout.id) }}" class="complete-workout-form" style="margin-top: 2rem;">
+                            <h3>Complete Workout</h3>
+                            <p>Log your results for each exercise and submit:</p>
+                            {% for exercise in workout.exercises %}
+                                <div class="exercise-input-row" style="margin-bottom: 0.7rem;">
+                                    <label>
+                                        {{ exercise.name }}
+                                        <input 
+                                            type="text" 
+                                            name="exercise_{{ exercise.id }}_details" 
+                                            placeholder="Enter weight/reps/details" 
+                                            required
+                                            style="margin-left: 0.5rem; min-width: 180px;"
+                                        >
+                                    </label>
+                                </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-complete" style="margin-top: 1rem;">Complete Workout</button>
+                        </form>
+                    </div>
+
                 </div>
             {% endfor %}
         </main>
