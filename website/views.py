@@ -64,18 +64,46 @@ def log_workout_session():
     exercises = data.get("exercises", [])
     if not workout_id or not exercises:
         return jsonify({"error": "Missing workout_id or exercises"}), 400
+    
+    # Defensive: Is the referenced workout valid and does it belong to this user?
+    workout = Workout.query.filter_by(id=workout_id, user_id=current_user.id).first()
+    if not workout:
+        return jsonify({"error": "Workout not found"}), 404
+
     # Create new session object
     session = WorkoutSession(user_id=current_user.id, workout_id=workout_id)
     db.session.add(session)
     db.session.commit()  # session.id now exists
     logs = []
-    for item in exercises:
+    for idx, item in enumerate(exercises):
+        # Minimal validation for exercise entry
+        exercise_name = item.get("exercise_name", "").strip() if item.get("exercise_name") else ""
+        if not exercise_name:
+            return jsonify({"error": f"Missing exercise_name in entry {idx}"}), 400
+        set_number = item.get("set_number")
+        reps = item.get("reps")
+        weight = item.get("weight")
+        if set_number is not None:
+            try:
+                set_number = int(set_number)
+            except Exception:
+                set_number = None
+        if reps is not None:
+            try:
+                reps = int(reps)
+            except Exception:
+                reps = None
+        if weight is not None:
+            try:
+                weight = float(weight)
+            except Exception:
+                weight = None
         log = ExerciseLog(
             session_id=session.id,
-            exercise_name=item.get("exercise_name", ""),
-            set_number=item.get("set_number"),
-            reps=item.get("reps"),
-            weight=item.get("weight"),
+            exercise_name=exercise_name,
+            set_number=set_number,
+            reps=reps,
+            weight=weight,
             details=item.get("details"),
             include_details=item.get("include_details"),
         )
