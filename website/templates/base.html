@@ -29,70 +29,31 @@
 
 	<body>
 		{% block navbar %}
-		<header class="modern-navbar" role="banner">
-			<nav class="navbar-container" role="navigation" aria-label="Main navigation">
-				<!-- Logo and Brand -->
-				<div class="navbar-brand">
-					<a href="/" class="brand-link" aria-label="Ares Home">
-						<img src="/static/images/logo-nobg.png" alt="Ares Logo" class="brand-logo" />
-						<span class="brand-text">Ares</span>
-					</a>
-				</div>
-
-				<!-- Mobile Menu Toggle -->
-				<input type="checkbox" id="nav-toggle" class="nav-toggle" aria-hidden="true" />
-				<label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation menu">
-					<span class="hamburger-line"></span>
-					<span class="hamburger-line"></span>
-					<span class="hamburger-line"></span>
-				</label>
-
-				<!-- Navigation Menu -->
-				<div class="navbar-menu" role="menubar">
-					<ul class="nav-links" role="none">
-						{% block active %}
-						<li class="nav-item" role="none">
-							<a class="nav-link" href="/" role="menuitem">
-								<i class="fa-solid fa-home nav-icon"></i>
-								<span class="nav-text">Home</span>
-							</a>
-						</li>
-						<li class="nav-item" role="none">
-							<a class="nav-link" href="/workout" role="menuitem">
-								<i class="fa-solid fa-dumbbell nav-icon"></i>
-								<span class="nav-text">Workout</span>
-							</a>
-						</li>
-						<li class="nav-item" role="none">
-							<a class="nav-link" href="/new-workout" role="menuitem">
-								<i class="fa-solid fa-plus nav-icon"></i>
-								<span class="nav-text">New Workout</span>
-							</a>
-						</li>
-						{% endblock %}
-					</ul>
-					
-					<!-- User Actions -->
-					<div class="navbar-actions">
-						<a class="nav-action-btn" href="/logout" role="menuitem" aria-label="Logout">
-							<i class="fa-solid fa-sign-out-alt"></i>
-							<span class="action-text">Logout</span>
-						</a>
-					</div>
-				</div>
-
-				<!-- Mobile Overlay -->
-				<div class="nav-overlay"></div>
-			</nav>
-		</header>
-		{% endblock %}
-		
-		<!-- Main Content -->
-		<main class="main-content" role="main">
-			{% block body %}{% endblock %}
-		</main>
-
-		<!-- Navigation JavaScript -->
-		<script src="/static/js/navigation.js"></script>
+		<nav class="navbar">
+			<a href="/" class="nav-branding no-hover">Ares</a>
+			<input type="checkbox" id="nav-toggle" class="nav-toggle" />
+			<ul class="nav-menu">
+				{% block active %}
+				<li class="nav-item">
+					<a class="nav-link" href="/">Home</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/workout">Workout</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/history">History</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/logout">Logout</a>
+				</li>
+				{% endblock %}
+			</ul>
+			<label for="nav-toggle" class="nav-toggle-label">
+				<span class="hamburger-bar"></span>
+				<span class="hamburger-bar"></span>
+				<span class="hamburger-bar"></span>
+			</label>
+		</nav>
+		{% endblock %} {% block body %}{% endblock %}
 	</body>
 </html>

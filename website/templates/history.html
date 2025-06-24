@@ -1,58 +1,93 @@
 {% extends "base.html" %}
 
-{% block content %}
-<div class="container" style="max-width: 900px; margin: 32px auto;">
-    <h2 style="margin-bottom: 20px;">Workout History</h2>
-    {% if sessions and sessions|length > 0 %}
-        <div class="history-table-wrapper" style="overflow-x:auto;">
-            <table class="history-table" style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="background-color: #f5f5f5;">
-                        <th style="padding: 10px; border-bottom: 2px solid #ccc;">Date</th>
-                        <th style="padding: 10px; border-bottom: 2px solid #ccc;">Workout</th>
-                        <th style="padding: 10px; border-bottom: 2px solid #ccc;">Exercises</th>
-                        <th style="padding: 10px; border-bottom: 2px solid #ccc;">Weights</th>
-                        <th style="padding: 10px; border-bottom: 2px solid #ccc;">Notes / Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for session in sessions %}
-                    <tr>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee; white-space:nowrap;">
-                            {{ session.date.strftime('%Y-%m-%d') if session.date else '' }}
-                        </td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee;">
-                            {{ session.workout_name or '—' }}
-                        </td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee;">
-                            <ul style="margin: 0; padding-left: 16px;">
-                            {% for exercise in session.exercises %}
-                                <li>
-                                    {{ exercise.name or '—' }}
-                                </li>
-                            {% endfor %}
-                            </ul>
-                        </td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee;">
-                            <ul style="margin: 0; padding-left: 16px;">
-                            {% for exercise in session.exercises %}
-                                <li>
-                                    {% if exercise.weight %}{{ exercise.weight }}{% else %}—{% endif %}
-                                </li>
-                            {% endfor %}
-                            </ul>
-                        </td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee;">
-                            {{ session.notes or session.details or '—' }}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+{% block active %}
+    <li class="nav-item">
+        <a class="nav-link" href="/">Home</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/workout">Workout</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="/history">History</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/logout">Logout</a>
+    </li>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h2 class="title" style="margin-bottom:1.5rem;">View your Progress</h2>
+    {% if workouts|length > 1 %}
+    <form method="get" style="margin-bottom:1.5rem;">
+        <label for="workout_filter" class="welcome-lead" style="margin-right:1rem;">Filter by workout: </label>
+        <select id="workout_filter" name="workout_id" onchange="this.form.submit()" style="color:var(--dark);">
+            <option value="">All Workouts</option>
+            {% for workout in workouts %}
+                <option value="{{ workout.id }}" {% if selected_workout == workout.id %}selected{% endif %}>
+                    {{ workout.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <noscript><button type="submit" class="btn btn-secondary">Go</button></noscript>
+    </form>
+    {% endif %}
+
+    {% if not sessions or sessions|length == 0 %}
+        <div class="no-workouts" style="padding:4rem 0;">
+            <h2 class="title">No workout sessions yet</h2>
+            <p class="welcome-lead">Your workout history will appear here after you log a workout session.</p>
+            <a class="btn btn-secondary" href="/workout" role="button">Log a workout</a>
         </div>
     {% else %}
-        <div style="margin-top: 32px; color: #666; text-align: center; font-size: 1.2em;">
-            No workout history found yet.
+        <div style="display:flex;flex-direction:column;gap:2rem;">
+        {% for session in sessions %}
+            <section class="exercise" style="border-left:5px solid var(--primary-solid); box-shadow:0 2px 8px 0 rgba(0,0,0,0.1);">
+                <div style="display:flex;justify-content: space-between;align-items:flex-end;">
+                    <div>
+                        <h2 class="exercise-name" style="margin:0;">{{ session.workout.name if session.workout else 'Workout' }}</h2>
+                        <p class="workout-lead" style="color:var(--text-on-dark);margin:0.1rem 0 0 0;">
+                            {{ session.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                        </p>
+                    </div>
+                    <span style="font-size:var(--fs-13);color:var(--quaternary);">
+                        Session #{{ session.id }}
+                    </span>
+                </div>
+                <hr style="margin:1rem 0 0.5rem 0;border:0;height:1px;background:var(--input-icon);"/>
+                {% if session.exercise_logs|length > 0 %}
+                <div class="exercises" style="margin-top:0;">
+                    {% for log in session.exercise_logs %}
+                    <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+                        <span class="exercise-name" style="font-size:var(--fs-16);">{{ log.exercise_name }}</span>
+                        {% if log.set_number is not none %}
+                            <span style="font-size:var(--fs-12);color:var(--tertiary);">Set {{ log.set_number }}</span>
+                        {% endif %}
+                        {% if log.reps is not none %}
+                            <span style="font-size:var(--fs-12);color:var(--tertiary);">{{ log.reps }} reps</span>
+                        {% endif %}
+                        <span style="display:inline-block;">
+                            <span class="weight-value text-primary">
+                            {% if log.weight is not none and (log.weight | float | int == log.weight | float) %}
+                                {{ log.weight|int }} kg
+                            {% elif log.weight is not none %}
+                                {{ log.weight }} kg
+                            {% endif %}
+                            </span>
+                        </span>
+                        {% if log.include_details and log.details %}
+                            <span class="details" style="color:var(--primary-solid);font-size:var(--fs-14);margin-left:1rem;" title="Details">
+                                {{ log.details }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <div class="welcome-lead" style="color:var(--quaternary);margin:1rem 0;">No logged exercises for this session.</div>
+                {% endif %}
+            </section>
+        {% endfor %}
         </div>
     {% endif %}
 </div>

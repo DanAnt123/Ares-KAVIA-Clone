@@ -21,6 +21,54 @@
 </li>
 {% endblock %}
 
+{# --- Workout Progress History UI INTEGRATION PLAN (for maintainers/designers) --- #}
+{# 
+  The following is a technical plan for adding a workout session history and progress tracking interface to the existing Flask/Jinja2 UI.
+
+  1. EXISTING STRUCTURE:
+    - Main templates:
+      * base.html: Base layout with nav. 
+      * home.html: "Home" - lists all workouts for current user; navigates to workout details or edit.
+      * workout.html: Per-workout view (log/edit weights/details for today's session).
+      * edit-workout.html, new-workout.html: For creating or editing workout and exercises.
+    - Navigation: 
+      * Navbar has direct links: Home, Workout, Logout.
+      * Home has a button per workout, plus add/edit.
+
+  2. API for session data:
+    - Implemented at /api/workout/history (GET returns [sessions], POST logs a new session).
+
+  3. HOW TO INTEGRATE "WORKOUT HISTORY" UI:
+    * Add a new page/view: "Workout History" (e.g., at /history or /workout/history).
+        - Accessible from navbar (add nav item: "History").
+    * UI Components for the History Page:
+      a) Summary of all past sessions by date, most recent first.
+      b) Per session: Show workout name, timestamp, and all exercise logs (weights, reps, details, etc.).
+      c) Optionally, add per-workout filter (dropdown) to filter history to a specific workout.
+      d) (Advanced/future) Sparkline or chart components to visualize progress for each exercise.
+    * General navigation flow:
+      - User logs in and lands on Home.
+      - New nav item "History" lets user access their session history.
+      - From a session, optionally provide link back to that workout or allow session deletion (future).
+      - If session data is empty, show a message indicating no workout history exists yet.
+
+  4. RECOMMENDED IMPLEMENTATION:
+    - New template: templates/history.html (extends base, uses container layout).
+    - New view: Python handler at GET /history to render the page, fetches session data via backend API or DB query.
+    - JS enhancement: Optionally use fetch XHR to allow live filtering/progress, but can be fully server-side Jinja.
+    - Nav update: Edit base.html to add "History" item, ensure active state.
+    - Styling: Re-use container, table/list, card components (see workout/exercise display).
+    - Data Source: Use existing models.WorkoutSession and ExerciseLog; query sorted by timestamp.
+
+  5. FILES TO UPDATE/CREATE:
+    - templates/base.html (add nav)
+    - templates/history.html (new!)
+    - views.py (add history view handler)
+    - Optionally static/js/history.js (for future interactive features)
+
+  This plan provides a clear and practical path to surface workout history with minimal risk to existing UI.
+#}
+
 {% block body %}
 
 {% if not user.workouts %}
@@ -165,3 +213,51 @@
 {% endif %}
 
 {% endblock %}
+
+{# --- Workout Progress History UI INTEGRATION PLAN (for maintainers/designers) --- #}
+{# 
+  The following is a technical plan for adding a workout session history and progress tracking interface to the existing Flask/Jinja2 UI.
+
+  1. EXISTING STRUCTURE:
+    - Main templates:
+      * base.html: Base layout with nav. 
+      * home.html: "Home" - lists all workouts for current user; navigates to workout details or edit.
+      * workout.html: Per-workout view (log/edit weights/details for today's session).
+      * edit-workout.html, new-workout.html: For creating or editing workout and exercises.
+    - Navigation: 
+      * Navbar has direct links: Home, Workout, Logout.
+      * Home has a button per workout, plus add/edit.
+
+  2. API for session data:
+    - Implemented at /api/workout/history (GET returns [sessions], POST logs a new session).
+
+  3. HOW TO INTEGRATE "WORKOUT HISTORY" UI:
+    * Add a new page/view: "Workout History" (e.g., at /history or /workout/history).
+        - Accessible from navbar (add nav item: "History").
+    * UI Components for the History Page:
+      a) Summary of all past sessions by date, most recent first.
+      b) Per session: Show workout name, timestamp, and all exercise logs (weights, reps, details, etc.).
+      c) Optionally, add per-workout filter (dropdown) to filter history to a specific workout.
+      d) (Advanced/future) Sparkline or chart components to visualize progress for each exercise.
+    * General navigation flow:
+      - User logs in and lands on Home.
+      - New nav item "History" lets user access their session history.
+      - From a session, optionally provide link back to that workout or allow session deletion (future).
+      - If session data is empty, show a message indicating no workout history exists yet.
+
+  4. RECOMMENDED IMPLEMENTATION:
+    - New template: templates/history.html (extends base, uses container layout).
+    - New view: Python handler at GET /history to render the page, fetches session data via backend API or DB query.
+    - JS enhancement: Optionally use fetch XHR to allow live filtering/progress, but can be fully server-side Jinja.
+    - Nav update: Edit base.html to add "History" item, ensure active state.
+    - Styling: Re-use container, table/list, card components (see workout/exercise display).
+    - Data Source: Use existing models.WorkoutSession and ExerciseLog; query sorted by timestamp.
+
+  5. FILES TO UPDATE/CREATE:
+    - templates/base.html (add nav)
+    - templates/history.html (new!)
+    - views.py (add history view handler)
+    - Optionally static/js/history.js (for future interactive features)
+
+  This plan provides a clear and practical path to surface workout history with minimal risk to existing UI.
+#}
