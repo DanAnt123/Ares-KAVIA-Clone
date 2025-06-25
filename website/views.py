@@ -6,6 +6,96 @@ from flask_login import login_required, current_user
 # Define blueprint
 views = Blueprint('views', __name__)
 
+
+def _create_workout_session(workout_id, exercises_data, user_id):
+    """
+    Unified function to create a workout session with exercise logs.
+    
+    Args:
+        workout_id (int): ID of the workout being completed
+        exercises_data (list): List of exercise data dictionaries
+        user_id (int): ID of the user completing the workout
+        
+    Returns:
+        tuple: (success: bool, result: dict|str, status_code: int)
+            - On success: (True, session_data_dict, 201)
+            - On error: (False, error_message, error_code)
+    """
+    # Validate workout exists and belongs to user
+    workout = Workout.query.filter_by(id=workout_id, user_id=user_id).first()
+    if not workout:
+        return False, "Workout not found or access denied", 404
+    
+    if not exercises_data:
+        return False, "No exercises provided", 400
+    
+    # Create new session
+    session = WorkoutSession(user_id=user_id, workout_id=workout_id)
+    db.session.add(session)
+    db.session.commit()  # Get session ID
+    
+    logs = []
+    exercises_logged = 0
+    
+    for idx, exercise_data in enumerate(exercises_data):
+        # Extract and validate exercise name
+        exercise_name = exercise_data.get("exercise_name", "").strip() if exercise_data.get("exercise_name") else ""
+        if not exercise_name:
+            # Rollback session if exercise name is missing
+            db.session.delete(session)
+            db.session.commit()
+            return False, f"Missing exercise_name in entry {idx}", 400
+        
+        # Parse and validate numeric fields with error handling
+        set_number = exercise_data.get("set_number")
+        reps = exercise_data.get("reps")
+        weight = exercise_data.get("weight")
+        
+        if set_number is not None:
+            try:
+                set_number = int(set_number) if str(set_number).strip() else None
+            except (ValueError, TypeError):
+                set_number = None
+                
+        if reps is not None:
+            try:
+                reps = int(reps) if str(reps).strip() else None
+            except (ValueError, TypeError):
+                reps = None
+                
+        if weight is not None:
+            try:
+                weight = float(weight) if str(weight).strip() else None
+            except (ValueError, TypeError):
+                weight = None
+        
+        # Create exercise log
+        log = ExerciseLog(
+            session_id=session.id,
+            exercise_name=exercise_name,
+            set_number=set_number,
+            reps=reps,
+            weight=weight,
+            details=exercise_data.get("details"),
+            include_details=exercise_data.get("include_details", False),
+        )
+        db.session.add(log)
+        logs.append(log)
+        exercises_logged += 1
+    
+    # Commit all changes
+    db.session.commit()
+    
+    # Return success data
+    return True, {
+        "session_id": session.id,
+        "timestamp": session.timestamp.isoformat(),
+        "workout_id": session.workout_id,
+        "workout_name": workout.name,
+        "exercises_logged": exercises_logged,
+    }, 201
+=======
+
 # PUBLIC_INTERFACE
 @views.route("/api/workout/history", methods=["GET"])
 @login_required
@@ -62,60 +152,21 @@ def log_workout_session():
     data = request.get_json()
     workout_id = data.get("workout_id")
     exercises = data.get("exercises", [])
-    if not workout_id or not exercises:
-        return jsonify({"error": "Missing workout_id or exercises"}), 400
     
-    # Defensive: Is the referenced workout valid and does it belong to this user?
-    workout = Workout.query.filter_by(id=workout_id, user_id=current_user.id).first()
-    if not workout:
-        return jsonify({"error": "Workout not found"}), 404
-
-    # Create new session object
-    session = WorkoutSession(user_id=current_user.id, workout_id=workout_id)
-    db.session.add(session)
-    db.session.commit()  # session.id now exists
-    logs = []
-    for idx, item in enumerate(exercises):
-        # Minimal validation for exercise entry
-        exercise_name = item.get("exercise_name", "").strip() if item.get("exercise_name") else ""
-        if not exercise_name:
-            return jsonify({"error": f"Missing exercise_name in entry {idx}"}), 400
-        set_number = item.get("set_number")
-        reps = item.get("reps")
-        weight = item.get("weight")
-        if set_number is not None:
-            try:
-                set_number = int(set_number)
-            except Exception:
-                set_number = None
-        if reps is not None:
-            try:
-                reps = int(reps)
-            except Exception:
-                reps = None
-        if weight is not None:
-            try:
-                weight = float(weight)
-            except Exception:
-                weight = None
-        log = ExerciseLog(
-            session_id=session.id,
-            exercise_name=exercise_name,
-            set_number=set_number,
-            reps=reps,
-            weight=weight,
-            details=item.get("details"),
-            include_details=item.get("include_details"),
-        )
-        db.session.add(log)
-        logs.append(log)
-    db.session.commit()
-    return jsonify({
-        "session_id": session.id,
-        "timestamp": session.timestamp.isoformat(),
-        "workout_id": session.workout_id,
-        "exercises_logged": len(logs),
-    }), 201
+    if not workout_id:
+        return jsonify({"error": "Missing workout_id"}), 400
+    
+    # Use unified workout completion function
+    success, result, status_code = _create_workout_session(
+        workout_id=workout_id,
+        exercises_data=exercises,
+        user_id=current_user.id
+    )
+    
+    if success:
+        return jsonify(result), status_code
+    else:
+        return jsonify({"error": result}), status_code
 
 
 @views.route("/")
@@ -421,41 +472,53 @@ def duplicate_workout(workout_id):
 def complete_workout(workout_id):
     """
     Complete a workout by logging exercise details and creating a workout session.
+    Processes form data and converts it to the standard exercise data format.
     Args:
         workout_id (int): The ID of the workout to complete.
     Returns:
         Redirects to the workout page with a success message.
     """
+    # Get workout to build exercise data structure
     workout = Workout.query.filter_by(id=workout_id, user_id=current_user.id).first()
     if not workout:
         flash('Workout not found.', category='error')
         return redirect(url_for('views.workout'))
     
-    # Create a new workout session
-    session = WorkoutSession(user_id=current_user.id, workout_id=workout_id)
-    db.session.add(session)
-    db.session.commit()
-    
-    # Process exercise details from form
-    exercises_logged = 0
+    # Process form data into standardized exercise data structure
+    exercises_data = []
     for exercise in workout.exercises:
+        # Extract form data for this exercise
+        exercise_weight = request.form.get(f'exercise_{exercise.id}_weight')
+        exercise_reps = request.form.get(f'exercise_{exercise.id}_reps')
+        exercise_sets = request.form.get(f'exercise_{exercise.id}_sets')
         exercise_details = request.form.get(f'exercise_{exercise.id}_details')
-        if exercise_details and exercise_details.strip():
-            # Create exercise log entry
-            log = ExerciseLog(
-                session_id=session.id,
-                exercise_name=exercise.name,
-                details=exercise_details.strip(),
-                include_details=exercise.include_details
-            )
-            db.session.add(log)
-            exercises_logged += 1
+        
+        # Only include exercises that have at least some data
+        if any([exercise_weight, exercise_reps, exercise_sets, exercise_details]):
+            exercise_data = {
+                "exercise_name": exercise.name,
+                "weight": exercise_weight,
+                "reps": exercise_reps,
+                "set_number": exercise_sets,
+                "details": exercise_details,
+                "include_details": exercise.include_details
+            }
+            exercises_data.append(exercise_data)
     
-    db.session.commit()
+    # Use unified workout completion function
+    success, result, status_code = _create_workout_session(
+        workout_id=workout_id,
+        exercises_data=exercises_data,
+        user_id=current_user.id
+    )
     
-    if exercises_logged > 0:
-        flash(f'Workout completed! Logged {exercises_logged} exercises.', category='success')
+    if success:
+        exercises_logged = result.get('exercises_logged', 0)
+        if exercises_logged > 0:
+            flash(f'Workout completed! Logged {exercises_logged} exercises.', category='success')
+        else:
+            flash('Workout completed, but no exercise details were recorded.', category='info')
     else:
-        flash('Workout completed, but no exercise details were recorded.', category='info')
+        flash(f'Error completing workout: {result}', category='error')
     
     return redirect(url_for('views.workout'))
