@@ -178,7 +178,16 @@
                             </div>
                             <div class="stat-content">
                                 <span class="stat-number">{{ (user.workouts | map(attribute='exercises') | map('length') | sum) if user.workouts else 0 }}</span>
-                                <span class="stat-label">Exercise{{ 's' if (user.workouts | sum(attribute='exercises') | length) != 1 else '' }}</span>
+                                {# 
+                          Pluralize 'Exercise(s)' correctly based on total exercises.
+                          Approach: Use Jinja2's map filter to map user.workouts to their exercises, map each to its |length, then sum.
+                          Handles 0 (Exercises), 1 (Exercise), N (Exercises).
+                        #}
+                        {% set ex_counts = user.workouts | map(attribute='exercises') | map('length') | list %}
+                        {% set total_exercises = ex_counts | sum %}
+                        <span class="stat-label">
+                          Exercise{{ 's' if total_exercises != 1 else '' }}
+                        </span>
                             </div>
                             <div class="stat-trend">
                                 <i class="fa-solid fa-fire"></i>
