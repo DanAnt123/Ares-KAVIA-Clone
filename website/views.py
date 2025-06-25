@@ -173,30 +173,37 @@ def workout():
 def history():
     """
     Renders the 'View your Progress' page showing all past workout sessions and their details for the logged-in user.
+    Supports enhanced filtering, sorting, and AJAX requests for real-time updates.
     """
+    # Check if this is an AJAX request for data only
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return get_workout_history()
+    
     # Fetch all workout sessions for current user, most recent first
-    from flask import Markup
     sessions = (
         WorkoutSession.query
         .filter_by(user_id=current_user.id)
         .order_by(WorkoutSession.timestamp.desc())
         .all()
     )
+    
     # Collect all user's workouts for filter dropdown
     all_workouts = (
         Workout.query.filter_by(user_id=current_user.id)
         .order_by(Workout.name.asc())
         .all()
     )
-    # If a filter is requested (by workout_id)
+    
+    # Handle legacy workout_id filter parameter for backward compatibility
     selected_workout = None
-    workout_filter = None
     if "workout_id" in request.args and request.args.get("workout_id", "").isdigit():
         workout_filter = int(request.args["workout_id"])
         sessions = [s for s in sessions if s.workout_id == workout_filter]
         selected_workout = workout_filter
-    else:
-        workout_filter = None
+
+    # Calculate additional statistics for enhanced UI
+    total_exercises = sum(len(session.exercise_logs) for session in sessions)
+    unique_workout_count = len(set(session.workout_id for session in sessions if session.workout_id))
 
     return render_template(
         "history.html",
@@ -204,6 +211,8 @@ def history():
         sessions=sessions,
         workouts=all_workouts,
         selected_workout=selected_workout,
+        total_exercises=total_exercises,
+        unique_workout_count=unique_workout_count,
     )
 
 @views.route("/new-workout", methods=["GET", "POST"])
