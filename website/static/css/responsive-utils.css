@@ -162,14 +162,39 @@
    NAVIGATION FIXES
    =============================== */
 
+/* Ensure consistent main content margins across all breakpoints */
+.main-content {
+  margin-top: 64px !important; /* Desktop navbar height */
+  padding-top: var(--space-4, 1rem) !important;
+  min-height: calc(100vh - 64px) !important;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    margin-top: 60px !important; /* Tablet navbar height */
+    padding-top: var(--space-3, 0.75rem) !important;
+    min-height: calc(100vh - 60px) !important;
+  }
+}
+
 @media (max-width: 768px) {
   .navbar-container {
-    padding-left: var(--space-3, 0.75rem);
-    padding-right: var(--space-3, 0.75rem);
+    padding-left: var(--space-2, 0.5rem);
+    padding-right: var(--space-2, 0.5rem);
   }
   
   .main-content {
-    margin-top: 70px; /* Account for mobile navbar height */
+    margin-top: 56px !important; /* Mobile navbar height */
+    padding-top: var(--space-3, 0.75rem) !important;
+    min-height: calc(100vh - 56px) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    margin-top: 52px !important; /* Small mobile navbar height */
+    padding-top: var(--space-2, 0.5rem) !important;
+    min-height: calc(100vh - 52px) !important;
   }
 }
 
@@ -177,13 +202,48 @@
    DASHBOARD LAYOUT FIXES
    =============================== */
 
+/* Desktop dashboard adjustments */
+.dashboard-container {
+  padding-top: var(--space-6, 1.5rem) !important;
+  margin-top: 0 !important; /* Let main-content handle the navbar margin */
+}
+
+.workout-dashboard {
+  padding-top: var(--space-6, 1.5rem) !important;
+  margin-top: 0 !important; /* Let main-content handle the navbar margin */
+}
+
+.simple-workout-creation {
+  padding-top: var(--space-6, 1.5rem) !important;
+  margin-top: 0 !important; /* Let main-content handle the navbar margin */
+}
+
 @media (max-width: 768px) {
   .dashboard-container {
-    padding: var(--space-3, 0.75rem) 0;
+    padding: var(--space-4, 1rem) var(--space-3, 0.75rem) 0;
+  }
+  
+  .workout-dashboard {
+    padding: var(--space-4, 1rem) var(--space-3, 0.75rem) 0;
+  }
+  
+  .simple-workout-creation {
+    padding: var(--space-4, 1rem) var(--space-3, 0.75rem) 0;
   }
   
   .dashboard-header {
     padding: var(--space-4, 1rem) var(--space-2, 0.5rem);
+    margin-bottom: var(--space-6, 1.5rem);
+  }
+  
+  .workout-header {
+    padding: var(--space-4, 1rem) var(--space-2, 0.5rem);
+    margin-bottom: var(--space-6, 1.5rem);
+  }
+  
+  .simple-header {
+    padding: 0 var(--space-2, 0.5rem);
+    margin-bottom: var(--space-6, 1.5rem);
   }
   
   .header-content {
@@ -199,6 +259,14 @@
   .stat-card {
     flex: 1;
     min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container,
+  .workout-dashboard,
+  .simple-workout-creation {
+    padding: var(--space-3, 0.75rem) var(--space-2, 0.5rem) 0;
   }
 }
 
@@ -228,9 +296,46 @@
    HERO SECTION FIXES
    =============================== */
 
+.hero-section {
+  padding-top: var(--space-8, 2rem) !important;
+  margin-top: 0 !important; /* Let main-content handle the navbar margin */
+  min-height: calc(100vh - 64px) !important; /* Account for navbar */
+}
+
+.workout-empty-state {
+  padding-top: var(--space-8, 2rem) !important;
+  margin-top: 0 !important; /* Let main-content handle the navbar margin */
+  min-height: calc(100vh - 64px) !important; /* Account for navbar */
+}
+
+.auth-container {
+  padding-top: var(--space-8, 2rem) !important;
+  margin-top: 0 !important; /* Let main-content handle the navbar margin */
+  min-height: calc(100vh - 64px) !important; /* Account for navbar */
+}
+
+@media (max-width: 1024px) {
+  .hero-section,
+  .workout-empty-state,
+  .auth-container {
+    min-height: calc(100vh - 60px) !important; /* Account for tablet navbar */
+  }
+}
+
 @media (max-width: 768px) {
   .hero-section {
-    padding: var(--space-6, 1.5rem) 0;
+    padding: var(--space-6, 1.5rem) var(--space-3, 0.75rem) 0;
+    min-height: calc(100vh - 56px) !important; /* Account for mobile navbar */
+  }
+  
+  .workout-empty-state {
+    padding: var(--space-6, 1.5rem) var(--space-3, 0.75rem) 0;
+    min-height: calc(100vh - 56px) !important; /* Account for mobile navbar */
+  }
+  
+  .auth-container {
+    padding: var(--space-6, 1.5rem) var(--space-3, 0.75rem) 0;
+    min-height: calc(100vh - 56px) !important; /* Account for mobile navbar */
   }
   
   .hero-content {
@@ -246,6 +351,14 @@
   
   .btn-cta {
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section,
+  .workout-empty-state,
+  .auth-container {
+    min-height: calc(100vh - 52px) !important; /* Account for small mobile navbar */
   }
 }
 

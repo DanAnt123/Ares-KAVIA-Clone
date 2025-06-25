@@ -783,17 +783,18 @@ input::placeholder {
   border-bottom: 1px solid var(--tertiary);
   box-shadow: var(--shadow-lg);
   transition: all var(--transition-base);
-  min-height: 44px;
+  height: 64px; /* Fixed height for consistency */
 }
 
 .navbar-container {
   max-width: var(--max-width-7xl);
   margin: 0 auto;
-  padding: var(--space-2) var(--space-4); /* Reduced vertical and horizontal padding */
+  padding: var(--space-3) var(--space-4);
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: relative;
+  height: 100%;
 }
 
 /* Brand Section */
@@ -824,8 +825,8 @@ input::placeholder {
 }
 
 .brand-logo {
-  width: 24px;  /* reduced from 32px */
-  height: 24px; /* reduced from 32px */
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-base);
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-fast);
@@ -843,7 +844,7 @@ input::placeholder {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-size: var(--fs-lg); /* was var(--fs-2xl) */
+  font-size: var(--fs-xl);
   letter-spacing: -0.025em;
 }
 
@@ -1024,14 +1025,19 @@ input::placeholder {
 
 /* Main Content Adjustment */
 .main-content {
-  margin-top: 50px; /* Account for fixed navbar (was 80px) */
-  min-height: calc(100vh - 50px);
+  margin-top: 64px; /* Account for fixed navbar height */
+  min-height: calc(100vh - 64px);
+  padding-top: var(--space-4); /* Add padding to prevent content from touching navbar */
 }
 
 /* Mobile Responsive Design */
 @media (max-width: 1024px) {
+  .modern-navbar {
+    height: 60px;
+  }
+  
   .navbar-container {
-    padding: var(--space-1) var(--space-3);
+    padding: var(--space-2) var(--space-3);
   }
   
   .nav-text {
@@ -1049,9 +1055,22 @@ input::placeholder {
   .navbar-menu {
     gap: var(--space-3);
   }
+  
+  .main-content {
+    margin-top: 60px;
+    padding-top: var(--space-3);
+  }
 }
 
 @media (max-width: 768px) {
+  .modern-navbar {
+    height: 56px;
+  }
+  
+  .navbar-container {
+    padding: var(--space-2);
+  }
+  
   .nav-toggle-label {
     display: flex;
   }
@@ -1060,7 +1079,7 @@ input::placeholder {
     position: fixed;
     top: 0;
     right: -100%;
-    width: 240px;
+    width: 260px;
     height: 100vh;
     background: linear-gradient(135deg, 
       var(--surface) 0%, 
@@ -1069,10 +1088,10 @@ input::placeholder {
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
-    padding: var(--space-12) var(--space-4) var(--space-4); /* Reduced padding */
+    padding: var(--space-16) var(--space-4) var(--space-4);
     box-shadow: var(--shadow-2xl);
     transition: right var(--transition-slow);
-    z-index: 1000;
+    z-index: 1001;
     border-left: 1px solid var(--tertiary);
   }
   
@@ -1086,7 +1105,7 @@ input::placeholder {
   
   .nav-link {
     justify-content: flex-start;
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-3) var(--space-4);
     border-radius: var(--radius-lg);
     font-size: var(--fs-base);
   }
@@ -1103,7 +1122,7 @@ input::placeholder {
   .nav-action-btn {
     width: 100%;
     justify-content: center;
-    padding: var(--space-2);
+    padding: var(--space-3);
     font-size: var(--fs-base);
   }
   
@@ -1135,13 +1154,18 @@ input::placeholder {
   }
   
   .main-content {
-    margin-top: 44px;
+    margin-top: 56px;
+    padding-top: var(--space-3);
   }
 }
 
 @media (max-width: 480px) {
+  .modern-navbar {
+    height: 52px;
+  }
+  
   .navbar-container {
-    padding: var(--space-1);
+    padding: var(--space-1) var(--space-2);
   }
   
   .brand-text {
@@ -1149,16 +1173,18 @@ input::placeholder {
   }
   
   .brand-logo {
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
   }
   
   .navbar-menu {
-    width: 180px;
+    width: 220px;
+    padding: var(--space-12) var(--space-3) var(--space-3);
   }
   
   .main-content {
-    margin-top: 40px;
+    margin-top: 52px;
+    padding-top: var(--space-2);
   }
 }
 
