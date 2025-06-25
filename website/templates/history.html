@@ -298,4 +298,7 @@
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/history.js') }}"></script>
+<!-- Debug note: Cache busting and error debug for history.js -->
+<script src="{{ url_for('static', filename='js/history.js') }}?v={{ config.get('VERSION', '1.0') or now()|int }}" 
+        onerror="document.body.insertAdjacentHTML('beforeend', '<div style=&quot;background:#c33;color:#fff;padding:1em;text-align:center;&quot;>Could not load history.js. Check if the file exists at /static/js/history.js and server static config.</div>');">
+</script>
