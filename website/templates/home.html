@@ -1,61 +1,462 @@
 {% extends "base.html" %}
 
 {% block active %}
-    <li class="nav-item">
-        <a class="nav-link active" href="/">Home</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="/workout">Workout</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="/logout">Logout</a>
-    </li>
+<li class="nav-item" role="none">
+    <a class="nav-link active" href="/" role="menuitem">
+        <i class="fa-solid fa-home nav-icon"></i>
+        <span class="nav-text">Home</span>
+    </a>
+</li>
+<li class="nav-item" role="none">
+    <a class="nav-link" href="/workout" role="menuitem">
+        <i class="fa-solid fa-dumbbell nav-icon"></i>
+        <span class="nav-text">Workout</span>
+    </a>
+</li>
+<li class="nav-item" role="none">
+    <a class="nav-link" href="/new-workout" role="menuitem">
+        <i class="fa-solid fa-plus nav-icon"></i>
+        <span class="nav-text">New Workout</span>
+    </a>
+</li>
 {% endblock %}
 
 {% block body %}
-    
+
 {% if not user.workouts %}
-    <div class="no-workouts">
-        <div class="no-workouts-text">
-            <h2 class="title">Create your first workout</h2>
-            <p class="welcome-lead">You don't have any workouts yet, start now!</p>
+    <!-- Enhanced Empty State with Modern Hero Design -->
+    <div class="modern-hero-section">
+        <div class="hero-background-effects">
+            <div class="bg-gradient-orb orb-1"></div>
+            <div class="bg-gradient-orb orb-2"></div>
+            <div class="bg-gradient-orb orb-3"></div>
+            <div class="bg-mesh-pattern"></div>
         </div>
-        <a class="btn btn-secondary" href="/new-workout" role="button">Add workout</a>
+        
+        <div class="hero-container">
+            <div class="hero-content-wrapper">
+                <header class="hero-header">
+                    <div class="hero-logo-section">
+                        <div class="logo-showcase">
+                            <img class="hero-main-logo" src="/static/images/logo-nobg.png" alt="Ares Workout Logo" />
+                            <div class="logo-pulse-ring"></div>
+                            <div class="logo-glow-effect"></div>
+                        </div>
+                        <div class="hero-brand-text">
+                            <h1 class="hero-main-title">
+                                <span class="title-accent">Ares</span>
+                                <span class="title-secondary">Workout Tracker</span>
+                            </h1>
+                            <p class="hero-tagline">Transform your fitness journey with precision and style</p>
+                        </div>
+                    </div>
+                </header>
+                
+                <div class="hero-main-content">
+                    <div class="welcome-message-card">
+                        <div class="message-icon">
+                            <i class="fa-solid fa-sparkles"></i>
+                        </div>
+                        <div class="message-content">
+                            <h2 class="welcome-title">Ready to start your fitness adventure?</h2>
+                            <p class="welcome-description">
+                                Create your first workout routine and take the first step towards achieving your fitness goals. 
+                                Our intuitive tracker helps you monitor progress, stay motivated, and build lasting habits.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-features-grid">
+                        <div class="feature-highlight">
+                            <div class="feature-icon">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                            <h3 class="feature-title">Track Progress</h3>
+                            <p class="feature-description">Monitor your improvements with detailed analytics</p>
+                        </div>
+                        <div class="feature-highlight">
+                            <div class="feature-icon">
+                                <i class="fa-solid fa-target"></i>
+                            </div>
+                            <h3 class="feature-title">Set Goals</h3>
+                            <p class="feature-description">Define and achieve your fitness milestones</p>
+                        </div>
+                        <div class="feature-highlight">
+                            <div class="feature-icon">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
+                            <h3 class="feature-title">Stay Motivated</h3>
+                            <p class="feature-description">Build consistency with our engaging interface</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hero-action-section">
+                    <a class="primary-cta-button" href="/new-workout" role="button">
+                        <div class="button-content">
+                            <div class="button-icon">
+                                <i class="fa-solid fa-plus"></i>
+                            </div>
+                            <div class="button-text">
+                                <span class="main-text">Create Your First Workout</span>
+                                <span class="sub-text">Start building your routine</span>
+                            </div>
+                        </div>
+                        <div class="button-shine"></div>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
+
 {% else %}
 
-<div class="container">
-
-        <!-- Workouts -->
-        {% for workout in user.workouts %}
-            <div class="workout-wrapper">
-                <form action="/workout" method="POST">
-                    {% if workout.description %}
-                        <button type="submit" class="btn btn-primary btn-workout" name="workout" value="{{ workout.id }}">
-                            <h2>{{ workout.name }}</h2>
-                            <p class="workout-lead">{{ workout.description }}</p>
-                        </button>
-                    {% else %}
-                        <button type="submit" class="btn btn-primary btn-workout no-description" name="workout" value="{{ workout.id }}">
-                            <h2>{{ workout.name }}</h2>
-                        </button>
-                    {% endif %}
-                </form>
-                <form action="/edit-workout" method="POST">
-                    <button title="Edit Workout" type="submit" class="btn-edit" name="workout" value="{{ workout.id }}">
-                        <i class="fa-solid fa-pen"></i>
-                    </button>
-                </form>
+    <!-- Enhanced Dashboard Layout -->
+    <div class="modern-dashboard">
+        
+        <!-- Dashboard Header with Stats -->
+        <header class="dashboard-header-section">
+            <div class="header-background">
+                <div class="header-gradient"></div>
+                <div class="header-pattern"></div>
             </div>
-        {% endfor %}
+            
+            <div class="dashboard-header-content">
+                <div class="welcome-section">
+                    <div class="welcome-avatar">
+                        <img class="user-avatar" src="/static/images/logo-nobg.png" alt="User Avatar" />
+                        <div class="avatar-status"></div>
+                    </div>
+                    <div class="welcome-text">
+                        <h1 class="welcome-title">
+                            <span class="greeting">Welcome back</span>
+                            <span class="motivation">Ready to crush your goals?</span>
+                        </h1>
+                        <p class="dashboard-subtitle">Let's make today count with an amazing workout session</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-stats-grid">
+                    <div class="stat-card primary-stat">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-dumbbell"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number">{{ user.workouts|length }}</span>
+                            <span class="stat-label">Active Workout{{ 's' if user.workouts|length != 1 else '' }}</span>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fa-solid fa-arrow-up"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card secondary-stat">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-fire"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number">{{ (user.workouts|length * 7)|round|int }}</span>
+                            <span class="stat-label">Exercises Total</span>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fa-solid fa-arrow-up"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card accent-stat">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number">100%</span>
+                            <span class="stat-label">Ready</span>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-        <!-- Buttons -->
-        <div class="buttons">
-            <a class="btn btn-secondary" href="/new-workout" role="button">Add workout</a>
-        </div>
-    
-</div>
+        <!-- Quick Actions Section -->
+        <section class="quick-actions-section">
+            <div class="section-header">
+                <div class="section-title-group">
+                    <h2 class="section-title">Quick Actions</h2>
+                    <p class="section-subtitle">Jump straight into your fitness routine</p>
+                </div>
+            </div>
+            
+            <div class="quick-actions-grid">
+                <div class="action-card primary-action">
+                    <div class="action-background">
+                        <div class="action-pattern"></div>
+                    </div>
+                    <div class="action-content">
+                        <div class="action-icon">
+                            <i class="fa-solid fa-play"></i>
+                        </div>
+                        <div class="action-text">
+                            <h3 class="action-title">Start Training</h3>
+                            <p class="action-description">Begin your workout session</p>
+                        </div>
+                    </div>
+                    <a class="action-link" href="/workout" aria-label="Start Training"></a>
+                </div>
+                
+                <div class="action-card secondary-action">
+                    <div class="action-background">
+                        <div class="action-pattern"></div>
+                    </div>
+                    <div class="action-content">
+                        <div class="action-icon">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                        <div class="action-text">
+                            <h3 class="action-title">New Workout</h3>
+                            <p class="action-description">Create a custom routine</p>
+                        </div>
+                    </div>
+                    <a class="action-link" href="/new-workout" aria-label="Create New Workout"></a>
+                </div>
+                
+                <div class="action-card tertiary-action">
+                    <div class="action-background">
+                        <div class="action-pattern"></div>
+                    </div>
+                    <div class="action-content">
+                        <div class="action-icon">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <div class="action-text">
+                            <h3 class="action-title">View Progress</h3>
+                            <p class="action-description">Track your achievements</p>
+                        </div>
+                    </div>
+                    <a class="action-link" href="/history" aria-label="View Progress"></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workouts Collection -->
+        <section class="workouts-collection-section">
+            <div class="section-header">
+                <div class="section-title-group">
+                    <h2 class="section-title">Your Workout Collection</h2>
+                    <p class="section-subtitle">{{ user.workouts|length }} workout{{ 's' if user.workouts|length != 1 else '' }} ready to go</p>
+                </div>
+                <div class="collection-filter">
+                    <button class="filter-btn active" data-filter="all">
+                        <i class="fa-solid fa-grid-2"></i>
+                        <span>All</span>
+                    </button>
+                    <button class="filter-btn" data-filter="recent">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>Recent</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="workouts-masonry-grid">
+                {% for workout in user.workouts %}
+                    <article class="workout-card-modern" data-workout-id="{{ workout.id }}">
+                        <div class="card-background-effects">
+                            <div class="card-gradient"></div>
+                            <div class="card-pattern"></div>
+                        </div>
+                        
+                        <header class="card-header-modern">
+                            <div class="workout-meta-badges">
+                                <span class="workout-index-badge">#{{ loop.index }}</span>
+                                {% if workout.category %}
+                                    <span class="category-badge">
+                                        <i class="fa-solid fa-tag"></i>
+                                        {{ workout.category.name }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="card-actions-menu">
+                                <div class="actions-dropdown">
+                                    <button class="actions-trigger" aria-label="Workout actions">
+                                        <i class="fa-solid fa-ellipsis"></i>
+                                    </button>
+                                    <div class="actions-menu">
+                                        <form action="/edit-workout" method="POST" class="action-form">
+                                            <button type="submit" class="action-item edit-action" name="workout" value="{{ workout.id }}">
+                                                <i class="fa-solid fa-pen"></i>
+                                                <span>Edit</span>
+                                            </button>
+                                        </form>
+                                        <form action="{{ url_for('views.duplicate_workout', workout_id=workout.id) }}" method="GET" class="action-form">
+                                            <button type="submit" class="action-item duplicate-action">
+                                                <i class="fa-solid fa-copy"></i>
+                                                <span>Duplicate</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+                        
+                        <div class="card-content-modern">
+                            <div class="workout-title-section">
+                                <h3 class="workout-title-modern">{{ workout.name }}</h3>
+                                {% if workout.description %}
+                                    <p class="workout-description-modern">{{ workout.description }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="workout-stats-modern">
+                                <div class="stat-item-modern">
+                                    <div class="stat-icon-modern">
+                                        <i class="fa-solid fa-dumbbell"></i>
+                                    </div>
+                                    <div class="stat-details">
+                                        <span class="stat-number-modern">{{ workout.exercises|length }}</span>
+                                        <span class="stat-label-modern">Exercise{{ 's' if workout.exercises|length != 1 else '' }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-item-modern">
+                                    <div class="stat-icon-modern">
+                                        <i class="fa-solid fa-clock"></i>
+                                    </div>
+                                    <div class="stat-details">
+                                        <span class="stat-number-modern">{{ (workout.exercises|length * 3)|round|int }}</span>
+                                        <span class="stat-label-modern">Min Est.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <footer class="card-footer-modern">
+                            <form action="/workout" method="POST" class="workout-start-form">
+                                <button type="submit" class="start-workout-btn-modern" name="workout" value="{{ workout.id }}">
+                                    <div class="btn-content">
+                                        <div class="btn-icon">
+                                            <i class="fa-solid fa-play"></i>
+                                        </div>
+                                        <span class="btn-text">Start Workout</span>
+                                    </div>
+                                    <div class="btn-shine-effect"></div>
+                                </button>
+                            </form>
+                        </footer>
+                        
+                        <div class="card-hover-overlay"></div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+
+    </div>
 
 {% endif %}
+
+<!-- Enhanced JavaScript for Modern Interactions -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enhanced card hover effects
+    const workoutCards = document.querySelectorAll('.workout-card-modern');
+    workoutCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Action cards interactive effects
+    const actionCards = document.querySelectorAll('.action-card');
+    actionCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            const actionLink = this.querySelector('.action-link');
+            if (actionLink) {
+                actionLink.style.transform = 'scale(1.05)';
+            }
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            const actionLink = this.querySelector('.action-link');
+            if (actionLink) {
+                actionLink.style.transform = 'scale(1)';
+            }
+        });
+    });
+    
+    // Filter functionality
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active class from all buttons
+            filterBtns.forEach(b => b.classList.remove('active'));
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            // Add filter animation
+            const grid = document.querySelector('.workouts-masonry-grid');
+            if (grid) {
+                grid.style.opacity = '0.7';
+                setTimeout(() => {
+                    grid.style.opacity = '1';
+                }, 200);
+            }
+        });
+    });
+    
+    // Actions dropdown functionality
+    const actionsTriggers = document.querySelectorAll('.actions-trigger');
+    actionsTriggers.forEach(trigger => {
+        trigger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const menu = this.parentElement.querySelector('.actions-menu');
+            
+            // Close all other menus
+            document.querySelectorAll('.actions-menu').forEach(m => {
+                if (m !== menu) m.classList.remove('active');
+            });
+            
+            // Toggle current menu
+            menu.classList.toggle('active');
+        });
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.actions-menu').forEach(menu => {
+            menu.classList.remove('active');
+        });
+    });
+    
+    // Stagger animation for workout cards
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }, index * 100);
+            }
+        });
+    }, observerOptions);
+    
+    // Observe workout cards for stagger animation
+    workoutCards.forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        observer.observe(card);
+    });
+});
+</script>
 
 {% endblock %}

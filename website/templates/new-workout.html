@@ -1,77 +1,292 @@
 {% extends "base.html" %}
 
+{% block title %}Create New Workout - Ares{% endblock %}
+
+{% block active %}
+<li class="nav-item" role="none">
+    <a class="nav-link" href="/" role="menuitem">
+        <i class="fa-solid fa-home nav-icon"></i>
+        <span class="nav-text">Home</span>
+    </a>
+</li>
+<li class="nav-item" role="none">
+    <a class="nav-link" href="/workout" role="menuitem">
+        <i class="fa-solid fa-dumbbell nav-icon"></i>
+        <span class="nav-text">Workout</span>
+    </a>
+</li>
+<li class="nav-item" role="none">
+    <a class="nav-link active" href="/new-workout" role="menuitem">
+        <i class="fa-solid fa-plus nav-icon"></i>
+        <span class="nav-text">New Workout</span>
+    </a>
+</li>
+{% endblock %}
+
 {% block body %}
 
-    <div class="container">
+<div class="simple-workout-creation">
+    
+    <!-- Simple Page Header -->
+    <header class="simple-header">
+        <h1 class="simple-title">Create New Workout</h1>
+        <p class="simple-subtitle">Add a new workout to your routine</p>
+    </header>
 
-        <!-- Workout form -->
-        <form id="workout" autocomplete="off" method="POST">
-            <div class="workout-inputs">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            {% if category == "error" %}
-                                <div class="alert alert-error show" role="alert">
-                                    <span>{{ message }}</span>
-                                    <button type="button" class="alert-close">
-                                        <i class="fa-solid fa-xmark"></i>
-                                    </button>
-                                </div>
-                            {% else %}
-                                <div class="alert alert-success show" role="alert">
-                                    <span>{{ message }}</span>
-                                    <button type="button" class="alert-close">
-                                        <i class="fa-solid fa-xmark"></i>
-                                    </button>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+    <!-- Alert Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="simple-alerts">
+                {% for category, message in messages %}
+                    {% if category == "error" %}
+                        <div class="simple-alert simple-alert-error" role="alert" aria-live="polite">
+                            <i class="fa-solid fa-exclamation-triangle"></i>
+                            <span>{{ message }}</span>
+                            <button type="button" class="alert-close" aria-label="Close alert">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    {% else %}
+                        <div class="simple-alert simple-alert-success" role="alert" aria-live="polite">
+                            <i class="fa-solid fa-check-circle"></i>
+                            <span>{{ message }}</span>
+                            <button type="button" class="alert-close" aria-label="Close alert">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
                     {% endif %}
-                {% endwith %}   
-                <input class="text-input" type="text" name="workout_name" placeholder="Workout name" maxlength="12" required>
-                <input class="text-input" type="text" name="workout_description" placeholder="Description" maxlength="18">
+                {% endfor %}
             </div>
-            <div id="template">
-                <div class="exercise-edit" hidden>
-                    <input class="exercise-edit-name" type="text" name="exercise_name" placeholder="Exercise name" maxlength="45" required disabled>
-                    <div class="exercise-edit-options">
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Form -->
+    <form id="workout" method="POST" class="simple-workout-form" autocomplete="off">
+        
+        <!-- Workout Information Section -->
+        <section class="form-section">
+            <h2 class="section-title">Workout Information</h2>
+            
+            <div class="form-group">
+                <label for="workout_name" class="form-label">
+                    Workout Name <span class="required">*</span>
+                </label>
+                <input 
+                    id="workout_name" 
+                    name="workout_name" 
+                    type="text" 
+                    class="form-input" 
+                    placeholder="Enter workout name (max 12 characters)" 
+                    maxlength="12" 
+                    required 
+                    autocomplete="off"
+                    aria-describedby="workout_name_help"
+                >
+                <small id="workout_name_help" class="form-help">
+                    Maximum 12 characters
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="workout_description" class="form-label">
+                    Description <span class="optional">(optional)</span>
+                </label>
+                <input 
+                    id="workout_description" 
+                    name="workout_description" 
+                    type="text" 
+                    class="form-input" 
+                    placeholder="Brief description (max 18 characters)" 
+                    maxlength="18" 
+                    autocomplete="off"
+                    aria-describedby="workout_description_help"
+                >
+                <small id="workout_description_help" class="form-help">
+                    Maximum 18 characters
+                </small>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="category_id" class="form-label">
+                        Category <span class="required">*</span>
+                    </label>
+                    <select id="category_id" name="category_id" class="form-select" required aria-describedby="category_help">
+                        <option value="" disabled selected>Choose a category...</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="category_help" class="form-help">
+                        Select an existing category
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="new_category_name" class="form-label">
+                        Or Create New Category
+                    </label>
+                    <input 
+                        id="new_category_name" 
+                        name="new_category_name" 
+                        type="text" 
+                        class="form-input" 
+                        placeholder="New category name" 
+                        maxlength="50" 
+                        autocomplete="off"
+                        aria-describedby="new_category_help"
+                    >
+                    <small id="new_category_help" class="form-help">
+                        Leave blank to use selected category
+                    </small>
+                </div>
+            </div>
+
+            <div class="form-group" id="new-category-description" style="display: none;">
+                <label for="new_category_description" class="form-label">
+                    New Category Description
+                </label>
+                <input 
+                    id="new_category_description" 
+                    name="new_category_description" 
+                    type="text" 
+                    class="form-input" 
+                    placeholder="Description for new category" 
+                    maxlength="100" 
+                    autocomplete="off"
+                >
+            </div>
+        </section>
+
+        <!-- Exercises Section -->
+        <section class="form-section">
+            <div class="section-header">
+                <h2 class="section-title">Exercises</h2>
+                <span class="exercise-count-display">
+                    <span id="exercise-count">1</span> exercise(s)
+                </span>
+            </div>
+
+            <!-- Exercise Template (Hidden) -->
+            <div id="template" class="exercise-template" hidden>
+                <div class="exercise-item">
+                    <div class="exercise-header">
+                        <span class="exercise-number">1</span>
+                        <input 
+                            class="exercise-name-input" 
+                            type="text" 
+                            name="exercise_name" 
+                            placeholder="Exercise name (e.g., Bench Press)" 
+                            maxlength="45" 
+                            required 
+                            disabled
+                            aria-label="Exercise name"
+                        >
+                        <button type="button" class="exercise-remove-btn" title="Remove exercise" disabled>
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="exercise-options">
                         <input class="include_details_hidden" type="hidden" value="0" name="include_details" disabled>
-                        <label class="checkbox">
+                        <label class="checkbox-label">
                             <input class="include_details" type="checkbox" value="1" name="include_details" disabled>
-                            <span>Include details</span>
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">
+                                Include tracking details (weight, reps, sets)
+                            </span>
                         </label>
-                        <i class="handle fa-solid fa-grip-lines"></i>
-                        <i class="delete fa-solid fa-xmark"></i>
+                    </div>
+                    <div class="exercise-tracking-details" style="display: none;">
+                        <div class="tracking-fields">
+                            <div class="tracking-field">
+                                <label class="tracking-label">Sets</label>
+                                <input type="number" name="exercise_sets" class="tracking-input" placeholder="3" min="1" max="99" disabled>
+                            </div>
+                            <div class="tracking-field">
+                                <label class="tracking-label">Reps</label>
+                                <input type="text" name="exercise_reps" class="tracking-input" placeholder="8-12" maxlength="20" disabled>
+                            </div>
+                            <div class="tracking-field">
+                                <label class="tracking-label">Weight</label>
+                                <input type="number" name="exercise_weight" class="tracking-input" placeholder="135" step="0.5" min="0" max="9999" disabled>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div id="exercises" class="exercises-edit">
-                <div class="exercise-edit">
-                    <input class="exercise-edit-name" type="text" name="exercise_name" placeholder="Exercise name" maxlength="45" required>
-                    <div class="exercise-edit-options">
+
+            <!-- Exercises List -->
+            <div id="exercises" class="exercises-list">
+                <div class="exercise-item">
+                    <div class="exercise-header">
+                        <span class="exercise-number">1</span>
+                        <input 
+                            class="exercise-name-input" 
+                            type="text" 
+                            name="exercise_name" 
+                            placeholder="Exercise name (e.g., Bench Press)" 
+                            maxlength="45" 
+                            required
+                            aria-label="Exercise name"
+                        >
+                        <button type="button" class="exercise-remove-btn" title="Remove exercise">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="exercise-options">
                         <input class="include_details_hidden" type="hidden" value="0" name="include_details">
-                        <label class="checkbox">
+                        <label class="checkbox-label">
                             <input class="include_details" type="checkbox" value="1" name="include_details">
-                            <span>Include details</span>
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">
+                                Include tracking details (weight, reps, sets)
+                            </span>
                         </label>
-                        <i class="handle fa-solid fa-grip-lines"></i>
-                        <i class="delete fa-solid fa-xmark"></i>
+                    </div>
+                    <div class="exercise-tracking-details" style="display: none;">
+                        <div class="tracking-fields">
+                            <div class="tracking-field">
+                                <label class="tracking-label">Sets</label>
+                                <input type="number" name="exercise_sets" class="tracking-input" placeholder="3" min="1" max="99">
+                            </div>
+                            <div class="tracking-field">
+                                <label class="tracking-label">Reps</label>
+                                <input type="text" name="exercise_reps" class="tracking-input" placeholder="8-12" maxlength="20">
+                            </div>
+                            <div class="tracking-field">
+                                <label class="tracking-label">Weight</label>
+                                <input type="number" name="exercise_weight" class="tracking-input" placeholder="135" step="0.5" min="0" max="9999">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-secondary" id="add_exercise" title="Add exercise">
+
+            <!-- Add Exercise Button -->
+            <button type="button" class="add-exercise-btn" id="add_exercise">
                 <i class="fa-solid fa-plus"></i>
+                <span>Add Exercise</span>
             </button>
-        </form>
-        <div class="buttons">
-            <button type="submit" class="btn btn-primary" form="workout">Save workout</button>
-            <a href="/" class="btn btn-tertiary cancel">Cancel</a>
+        </section>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn-primary btn-save" form="workout">
+                <i class="fa-solid fa-check"></i>
+                <span>Save Workout</span>
+            </button>
+            <a href="/" class="btn-secondary btn-cancel">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Cancel</span>
+            </a>
         </div>
 
-    </div>
+    </form>
 
-    <!-- JavaScript -->
-    <script type="text/javascript" src="/static/js/new-workout.js"></script>
-    <script type="text/javascript" src="/static/js/alert.js"></script>
+</div>
+
+<!-- JavaScript -->
+<script type="text/javascript" src="/static/js/new-workout.js"></script>
+<script type="text/javascript" src="/static/js/alert.js"></script>
 
 {% endblock %}

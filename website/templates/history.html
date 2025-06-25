@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block active %}
+    <li class="nav-item">
+        <a class="nav-link" href="/">Home</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/workout">Workout</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="/history">History</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/logout">Logout</a>
+    </li>
+{% endblock %}
+
+{% block body %}
+<div class="main-content">
+    <div class="workout-dashboard">
+        <!-- History Header -->
+        <div class="workout-header">
+            <div class="workout-header-content">
+                <div class="workout-selector-section">
+                    <h1 class="workout-page-title">
+                        <i class="fa fa-history"></i>
+                        Workout History
+                    </h1>
+                    <p class="dashboard-subtitle">Track your progress and review past workout sessions</p>
+                </div>
+                <div class="workout-stats-summary">
+                    <div class="stat-card">
+                        <span class="stat-number" id="total-sessions">{{ sessions|length }}</span>
+                        <span class="stat-label">Total Sessions</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="unique-workouts">{{ workouts|length }}</span>
+                        <span class="stat-label">Workouts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter and Sort Controls -->
+        <div class="history-controls-panel">
+            <div class="controls-container">
+                <!-- Filter Controls -->
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <label for="workout-filter" class="filter-label">
+                            <i class="fa fa-filter"></i>
+                            Filter by Workout
+                        </label>
+                        <div class="custom-select">
+                            <select id="workout-filter" class="workout-select">
+                                <option value="">All Workouts</option>
+                                {% for workout in workouts %}
+                                    <option value="{{ workout.id }}" {% if selected_workout == workout.id %}selected{% endif %}>
+                                        {{ workout.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <i class="fa fa-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="date-filter" class="filter-label">
+                            <i class="fa fa-calendar"></i>
+                            Date Range
+                        </label>
+                        <div class="custom-select">
+                            <select id="date-filter" class="workout-select">
+                                <option value="">All Time</option>
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                                <option value="quarter">Last 3 Months</option>
+                            </select>
+                            <i class="fa fa-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sort Controls -->
+                <div class="sort-section">
+                    <div class="sort-group">
+                        <label for="sort-by" class="filter-label">
+                            <i class="fa fa-sort"></i>
+                            Sort By
+                        </label>
+                        <div class="custom-select">
+                            <select id="sort-by" class="workout-select">
+                                <option value="date-desc">Newest First</option>
+                                <option value="date-asc">Oldest First</option>
+                                <option value="workout-name">Workout Name</option>
+                                <option value="exercise-count">Exercise Count</option>
+                            </select>
+                            <i class="fa fa-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+
+                    <div class="view-options">
+                        <button id="view-grid" class="view-btn active" title="Grid View">
+                            <i class="fa fa-th-large"></i>
+                        </button>
+                        <button id="view-list" class="view-btn" title="List View">
+                            <i class="fa fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search and Actions -->
+                <div class="action-section">
+                    <div class="search-group">
+                        <div class="search-input-wrapper">
+                            <input type="text" id="search-input" class="search-input" placeholder="Search exercises...">
+                            <i class="fa fa-search search-icon"></i>
+                            <button id="clear-search" class="clear-search-btn" style="display: none;">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <button id="refresh-data" class="action-btn secondary" title="Refresh Data">
+                            <i class="fa fa-refresh"></i>
+                        </button>
+                        <button id="export-data" class="action-btn secondary" title="Export History">
+                            <i class="fa fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading-indicator" class="loading-indicator" style="display: none;">
+            <div class="spinner"></div>
+            <span>Loading workout history...</span>
+        </div>
+
+        <!-- History Content -->
+        <div id="history-content" class="history-content">
+            {% if not sessions or sessions|length == 0 %}
+                <div class="empty-state" id="empty-state">
+                    <div class="empty-state-content">
+                        <div class="empty-state-icon">
+                            <i class="fa fa-history"></i>
+                        </div>
+                        <h2 class="empty-state-title">No workout sessions yet</h2>
+                        <p class="empty-state-description">Your workout history will appear here after you log a workout session.</p>
+                        <div class="empty-state-actions">
+                            <a class="btn btn-primary btn-cta" href="/workout" role="button">
+                                <i class="fa fa-plus"></i>
+                                Log Your First Workout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Session Results Summary -->
+                <div class="results-summary">
+                    <div class="results-info">
+                        <span class="results-count" id="results-count">{{ sessions|length }} sessions found</span>
+                        <span class="results-divider">•</span>
+                        <span class="results-filter" id="active-filters">No filters applied</span>
+                    </div>
+                    <div class="results-actions">
+                        <button id="clear-filters" class="btn btn-tertiary" style="display: none;">
+                            <i class="fa fa-times"></i>
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sessions Container -->
+                <div id="sessions-container" class="sessions-container view-grid">
+                    {% for session in sessions %}
+                        <div class="session-card" data-session-id="{{ session.id }}" data-workout-id="{{ session.workout_id }}" data-timestamp="{{ session.timestamp.isoformat() }}" data-workout-name="{{ session.workout.name if session.workout else 'Workout' }}">
+                            <div class="session-header">
+                                <div class="session-info">
+                                    <h3 class="session-workout-name">{{ session.workout.name if session.workout else 'Workout' }}</h3>
+                                    <div class="session-meta">
+                                        <span class="session-date">
+                                            <i class="fa fa-calendar"></i>
+                                            {{ session.timestamp.strftime('%Y-%m-%d') }}
+                                        </span>
+                                        <span class="session-time">
+                                            <i class="fa fa-clock-o"></i>
+                                            {{ session.timestamp.strftime('%H:%M') }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="session-actions">
+                                    <button class="session-action-btn expand-btn" data-session-id="{{ session.id }}" title="View Details">
+                                        <i class="fa fa-chevron-down"></i>
+                                    </button>
+                                    <span class="session-id-badge">#{{ session.id }}</span>
+                                </div>
+                            </div>
+
+                            <div class="session-summary">
+                                <div class="summary-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value">{{ session.exercise_logs|length }}</span>
+                                        <span class="stat-label">Exercises</span>
+                                    </div>
+                                    {% if session.exercise_logs %}
+                                        {% set total_weight = session.exercise_logs | selectattr('weight') | map(attribute='weight') | sum %}
+                                        {% if total_weight > 0 %}
+                                            <div class="stat-item">
+                                                <span class="stat-value">{{ total_weight|int }}kg</span>
+                                                <span class="stat-label">Total Weight</span>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="session-details" id="session-details-{{ session.id }}" style="display: none;">
+                                {% if session.exercise_logs|length > 0 %}
+                                    <div class="exercises-list">
+                                        {% for log in session.exercise_logs %}
+                                            <div class="exercise-log-item" data-exercise-name="{{ log.exercise_name }}">
+                                                <div class="exercise-info">
+                                                    <span class="exercise-name">{{ log.exercise_name }}</span>
+                                                    <div class="exercise-details">
+                                                        {% if log.set_number is not none %}
+                                                            <span class="detail-badge">Set {{ log.set_number }}</span>
+                                                        {% endif %}
+                                                        {% if log.reps is not none %}
+                                                            <span class="detail-badge">{{ log.reps }} reps</span>
+                                                        {% endif %}
+                                                        {% if log.weight is not none %}
+                                                            <span class="weight-badge">
+                                                                {% if log.weight | float | int == log.weight | float %}
+                                                                    {{ log.weight|int }} kg
+                                                                {% else %}
+                                                                    {{ log.weight }} kg
+                                                                {% endif %}
+                                                            </span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                {% if log.include_details and log.details %}
+                                                    <div class="exercise-notes">
+                                                        <i class="fa fa-sticky-note-o"></i>
+                                                        {{ log.details }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="no-exercises">
+                                        <i class="fa fa-info-circle"></i>
+                                        No exercises logged for this session.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- No Results Message -->
+                <div id="no-results" class="no-results" style="display: none;">
+                    <div class="no-results-content">
+                        <div class="no-results-icon">
+                            <i class="fa fa-search"></i>
+                        </div>
+                        <h3 class="no-results-title">No matching sessions found</h3>
+                        <p class="no-results-description">Try adjusting your filters or search terms to find more results.</p>
+                        <button id="reset-filters" class="btn btn-secondary">
+                            <i class="fa fa-refresh"></i>
+                            Reset Filters
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Session Detail Modal (for mobile/enhanced view) -->
+<div id="session-modal" class="session-modal" style="display: none;">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Session Details</h3>
+            <button class="modal-close-btn">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="modal-session-content">
+            <!-- Dynamic content will be inserted here -->
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/history.js') }}"></script>

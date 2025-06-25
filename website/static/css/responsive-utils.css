@@ -1,0 +1,683 @@
+/**
+ * Responsive Utilities CSS
+ * Provides container classes, responsive utilities, and layout fixes
+ * to ensure all components fit the web page properly
+ */
+
+/* ===============================
+   CONTAINER SYSTEM
+   =============================== */
+
+.container {
+  width: 100%;
+  max-width: var(--max-width-7xl, 80rem);
+  margin: 0 auto;
+  padding-left: var(--space-4, 1rem);
+  padding-right: var(--space-4, 1rem);
+}
+
+.container-fluid {
+  width: 100%;
+  padding-left: var(--space-4, 1rem);
+  padding-right: var(--space-4, 1rem);
+}
+
+.container-sm {
+  max-width: var(--max-width-2xl, 42rem);
+}
+
+.container-md {
+  max-width: var(--max-width-4xl, 56rem);
+}
+
+.container-lg {
+  max-width: var(--max-width-6xl, 72rem);
+}
+
+/* ===============================
+   RESPONSIVE CONTAINERS
+   =============================== */
+
+@media (max-width: 1200px) {
+  .container,
+  .container-fluid {
+    padding-left: var(--space-3, 0.75rem);
+    padding-right: var(--space-3, 0.75rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .container,
+  .container-fluid {
+    padding-left: var(--space-2, 0.5rem);
+    padding-right: var(--space-2, 0.5rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .container,
+  .container-fluid {
+    padding-left: var(--space-1, 0.25rem);
+    padding-right: var(--space-1, 0.25rem);
+  }
+}
+
+/* ===============================
+   LAYOUT UTILITIES
+   =============================== */
+
+.h-100 {
+  height: 100%;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* ===============================
+   RESPONSIVE GRID FIXES
+   =============================== */
+
+/* Fix workout grid on mobile */
+@media (max-width: 768px) {
+  .workouts-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-3, 0.75rem);
+    margin: 0 var(--space-2, 0.5rem);
+  }
+  
+  .workout-card {
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* Fix exercise grid responsiveness */
+@media (max-width: 768px) {
+  .workout-form {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-4, 1rem);
+  }
+  
+  .exercise-card {
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* ===============================
+   FORM RESPONSIVENESS FIXES
+   =============================== */
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-3, 0.75rem);
+  }
+  
+  .form-input,
+  .form-select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .btn-group {
+    flex-direction: column;
+    gap: var(--space-2, 0.5rem);
+  }
+}
+
+/* ===============================
+   NAVIGATION FIXES
+   =============================== */
+
+/* Ensure consistent main content margins across all breakpoints */
+.main-content {
+  margin-top: 64px !important; /* Desktop navbar height */
+  padding-top: var(--space-4, 1rem) !important;
+  min-height: calc(100vh - 64px) !important;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    margin-top: 60px !important; /* Tablet navbar height */
+    padding-top: var(--space-3, 0.75rem) !important;
+    min-height: calc(100vh - 60px) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-container {
+    padding-left: var(--space-2, 0.5rem);
+    padding-right: var(--space-2, 0.5rem);
+  }
+  
+  .main-content {
+    margin-top: 56px !important; /* Mobile navbar height */
+    padding-top: var(--space-3, 0.75rem) !important;
+    min-height: calc(100vh - 56px) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    margin-top: 52px !important; /* Small mobile navbar height */
+    padding-top: var(--space-2, 0.5rem) !important;
+    min-height: calc(100vh - 52px) !important;
+  }
+}
+
+/* ===============================
+   DASHBOARD LAYOUT FIXES
+   =============================== */
+
+/* Desktop dashboard adjustments */
+.dashboard-container {
+  padding-top: var(--space-6, 1.5rem) !important;
+  margin-top: 0 !important; /* Let main-content handle the navbar margin */
+}
+
+.workout-dashboard {
+  padding-top: var(--space-6, 1.5rem) !important;
+  margin-top: 0 !important; /* Let main-content handle the navbar margin */
+}
+
+.simple-workout-creation {
+  padding-top: var(--space-6, 1.5rem) !important;
+  margin-top: 0 !important; /* Let main-content handle the navbar margin */
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: var(--space-4, 1rem) var(--space-3, 0.75rem) 0;
+  }
+  
+  .workout-dashboard {
+    padding: var(--space-4, 1rem) var(--space-3, 0.75rem) 0;
+  }
+  
+  .simple-workout-creation {
+    padding: var(--space-4, 1rem) var(--space-3, 0.75rem) 0;
+  }
+  
+  .dashboard-header {
+    padding: var(--space-4, 1rem) var(--space-2, 0.5rem);
+    margin-bottom: var(--space-6, 1.5rem);
+  }
+  
+  .workout-header {
+    padding: var(--space-4, 1rem) var(--space-2, 0.5rem);
+    margin-bottom: var(--space-6, 1.5rem);
+  }
+  
+  .simple-header {
+    padding: 0 var(--space-2, 0.5rem);
+    margin-bottom: var(--space-6, 1.5rem);
+  }
+  
+  .header-content {
+    flex-direction: column;
+    gap: var(--space-3, 0.75rem);
+  }
+  
+  .header-stats {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .stat-card {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container,
+  .workout-dashboard,
+  .simple-workout-creation {
+    padding: var(--space-3, 0.75rem) var(--space-2, 0.5rem) 0;
+  }
+}
+
+/* ===============================
+   AUTH PAGE FIXES
+   =============================== */
+
+@media (max-width: 768px) {
+  .auth-container {
+    padding: var(--space-3, 0.75rem);
+  }
+  
+  .auth-card {
+    margin: var(--space-2, 0.5rem);
+    padding: var(--space-4, 1rem);
+    width: calc(100% - var(--space-4, 1rem));
+    max-width: none;
+  }
+  
+  .form-input {
+    padding: var(--space-3, 0.75rem);
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+}
+
+/* ===============================
+   HERO SECTION FIXES
+   =============================== */
+
+.hero-section {
+  padding-top: var(--space-8, 2rem) !important;
+  margin-top: 0 !important; /* Let main-content handle the navbar margin */
+  min-height: calc(100vh - 64px) !important; /* Account for navbar */
+}
+
+.workout-empty-state {
+  padding-top: var(--space-8, 2rem) !important;
+  margin-top: 0 !important; /* Let main-content handle the navbar margin */
+  min-height: calc(100vh - 64px) !important; /* Account for navbar */
+}
+
+.auth-container {
+  padding-top: var(--space-8, 2rem) !important;
+  margin-top: 0 !important; /* Let main-content handle the navbar margin */
+  min-height: calc(100vh - 64px) !important; /* Account for navbar */
+}
+
+@media (max-width: 1024px) {
+  .hero-section,
+  .workout-empty-state,
+  .auth-container {
+    min-height: calc(100vh - 60px) !important; /* Account for tablet navbar */
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: var(--space-6, 1.5rem) var(--space-3, 0.75rem) 0;
+    min-height: calc(100vh - 56px) !important; /* Account for mobile navbar */
+  }
+  
+  .workout-empty-state {
+    padding: var(--space-6, 1.5rem) var(--space-3, 0.75rem) 0;
+    min-height: calc(100vh - 56px) !important; /* Account for mobile navbar */
+  }
+  
+  .auth-container {
+    padding: var(--space-6, 1.5rem) var(--space-3, 0.75rem) 0;
+    min-height: calc(100vh - 56px) !important; /* Account for mobile navbar */
+  }
+  
+  .hero-content {
+    padding: 0 var(--space-3, 0.75rem);
+    max-width: none;
+  }
+  
+  .cta-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: var(--space-3, 0.75rem);
+  }
+  
+  .btn-cta {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section,
+  .workout-empty-state,
+  .auth-container {
+    min-height: calc(100vh - 52px) !important; /* Account for small mobile navbar */
+  }
+}
+
+/* ===============================
+   WORKOUT PAGE FIXES
+   =============================== */
+
+@media (max-width: 768px) {
+  .workout-dashboard {
+    padding: var(--space-3, 0.75rem) 0;
+  }
+  
+  .workout-header {
+    padding: var(--space-4, 1rem) var(--space-2, 0.5rem);
+  }
+  
+  .workout-header-content {
+    flex-direction: column;
+    gap: var(--space-4, 1rem);
+  }
+  
+  .workout-selector-wrapper {
+    max-width: none;
+    width: 100%;
+  }
+  
+  .workout-stats-summary {
+    width: 100%;
+    justify-content: center;
+    gap: var(--space-3, 0.75rem);
+  }
+  
+  .workout-controls {
+    flex-direction: column;
+    gap: var(--space-3, 0.75rem);
+  }
+  
+  .control-group {
+    width: 100%;
+  }
+  
+  .workout-edit-btn,
+  .workout-save-btn,
+  .workout-cancel-btn {
+    width: 100%;
+  }
+}
+
+/* ===============================
+   HISTORY PAGE FIXES
+   =============================== */
+
+@media (max-width: 768px) {
+  .history-controls-panel {
+    margin: 0 var(--space-2, 0.5rem) var(--space-6, 1.5rem);
+    padding: var(--space-3, 0.75rem);
+  }
+  
+  .controls-container {
+    grid-template-columns: 1fr;
+    gap: var(--space-4, 1rem);
+  }
+  
+  .filter-section,
+  .sort-section,
+  .action-section {
+    width: 100%;
+  }
+  
+  .filter-group,
+  .sort-group,
+  .search-group {
+    width: 100%;
+  }
+  
+  .sessions-container.view-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-3, 0.75rem);
+    padding: 0 var(--space-2, 0.5rem);
+  }
+  
+  .session-card {
+    margin: 0;
+    width: 100%;
+  }
+}
+
+/* ===============================
+   NEW WORKOUT PAGE FIXES
+   =============================== */
+
+@media (max-width: 768px) {
+  .simple-workout-creation {
+    padding: var(--space-3, 0.75rem) 0;
+  }
+  
+  .simple-header {
+    padding: 0 var(--space-3, 0.75rem);
+    text-align: center;
+  }
+  
+  .form-section {
+    margin: 0 var(--space-2, 0.5rem) var(--space-4, 1rem);
+    padding: var(--space-4, 1rem);
+  }
+  
+  .form-actions {
+    margin: 0 var(--space-2, 0.5rem);
+    padding: var(--space-4, 1rem);
+    flex-direction: column;
+    gap: var(--space-3, 0.75rem);
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+  
+  .exercise-item {
+    padding: var(--space-3, 0.75rem);
+  }
+  
+  .exercise-header {
+    flex-wrap: wrap;
+    gap: var(--space-2, 0.5rem);
+  }
+  
+  .add-exercise-btn {
+    margin: 0 var(--space-2, 0.5rem);
+  }
+}
+
+/* ===============================
+   EDIT WORKOUT PAGE FIXES
+   =============================== */
+
+@media (max-width: 768px) {
+  .workout-creation-wrapper {
+    padding: var(--space-3, 0.75rem) 0;
+  }
+  
+  .creation-page-header {
+    padding: 0 var(--space-3, 0.75rem);
+  }
+  
+  .page-header-content {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-4, 1rem);
+  }
+  
+  .header-text-section {
+    text-align: center;
+  }
+  
+  .section-card {
+    margin: 0 var(--space-2, 0.5rem) var(--space-4, 1rem);
+  }
+  
+  .card-header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3, 0.75rem);
+  }
+  
+  .exercise-count-badge {
+    align-self: center;
+  }
+  
+  .input-fields-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-3, 0.75rem);
+  }
+  
+  .form-actions-section {
+    margin: 0 var(--space-2, 0.5rem);
+    padding: var(--space-6, 1.5rem) var(--space-3, 0.75rem);
+  }
+  
+  .secondary-actions {
+    flex-direction: column;
+    gap: var(--space-3, 0.75rem);
+  }
+  
+  .primary-action-button,
+  .secondary-action-button {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+}
+
+/* ===============================
+   RESPONSIVE TEXT SCALING
+   =============================== */
+
+@media (max-width: 480px) {
+  .hero-title,
+  .page-main-title {
+    font-size: var(--fs-2xl, 1.5rem) !important;
+  }
+  
+  .workout-page-title {
+    font-size: var(--fs-xl, 1.25rem) !important;
+  }
+  
+  .section-title {
+    font-size: var(--fs-lg, 1.125rem) !important;
+  }
+  
+  .btn {
+    padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+    font-size: var(--fs-base, 1rem);
+  }
+  
+  .btn-cta {
+    padding: var(--space-4, 1rem) var(--space-6, 1.5rem);
+    font-size: var(--fs-base, 1rem);
+  }
+}
+
+/* ===============================
+   PREVENT HORIZONTAL OVERFLOW
+   =============================== */
+
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.main-content {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Ensure images don't overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ===============================
+   MOBILE TOUCH IMPROVEMENTS
+   =============================== */
+
+@media (max-width: 768px) {
+  /* Increase touch targets */
+  .btn,
+  .nav-link,
+  .card-btn,
+  .session-action-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improve form inputs for mobile */
+  .form-input,
+  .form-select {
+    min-height: 44px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  /* Better spacing for touch interfaces */
+  .workout-card,
+  .session-card,
+  .exercise-card {
+    margin-bottom: var(--space-3, 0.75rem);
+  }
+}
+
+/* ===============================
+   ACCESSIBILITY IMPROVEMENTS
+   =============================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .workout-card,
+  .session-card,
+  .exercise-card,
+  .form-input,
+  .btn {
+    border-width: 2px !important;
+  }
+}
+
+/* ===============================
+   PRINT STYLES
+   =============================== */
+
+@media print {
+  .navbar,
+  .nav-action-btn,
+  .workout-controls,
+  .session-actions,
+  .form-actions {
+    display: none !important;
+  }
+  
+  .main-content {
+    margin-top: 0 !important;
+  }
+  
+  .workout-card,
+  .session-card,
+  .exercise-card {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #333 !important;
+  }
+}

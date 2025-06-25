@@ -1,57 +1,325 @@
 {% extends "base.html" %}
 
+{% block title %}Edit Workout - Ares{% endblock %}
+
+{% block active %}
+<li class="nav-item" role="none">
+    <a class="nav-link" href="/" role="menuitem">
+        <i class="fa-solid fa-home nav-icon"></i>
+        <span class="nav-text">Home</span>
+    </a>
+</li>
+<li class="nav-item" role="none">
+    <a class="nav-link" href="/workout" role="menuitem">
+        <i class="fa-solid fa-dumbbell nav-icon"></i>
+        <span class="nav-text">Workout</span>
+    </a>
+</li>
+<li class="nav-item" role="none">
+    <a class="nav-link active" href="/new-workout" role="menuitem">
+        <i class="fa-solid fa-edit nav-icon"></i>
+        <span class="nav-text">Edit Workout</span>
+    </a>
+</li>
+{% endblock %}
+
 {% block body %}
 
-    <div class="container">
-
-        <!-- Select workout -->
-        <select aria-label="Select workout" id="select_workout">
-            {% for workout in user.workouts %}
-                <option value="{{ workout.id }}">{{ workout.name }}</option>
-            {% endfor %}
-        </select>
-
-        <!-- Workout forms -->
-        {% for workout in user.workouts %}
-            <div class="workout {{ workout.id }}"hidden>
-                <form autocomplete="off" method="POST">
-                    <div class="workout-inputs">
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                            {% if messages %}
-                                {% for category, message in messages %}
-                                    {% if category == "error" %}
-                                        <div class="alert alert-error show" role="alert">
-                                            <span>{{ message }}</span>
-                                            <button type="button" class="alert-close">
-                                                <i class="fa-solid fa-xmark"></i>
-                                            </button>
-                                        </div>
-                                    {% else %}
-                                        <div class="alert alert-success show" role="alert">
-                                            <span>{{ message }}</span>
-                                            <button type="button" class="alert-close">
-                                                <i class="fa-solid fa-xmark"></i>
-                                            </button>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                        {% endwith %}   
-                        <input class="text-input" type="text" name="workout_name" placeholder="Workout name" value="{{ workout.name }}" maxlength="12" required>
-                        <input class="text-input" type="text" name="workout_description" placeholder="Description" value="{{ workout.description }}" maxlength="18">
+<div class="workout-creation-wrapper">
+    
+    <!-- Page Header -->
+    <header class="creation-page-header">
+        <div class="page-header-content">
+            <div class="header-visual-section">
+                <div class="header-icon-wrapper">
+                    <div class="header-icon-bg"></div>
+                    <div class="header-icon-main">
+                        <i class="fa-solid fa-edit"></i>
                     </div>
-                    <div class="exercises-edit {{ workout.id }}">
-                        <div class="template {{ workout.id }}">
-                            <div class="exercise-edit" hidden>
-                                <input class="exercise-edit-name" type="text" name="exercise_name" placeholder="Exercise name" maxlength="45" required disabled>
-                                <div class="exercise-edit-options">
-                                    <input class="include_details_hidden" type="hidden" value="0" name="include_details" disabled>
-                                    <label class="checkbox">
-                                        <input class="include_details" type="checkbox" value="1" name="include_details" disabled>
-                                        <span>Include details</span>
+                </div>
+                <div class="header-decorative-elements">
+                    <div class="deco-element deco-1"></div>
+                    <div class="deco-element deco-2"></div>
+                    <div class="deco-element deco-3"></div>
+                </div>
+            </div>
+            <div class="header-text-section">
+                <h1 class="page-main-title">Edit Workout</h1>
+                <p class="page-subtitle">
+                    Modify your workout details, exercises, and settings
+                </p>
+                <div class="page-meta-badges">
+                    <div class="meta-badge">
+                        <i class="fa-solid fa-edit"></i>
+                        <span>Edit Mode</span>
+                    </div>
+                    <div class="meta-badge">
+                        <i class="fa-solid fa-dumbbell"></i>
+                        <span>Workout Management</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Workout Selection -->
+    <div class="workout-selector-section">
+        <div class="section-card">
+            <div class="card-header-section">
+                <div class="card-icon">
+                    <i class="fa-solid fa-list"></i>
+                </div>
+                <div class="card-header-text">
+                    <h2 class="card-section-title">Select Workout</h2>
+                    <p class="card-section-description">Choose which workout you want to edit</p>
+                </div>
+            </div>
+            <div class="card-body-section">
+                <div class="input-field-group">
+                    <label for="select_workout" class="field-label">
+                        <i class="fa-solid fa-dumbbell"></i>
+                        Workout
+                    </label>
+                    <div class="select-container">
+                        <select id="select_workout" class="form-field-select" aria-label="Select workout">
+                            {% for workout in user.workouts %}
+                                <option value="{{ workout.id }}">{{ workout.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="select-dropdown-icon">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alerts-section">
+                {% for category, message in messages %}
+                    {% if category == "error" %}
+                        <div class="alert-message alert-error" role="alert" aria-live="polite">
+                            <div class="alert-icon">
+                                <i class="fa-solid fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="alert-content">
+                                <span class="alert-text">{{ message }}</span>
+                            </div>
+                            <button type="button" class="alert-dismiss" aria-label="Close alert">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    {% else %}
+                        <div class="alert-message alert-success" role="alert" aria-live="polite">
+                            <div class="alert-icon">
+                                <i class="fa-solid fa-check-circle"></i>
+                            </div>
+                            <div class="alert-content">
+                                <span class="alert-text">{{ message }}</span>
+                            </div>
+                            <button type="button" class="alert-dismiss" aria-label="Close alert">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Workout Forms -->
+    {% for workout in user.workouts %}
+        <div class="workout-edit-container workout-{{ workout.id }}" hidden>
+            <form autocomplete="off" method="POST" class="workout-edit-form">
+                
+                <!-- Workout Information Section -->
+                <div class="section-card">
+                    <div class="card-header-section">
+                        <div class="card-icon">
+                            <i class="fa-solid fa-info-circle"></i>
+                        </div>
+                        <div class="card-header-text">
+                            <h2 class="card-section-title">Workout Information</h2>
+                            <p class="card-section-description">Basic workout details and categorization</p>
+                        </div>
+                    </div>
+                    <div class="card-body-section">
+                        <div class="form-group-container">
+                            <div class="input-field-group primary-field">
+                                <label for="edit-workout_name-{{ workout.id }}" class="field-label">
+                                    <i class="fa-solid fa-dumbbell"></i>
+                                    Workout Name
+                                    <span class="required-indicator">*</span>
+                                </label>
+                                <div class="input-container">
+                                    <input 
+                                        id="edit-workout_name-{{ workout.id }}" 
+                                        class="form-field-input" 
+                                        type="text" 
+                                        name="workout_name" 
+                                        placeholder="Enter workout name" 
+                                        value="{{ workout.name }}" 
+                                        maxlength="12" 
+                                        required 
+                                        autocomplete="off"
+                                    >
+                                    <div class="input-focus-indicator"></div>
+                                </div>
+                                <div class="field-help-text">
+                                    <i class="fa-solid fa-info-circle"></i>
+                                    Maximum 12 characters
+                                </div>
+                            </div>
+
+                            <div class="input-field-group">
+                                <label for="edit-workout_description-{{ workout.id }}" class="field-label">
+                                    <i class="fa-solid fa-align-left"></i>
+                                    Description
+                                    <span class="optional-indicator">(optional)</span>
+                                </label>
+                                <div class="input-container">
+                                    <input 
+                                        id="edit-workout_description-{{ workout.id }}" 
+                                        class="form-field-input" 
+                                        type="text" 
+                                        name="workout_description" 
+                                        placeholder="Brief description" 
+                                        value="{{ workout.description }}" 
+                                        maxlength="18" 
+                                        autocomplete="off"
+                                    >
+                                    <div class="input-focus-indicator"></div>
+                                </div>
+                                <div class="field-help-text">
+                                    <i class="fa-solid fa-info-circle"></i>
+                                    Maximum 18 characters
+                                </div>
+                            </div>
+
+                            <div class="input-fields-row">
+                                <div class="input-field-group">
+                                    <label for="edit-category_id-{{ workout.id }}" class="field-label">
+                                        <i class="fa-solid fa-tag"></i>
+                                        Category
+                                        <span class="required-indicator">*</span>
                                     </label>
-                                    <i class="handle fa-solid fa-grip-lines"></i>
-                                    <i class="delete fa-solid fa-xmark"></i>
+                                    <div class="select-container">
+                                        <select id="edit-category_id-{{ workout.id }}" class="form-field-select" name="category_id" required>
+                                            <option value="" disabled>Select category</option>
+                                            {% for category in categories %}
+                                                <option value="{{ category.id }}" {% if workout.category_id == category.id %}selected{% endif %}>
+                                                    {{ category.name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="select-dropdown-icon">
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="input-field-group">
+                                    <label for="edit-new_category_name-{{ workout.id }}" class="field-label">
+                                        <i class="fa-solid fa-plus"></i>
+                                        New Category
+                                    </label>
+                                    <div class="input-container">
+                                        <input 
+                                            id="edit-new_category_name-{{ workout.id }}" 
+                                            class="form-field-input" 
+                                            type="text" 
+                                            name="new_category_name" 
+                                            placeholder="Create new category" 
+                                            maxlength="50" 
+                                            autocomplete="off"
+                                        >
+                                        <div class="input-focus-indicator"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="input-field-group">
+                                <label for="edit-new_category_description-{{ workout.id }}" class="field-label">
+                                    <i class="fa-solid fa-align-left"></i>
+                                    New Category Description
+                                </label>
+                                <div class="input-container">
+                                    <input 
+                                        id="edit-new_category_description-{{ workout.id }}" 
+                                        class="form-field-input" 
+                                        type="text" 
+                                        name="new_category_description" 
+                                        placeholder="Description for new category" 
+                                        maxlength="100" 
+                                        autocomplete="off"
+                                    >
+                                    <div class="input-focus-indicator"></div>
+                                </div>
+                                <div class="field-help-text">
+                                    <i class="fa-solid fa-info-circle"></i>
+                                    Only needed if creating a new category
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercises Section -->
+                <div class="section-card">
+                    <div class="card-header-section">
+                        <div class="card-icon">
+                            <i class="fa-solid fa-list-ul"></i>
+                        </div>
+                        <div class="card-header-text">
+                            <h2 class="card-section-title">Exercises</h2>
+                            <p class="card-section-description">Manage your workout exercises</p>
+                        </div>
+                        <div class="exercise-count-badge">
+                            <i class="fa-solid fa-dumbbell"></i>
+                            <span id="exercise-count-{{ workout.id }}">{{ workout.exercises|length }}</span>
+                            <span>exercises</span>
+                        </div>
+                    </div>
+                    <div class="card-body-section">
+                        
+                        <!-- Exercise Template (Hidden) -->
+                        <div class="template-{{ workout.id }}" hidden>
+                            <div class="exercise-item-wrapper">
+                                <div class="exercise-item-header">
+                                    <div class="exercise-position-number">
+                                        <span class="exercise-index">1</span>
+                                    </div>
+                                    <div class="exercise-drag-handle">
+                                        <i class="fa-solid fa-grip-lines"></i>
+                                    </div>
+                                    <div class="exercise-input-section">
+                                        <input 
+                                            class="exercise-edit-name" 
+                                            type="text" 
+                                            name="exercise_name" 
+                                            placeholder="Exercise name" 
+                                            maxlength="45" 
+                                            required 
+                                            disabled
+                                        >
+                                    </div>
+                                    <button type="button" class="exercise-remove-btn" title="Remove exercise" disabled>
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                                <div class="exercise-options-section">
+                                    <input class="include_details_hidden" type="hidden" value="0" name="include_details" disabled>
+                                    <label class="exercise-option-toggle">
+                                        <input class="include_details" type="checkbox" value="1" name="include_details" disabled>
+                                        <span class="toggle-checkmark"></span>
+                                        <span class="toggle-label">
+                                            <i class="fa-solid fa-cog"></i>
+                                            Include tracking details
+                                        </span>
+                                    </label>
                                 </div>
                                 <div class="exercise-info" hidden>
                                     <input type="hidden" name="weight" value="None" disabled>
@@ -59,154 +327,335 @@
                                 </div>
                             </div>
                         </div>
-                        {% for exercise in workout.exercises %}
-                            <div class="exercise-edit">
-                                <input class="exercise-edit-name" type="text" name="exercise_name" placeholder="Exercise name" value="{{ exercise.name }}" maxlength="45" required>
-                                <div class="exercise-edit-options">
-                                    <input class="include_details_hidden {{ exercise.id }}" type="hidden" value="0" name="include_details">
-                                    <label class="checkbox">
-                                        <input class="include_details {{ exercise.id }}" type="checkbox" value="1" name="include_details">
-                                        <span>Include details</span>
-                                    </label>
-                                    <i class="handle fa-solid fa-grip-lines"></i>
-                                    <i class="delete fa-solid fa-xmark"></i>
+
+                        <!-- Existing Exercises -->
+                        <div class="exercises-list-container exercises-edit-{{ workout.id }}">
+                            {% for exercise in workout.exercises %}
+                                <div class="exercise-item-wrapper">
+                                    <div class="exercise-item-header">
+                                        <div class="exercise-position-number">
+                                            <span class="exercise-index">{{ loop.index }}</span>
+                                        </div>
+                                        <div class="exercise-drag-handle handle">
+                                            <i class="fa-solid fa-grip-lines"></i>
+                                        </div>
+                                        <div class="exercise-input-section">
+                                            <input 
+                                                class="exercise-edit-name" 
+                                                type="text" 
+                                                name="exercise_name" 
+                                                placeholder="Exercise name" 
+                                                value="{{ exercise.name }}" 
+                                                maxlength="45" 
+                                                required
+                                            >
+                                        </div>
+                                        <button type="button" class="exercise-remove-btn delete" title="Remove exercise">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+                                    <div class="exercise-options-section">
+                                        <input class="include_details_hidden {{ exercise.id }}" type="hidden" value="0" name="include_details">
+                                        <label class="exercise-option-toggle">
+                                            <input class="include_details {{ exercise.id }}" type="checkbox" value="1" name="include_details">
+                                            <span class="toggle-checkmark"></span>
+                                            <span class="toggle-label">
+                                                <i class="fa-solid fa-cog"></i>
+                                                Include tracking details
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="exercise-info" hidden>
+                                        <input type="hidden" name="weight" value="{{ exercise.weight }}">
+                                        <input type="hidden" name="details" value="{{ exercise.details }}">
+                                    </div>
                                 </div>
-                                <div class="exercise-info" hidden>
-                                    <input type="hidden" name="weight" value="{{ exercise.weight }}">
-                                    <input type="hidden" name="details" value="{{ exercise.details }}">
+                            {% endfor %}
+                        </div>
+
+                        <!-- Add Exercise Button -->
+                        <div class="add-exercise-action">
+                            <button type="button" class="add-exercise-button add-{{ workout.id }}" title="Add exercise">
+                                <div class="button-icon">
+                                    <i class="fa-solid fa-plus"></i>
                                 </div>
-                            </div>
-                        {% endfor %}
+                                <span class="button-text">Add Exercise</span>
+                            </button>
+                            <p class="add-exercise-hint">
+                                <i class="fa-solid fa-lightbulb"></i>
+                                Click to add a new exercise to your workout
+                            </p>
+                        </div>
                     </div>
-                    <button type="button" class="btn btn-secondary add {{ workout.id }}" title="Add exercise">
-                        <i class="fa-solid fa-plus"></i>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions-section">
+                    <div class="actions-container">
+                        <div class="primary-actions">
+                            <button class="primary-action-button save-{{ workout.id }}" type="submit">
+                                <div class="button-icon">
+                                    <i class="fa-solid fa-save"></i>
+                                </div>
+                                <span>Save Changes</span>
+                                <div class="button-highlight"></div>
+                            </button>
+                        </div>
+                        <div class="secondary-actions">
+                            <button type="button" class="secondary-action-button cancel-{{ workout.id }}">
+                                <i class="fa-solid fa-times"></i>
+                                <span>Cancel</span>
+                            </button>
+                            <a href="{{ url_for('views.duplicate_workout', workout_id=workout.id) }}" class="secondary-action-button" target="_blank">
+                                <i class="fa-solid fa-copy"></i>
+                                <span>Duplicate</span>
+                            </a>
+                            <button type="button" class="secondary-action-button cancel-button modal-open-{{ workout.id }}">
+                                <i class="fa-solid fa-trash"></i>
+                                <span>Delete</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden Form Data -->
+                <div class="workout-info" hidden>
+                    <input type="hidden" name="workout" value="{{ workout.id }}">
+                    <input type="hidden" name="request_type" value="save">
+                </div>
+            </form>
+
+            <!-- Cancel Form -->
+            <form method="POST" style="display: none;" class="cancel-form-{{ workout.id }}">
+                <button type="submit" class="cancel-submit-{{ workout.id }}" name="workout" value="{{ workout.id }}">Cancel</button>
+                <input type="hidden" name="request_type" value="cancel">
+            </form>
+        </div>
+
+        <!-- Delete Modal -->
+        <div class="modal-container modal-container-{{ workout.id }}">
+            <div class="modal">
+                <h2 class="modal-title">Delete Workout</h2>
+                <p class="modal-text">
+                    Are you sure you want to delete "{{ workout.name }}"? 
+                    This action cannot be undone and will remove all exercises and data associated with this workout.
+                </p>
+                <div class="modal-buttons">
+                    <form method="POST">
+                        <button type="submit" class="btn btn-primary" name="workout" value="{{ workout.id }}">
+                            <i class="fa-solid fa-trash"></i>
+                            Delete Workout
+                        </button>
+                        <input type="hidden" name="request_type" value="delete">
+                    </form>
+                    <button type="button" class="btn btn-secondary modal-close-{{ workout.id }}">
+                        <i class="fa-solid fa-times"></i>
+                        Cancel
                     </button>
-                    <button class="btn btn-primary save {{ workout.id }}" type="submit">Save changes</button>
-                    <div class="workout-info" hidden>
-                        <input type="hidden" name="workout" value="{{ workout.id }}">
-                        <input type="hidden" name="request_type" value="save">
-                    </div>
-                </form>
-                <form method="POST">
-                    <div class="buttons">
-                        <button type="submit" class="btn btn-tertiary cancel {{ workout.id }}" name="workout" value="{{ workout.id }}">Cancel</button>
-                        <input type="hidden" name="request_type" value="cancel">
-                    </div>
-                </form>
-                <div class="buttons">
-                    <a class="modal-open {{ workout.id }}" type="button">Delete workout</a>
                 </div>
             </div>
-            <div class="modal-container {{ workout.id }}">
-                <div class="modal">
-                    <h2 class="modal-title">Delete workout</h2>
-                    <p class="modal-text">Do you really wish to delete the workout? This cannot be undone.</p>
-                    <div class="modal-buttons">
-                        <form method="POST">
-                            <button type="submit" class="btn btn-primary" name="workout" value="{{ workout.id }}">Delete</button>
-                            <input type="hidden" name="request_type" value="delete">
-                        </form>
-                        <button type="button" class="modal-close {{ workout.id }} btn btn-secondary">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-
-    </div>
-
-    <!-- JavaScript -->
-    {% if displayRequested %}
-        <script>
-            /* Select requested workout */
-            var select_workout = document.getElementById("select_workout")
-            var requested_workout = "{{ requested_workout }}"
-            select_workout.value = requested_workout
-        </script>
-    {% endif %}
-
-    {% for workout in user.workouts %}
-        <script>
-
-            /* Handle first hidden inputs for include_details */
-            for (let i = 1; i < document.getElementsByClassName("exercises-edit {{ workout.id }}")[0].getElementsByClassName("include_details").length; i++) {
-                document.getElementsByClassName("exercises-edit {{ workout.id }}")[0].getElementsByClassName("include_details")[i].addEventListener("change", function() {
-                    if (document.getElementsByClassName("exercises-edit {{ workout.id }}")[0].getElementsByClassName("include_details")[i].checked) {
-                        document.getElementsByClassName("exercises-edit {{ workout.id }}")[0].getElementsByClassName("include_details_hidden")[i].disabled = true
-                    }
-                    else {
-                        document.getElementsByClassName("exercises-edit {{ workout.id }}")[0].getElementsByClassName("include_details_hidden")[i].disabled = false
-                    }
-                })
-            }
-            
-            /* Add exercise function */
-            document.getElementsByClassName("add {{ workout.id }}")[0].addEventListener("click", function() {
-
-                /* Clone template */
-                var template = document.getElementsByClassName("template {{ workout.id }}")[0].getElementsByClassName("exercise-edit")[0]
-                var clone = template.cloneNode(true)
-
-                /* Show and enable inputs */
-                clone.hidden = false
-                var clone_inputs = clone.getElementsByTagName("input")
-                for (let i = 0; i < clone_inputs.length; i++) {
-                    clone_inputs[i].disabled = false
-                }
-
-                /* Handle hidden inputs for include_details */
-                var checkbox = clone.getElementsByClassName("include_details")[0]
-                var hidden_input = clone.getElementsByClassName("include_details_hidden")[0]
-                checkbox.addEventListener("change", function() {
-                    if (checkbox.checked) {
-                        hidden_input.disabled = true
-                    }
-                    else {
-                        hidden_input.disabled = false
-                    }
-                })
-
-                /* Add listener for delete exercise button */
-                var delete_button = clone.getElementsByClassName("delete")[0]
-                delete_button.addEventListener("click", function() {
-                    delete_button.parentElement.parentElement.remove()
-                })
-
-                /* Add to exercises */
-                document.getElementsByClassName("exercises-edit {{ workout.id }}")[0].appendChild(clone)
-
-            })
-
-            /* Create sortable list */
-            new Sortable(document.getElementsByClassName("exercises-edit {{ workout.id }}")[0], {
-                animation: 250,
-                handle: ".handle"
-            })
-
-            /* Delete-exercise modal */
-            document.getElementsByClassName("modal-open {{ workout.id }}")[0].addEventListener("click", () => {
-                document.getElementsByClassName("modal-container {{ workout.id }}")[0].classList.add("show")
-            })
-            document.getElementsByClassName("modal-close {{ workout.id }}")[0].addEventListener("click", () => {
-                document.getElementsByClassName("modal-container {{ workout.id }}")[0].classList.remove("show")
-            })
-
-        </script>
-        {% for exercise in workout.exercises %}
-            <script>
-
-                /* Select checkboxes based on database */
-                if ("{{ exercise.include_details }}" == "True") {
-                    var include_details = document.getElementsByClassName("include_details {{ exercise.id }}")[0]
-                    var include_details_hidden = document.getElementsByClassName("include_details_hidden {{ exercise.id }}")[0]
-                    include_details.checked = true
-                    include_details_hidden.disabled = true
-                }
-
-            </script>
-        {% endfor %}
+        </div>
     {% endfor %}
 
-    <script type="text/javascript" src="/static/js/edit-workout.js"></script>
-    <script type="text/javascript" src="/static/js/alert.js"></script>
+</div>
+
+<!-- JavaScript -->
+{% if displayRequested %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectWorkout = document.getElementById("select_workout");
+            const requestedWorkout = "{{ requested_workout }}";
+            if (selectWorkout && requestedWorkout) {
+                selectWorkout.value = requestedWorkout;
+                showSelectedWorkout(requestedWorkout);
+            }
+        });
+    </script>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectWorkout = document.getElementById('select_workout');
+    
+    // Show first workout by default
+    if (selectWorkout && selectWorkout.options.length > 0) {
+        const firstWorkoutId = selectWorkout.options[0].value;
+        showSelectedWorkout(firstWorkoutId);
+    }
+    
+    // Handle workout selection
+    selectWorkout.addEventListener('change', function() {
+        showSelectedWorkout(this.value);
+    });
+    
+    function showSelectedWorkout(workoutId) {
+        // Hide all workouts
+        document.querySelectorAll('.workout-edit-container').forEach(container => {
+            container.hidden = true;
+        });
+        
+        // Show selected workout
+        const selectedContainer = document.querySelector(`.workout-${workoutId}`);
+        if (selectedContainer) {
+            selectedContainer.hidden = false;
+        }
+    }
+    
+    // Initialize each workout
+    {% for workout in user.workouts %}
+        initializeWorkout({{ workout.id }});
+    {% endfor %}
+});
+
+function initializeWorkout(workoutId) {
+    // Handle checkboxes for existing exercises
+    {% for workout in user.workouts %}
+        {% for exercise in workout.exercises %}
+            {% if workout.id == workout.id %}
+                if ({{ workout.id }} === workoutId) {
+                    const includeDetails = document.querySelector('.include_details.{{ exercise.id }}');
+                    const includeDetailsHidden = document.querySelector('.include_details_hidden.{{ exercise.id }}');
+                    
+                    if (includeDetails && includeDetailsHidden) {
+                        if ({{ exercise.include_details|tojson }}) {
+                            includeDetails.checked = true;
+                            includeDetailsHidden.disabled = true;
+                        }
+                        
+                        includeDetails.addEventListener('change', function() {
+                            includeDetailsHidden.disabled = this.checked;
+                        });
+                    }
+                }
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+    
+    // Add exercise functionality
+    const addButton = document.querySelector(`.add-${workoutId}`);
+    const exercisesContainer = document.querySelector(`.exercises-edit-${workoutId}`);
+    const template = document.querySelector(`.template-${workoutId} .exercise-item-wrapper`);
+    
+    if (addButton && exercisesContainer && template) {
+        addButton.addEventListener('click', function() {
+            const clone = template.cloneNode(true);
+            
+            // Enable all inputs
+            const inputs = clone.querySelectorAll('input, button');
+            inputs.forEach(input => input.disabled = false);
+            
+            // Update exercise number
+            const exerciseCount = exercisesContainer.children.length + 1;
+            const numberElement = clone.querySelector('.exercise-index');
+            if (numberElement) {
+                numberElement.textContent = exerciseCount;
+            }
+            
+            // Add event listeners
+            const checkbox = clone.querySelector('.include_details');
+            const hiddenInput = clone.querySelector('.include_details_hidden');
+            const deleteButton = clone.querySelector('.exercise-remove-btn');
+            
+            if (checkbox && hiddenInput) {
+                checkbox.addEventListener('change', function() {
+                    hiddenInput.disabled = this.checked;
+                });
+            }
+            
+            if (deleteButton) {
+                deleteButton.addEventListener('click', function() {
+                    clone.remove();
+                    updateExerciseNumbers(workoutId);
+                    updateExerciseCount(workoutId);
+                });
+            }
+            
+            exercisesContainer.appendChild(clone);
+            updateExerciseCount(workoutId);
+            
+            // Focus the new exercise name input
+            const nameInput = clone.querySelector('.exercise-edit-name');
+            if (nameInput) {
+                setTimeout(() => nameInput.focus(), 100);
+            }
+        });
+    }
+    
+    // Delete existing exercises
+    exercisesContainer.querySelectorAll('.delete').forEach(deleteBtn => {
+        deleteBtn.addEventListener('click', function() {
+            deleteBtn.closest('.exercise-item-wrapper').remove();
+            updateExerciseNumbers(workoutId);
+            updateExerciseCount(workoutId);
+        });
+    });
+    
+    // Make exercises sortable
+    if (exercisesContainer) {
+        new Sortable(exercisesContainer, {
+            animation: 250,
+            handle: '.handle',
+            onEnd: function() {
+                updateExerciseNumbers(workoutId);
+            }
+        });
+    }
+    
+    // Cancel button
+    const cancelButton = document.querySelector(`.cancel-${workoutId}`);
+    const cancelForm = document.querySelector(`.cancel-form-${workoutId}`);
+    if (cancelButton && cancelForm) {
+        cancelButton.addEventListener('click', function() {
+            const cancelSubmit = cancelForm.querySelector(`.cancel-submit-${workoutId}`);
+            if (cancelSubmit) {
+                cancelSubmit.click();
+            }
+        });
+    }
+    
+    // Modal functionality
+    const modalOpen = document.querySelector(`.modal-open-${workoutId}`);
+    const modalClose = document.querySelector(`.modal-close-${workoutId}`);
+    const modalContainer = document.querySelector(`.modal-container-${workoutId}`);
+    
+    if (modalOpen && modalClose && modalContainer) {
+        modalOpen.addEventListener('click', () => {
+            modalContainer.classList.add('show');
+        });
+        
+        modalClose.addEventListener('click', () => {
+            modalContainer.classList.remove('show');
+        });
+    }
+    
+    updateExerciseCount(workoutId);
+}
+
+function updateExerciseNumbers(workoutId) {
+    const exercisesContainer = document.querySelector(`.exercises-edit-${workoutId}`);
+    if (!exercisesContainer) return;
+    
+    const exercises = exercisesContainer.querySelectorAll('.exercise-item-wrapper');
+    exercises.forEach((exercise, index) => {
+        const numberElement = exercise.querySelector('.exercise-index');
+        if (numberElement) {
+            numberElement.textContent = index + 1;
+        }
+    });
+}
+
+function updateExerciseCount(workoutId) {
+    const exercisesContainer = document.querySelector(`.exercises-edit-${workoutId}`);
+    const countElement = document.querySelector(`#exercise-count-${workoutId}`);
+    
+    if (exercisesContainer && countElement) {
+        const count = exercisesContainer.children.length;
+        countElement.textContent = count;
+    }
+}
+</script>
+
+<script type="text/javascript" src="/static/js/edit-workout.js"></script>
+<script type="text/javascript" src="/static/js/alert.js"></script>
 
 {% endblock %}
