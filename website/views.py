@@ -86,9 +86,6 @@ def _create_workout_session(workout_id, exercises_data, user_id):
     # Commit all changes
     db.session.commit()
     
-
-# PUBLIC_INTERFACE
-=======
     # Return success data
     return True, {
         "session_id": session.id,
@@ -98,9 +95,6 @@ def _create_workout_session(workout_id, exercises_data, user_id):
         "exercises_logged": exercises_logged,
     }, 201
 
-
-# PUBLIC_INTERFACE
-=======
 
 # PUBLIC_INTERFACE
 @views.route("/api/workout/history", methods=["GET"])
@@ -271,6 +265,7 @@ def history():
         total_exercises=total_exercises,
         unique_workout_count=unique_workout_count,
     )
+
 
 @views.route("/new-workout", methods=["GET", "POST"])
 @login_required
