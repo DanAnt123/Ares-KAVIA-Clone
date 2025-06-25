@@ -367,3 +367,40 @@ def edit_workout():
 
     # Display workout
     return render_template("edit-workout.html", user=current_user)
+
+
+# PUBLIC_INTERFACE
+@views.route("/duplicate-workout/<int:workout_id>", methods=["GET", "POST"])
+@login_required
+def duplicate_workout(workout_id):
+    """
+    Duplicate an existing workout by its ID and redirect to the home page.
+    Args:
+        workout_id (int): The ID of the workout to duplicate.
+    Returns:
+        Redirects to the 'views.home' route after duplicating the workout.
+    """
+    workout = Workout.query.get_or_404(workout_id)
+    # Clone basic info
+    new_workout = Workout(
+        name=f"{workout.name} (Copy)",
+        description=workout.description,
+        user_id=current_user.id
+    )
+    db.session.add(new_workout)
+    db.session.commit()
+    # Optionally duplicate exercises (if using exercises table)
+    original_exercises = Exercise.query.filter_by(workout_id=workout.id).all()
+    for orig_ex in original_exercises:
+        new_exercise = Exercise(
+            name=orig_ex.name,
+            include_details=orig_ex.include_details,
+            workout_id=new_workout.id,
+            weight=orig_ex.weight,
+            details=orig_ex.details,
+        )
+        db.session.add(new_exercise)
+    db.session.commit()
+
+    flash('Workout duplicated successfully!', category='success')
+    return redirect(url_for('views.home'))
