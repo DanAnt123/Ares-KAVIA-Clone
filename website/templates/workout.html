@@ -177,7 +177,7 @@
                                 <i class="fa-solid fa-list-check"></i>
                             </div>
                             <div class="stat-content">
-                                <span class="stat-number">{{ (user.workouts | sum(attribute='exercises') | length) if user.workouts else 0 }}</span>
+                                <span class="stat-number">{{ (user.workouts | map(attribute='exercises') | map('length') | sum) if user.workouts else 0 }}</span>
                                 <span class="stat-label">Exercise{{ 's' if (user.workouts | sum(attribute='exercises') | length) != 1 else '' }}</span>
                             </div>
                             <div class="stat-trend">
