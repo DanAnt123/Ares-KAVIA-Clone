@@ -783,12 +783,13 @@ input::placeholder {
   border-bottom: 1px solid var(--tertiary);
   box-shadow: var(--shadow-lg);
   transition: all var(--transition-base);
+  min-height: 44px;
 }
 
 .navbar-container {
   max-width: var(--max-width-7xl);
   margin: 0 auto;
-  padding: var(--space-4) var(--space-6);
+  padding: var(--space-2) var(--space-4); /* Reduced vertical and horizontal padding */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -806,14 +807,14 @@ input::placeholder {
 .brand-link {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2); /* reduced gap */
   text-decoration: none;
   color: var(--text-primary);
   font-weight: var(--fw-bold);
-  font-size: var(--fs-xl);
+  font-size: var(--fs-lg); /* was var(--fs-xl) */
   transition: all var(--transition-fast);
-  padding: var(--space-2);
-  border-radius: var(--radius-lg);
+  padding: var(--space-1);  /* reduced padding */
+  border-radius: var(--radius-md); /* slightly smaller */
 }
 
 .brand-link:hover, .brand-link:focus {
@@ -823,8 +824,8 @@ input::placeholder {
 }
 
 .brand-logo {
-  width: 32px;
-  height: 32px;
+  width: 24px;  /* reduced from 32px */
+  height: 24px; /* reduced from 32px */
   border-radius: var(--radius-base);
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-fast);
@@ -842,7 +843,7 @@ input::placeholder {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-size: var(--fs-2xl);
+  font-size: var(--fs-lg); /* was var(--fs-2xl) */
   letter-spacing: -0.025em;
 }
 
@@ -1023,14 +1024,14 @@ input::placeholder {
 
 /* Main Content Adjustment */
 .main-content {
-  margin-top: 80px; /* Account for fixed navbar */
-  min-height: calc(100vh - 80px);
+  margin-top: 50px; /* Account for fixed navbar (was 80px) */
+  min-height: calc(100vh - 50px);
 }
 
 /* Mobile Responsive Design */
 @media (max-width: 1024px) {
   .navbar-container {
-    padding: var(--space-3) var(--space-4);
+    padding: var(--space-1) var(--space-3);
   }
   
   .nav-text {
@@ -1046,7 +1047,7 @@ input::placeholder {
   }
   
   .navbar-menu {
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 }
 
@@ -1059,7 +1060,7 @@ input::placeholder {
     position: fixed;
     top: 0;
     right: -100%;
-    width: 300px;
+    width: 240px;
     height: 100vh;
     background: linear-gradient(135deg, 
       var(--surface) 0%, 
@@ -1068,7 +1069,7 @@ input::placeholder {
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
-    padding: var(--space-20) var(--space-6) var(--space-6);
+    padding: var(--space-12) var(--space-4) var(--space-4); /* Reduced padding */
     box-shadow: var(--shadow-2xl);
     transition: right var(--transition-slow);
     z-index: 1000;
@@ -1080,14 +1081,14 @@ input::placeholder {
     align-items: stretch;
     gap: var(--space-2);
     width: 100%;
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-4);
   }
   
   .nav-link {
     justify-content: flex-start;
-    padding: var(--space-4) var(--space-5);
-    border-radius: var(--radius-xl);
-    font-size: var(--fs-lg);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-lg);
+    font-size: var(--fs-base);
   }
   
   .nav-text {
@@ -1102,8 +1103,8 @@ input::placeholder {
   .nav-action-btn {
     width: 100%;
     justify-content: center;
-    padding: var(--space-4);
-    font-size: var(--fs-lg);
+    padding: var(--space-2);
+    font-size: var(--fs-base);
   }
   
   .action-text {
@@ -1134,30 +1135,30 @@ input::placeholder {
   }
   
   .main-content {
-    margin-top: 70px;
+    margin-top: 44px;
   }
 }
 
 @media (max-width: 480px) {
   .navbar-container {
-    padding: var(--space-3);
+    padding: var(--space-1);
   }
   
   .brand-text {
-    font-size: var(--fs-xl);
+    font-size: var(--fs-base);
   }
   
   .brand-logo {
-    width: 28px;
-    height: 28px;
+    width: 18px;
+    height: 18px;
   }
   
   .navbar-menu {
-    width: 280px;
+    width: 180px;
   }
   
   .main-content {
-    margin-top: 65px;
+    margin-top: 40px;
   }
 }
 
