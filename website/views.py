@@ -1,5 +1,5 @@
 from . import db
-from .models import Workout, Exercise, WorkoutSession, ExerciseLog
+from .models import Workout, Exercise, WorkoutSession, ExerciseLog, Category
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 
@@ -270,6 +270,19 @@ def history():
 @views.route("/new-workout", methods=["GET", "POST"])
 @login_required
 def new_workout():
+    # Ensure at least base categories exist (seed if needed)
+    if Category.query.count() == 0:
+        base_categories = [
+            {"name": "Strength", "description": "Strength training workouts"},
+            {"name": "Cardio", "description": "Cardiovascular exercises"},
+            {"name": "Flexibility", "description": "Stretching and flexibility"},
+            {"name": "Balance", "description": "Balance and stability"}
+        ]
+        for entry in base_categories:
+            db.session.add(Category(name=entry["name"], description=entry["description"]))
+        db.session.commit()
+
+    categories = Category.query.order_by(Category.name.asc()).all()
     if request.method == "POST":
         # Collect form information
         workout_name = request.form.get("workout_name")
@@ -277,23 +290,41 @@ def new_workout():
         exercise_names = request.form.getlist("exercise_name")
         include_details = request.form.getlist("include_details")
 
+        # NEW: Category logic
+        category_id = request.form.get("category_id")
+        new_category_name = request.form.get("new_category_name")
+        new_category_description = request.form.get("new_category_description")
+
         # Uppercase exercise names
         exercise_names = [exercise.upper() for exercise in exercise_names]
 
-        # Ensure workout name was submitted
+        # Form validation
         if not workout_name:
             flash("Must provide the workout name.", category="error")
-
-        # Ensure all exercises were named
         elif "" in exercise_names:
             flash("Must name all exercises.", category="error")
-
+        elif not category_id and not new_category_name:
+            flash("Must select or create a category.", category="error")
         else:
+            # Handle category
+            if new_category_name:
+                # Create and/or get new category
+                new_category = Category.query.filter_by(name=new_category_name).first()
+                if not new_category:
+                    new_category = Category(name=new_category_name, description=new_category_description)
+                    db.session.add(new_category)
+                    db.session.commit()
+                cat_id = new_category.id
+            else:
+                # Use existing
+                cat_id = int(category_id)
+
             # Add workout to database
             new_workout = Workout(
                 user_id=current_user.id,
                 name=workout_name,
                 description=workout_description,
+                category_id=cat_id
             )
             db.session.add(new_workout)
             db.session.commit()
@@ -313,7 +344,7 @@ def new_workout():
             return redirect(url_for("views.home"))
 
     # Display form to user
-    return render_template("new-workout.html")
+    return render_template("new-workout.html", categories=categories)
 
 
 @views.route("/edit-workout", methods=["GET", "POST"])
