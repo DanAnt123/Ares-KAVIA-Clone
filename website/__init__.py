@@ -46,6 +46,9 @@ def create_app():
 
     # Ensures default categories are seeded on app creation (address factory/CLI pattern issues)
     with app.app_context():
+        # Create all tables first
+        db.create_all()
+        # Then seed categories
         seed_categories_if_empty()
 
     login_manager = LoginManager()
