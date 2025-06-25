@@ -297,7 +297,7 @@
 
                     <!-- Complete Workout Form/Button (NEW) -->
                     <div class="complete-workout-log">
-                        <form method="POST" action="{{ url_for('website.complete_workout', workout_id=workout.id) }}" class="complete-workout-form" style="margin-top: 2rem;">
+                        <form method="POST" action="{{ url_for('views.complete_workout', workout_id=workout.id) }}" class="complete-workout-form" style="margin-top: 2rem;">
                             <h3>Complete Workout</h3>
                             <p>Log your results for each exercise and submit:</p>
                             {% for exercise in workout.exercises %}

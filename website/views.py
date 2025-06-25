@@ -404,3 +404,49 @@ def duplicate_workout(workout_id):
 
     flash('Workout duplicated successfully!', category='success')
     return redirect(url_for('views.home'))
+
+
+# PUBLIC_INTERFACE
+@views.route("/complete-workout/<int:workout_id>", methods=["POST"])
+@login_required
+def complete_workout(workout_id):
+    """
+    Complete a workout by logging exercise details and creating a workout session.
+    Args:
+        workout_id (int): The ID of the workout to complete.
+    Returns:
+        Redirects to the workout page with a success message.
+    """
+    workout = Workout.query.filter_by(id=workout_id, user_id=current_user.id).first()
+    if not workout:
+        flash('Workout not found.', category='error')
+        return redirect(url_for('views.workout'))
+    
+    # Create a new workout session
+    session = WorkoutSession(user_id=current_user.id, workout_id=workout_id)
+    db.session.add(session)
+    db.session.commit()
+    
+    # Process exercise details from form
+    exercises_logged = 0
+    for exercise in workout.exercises:
+        exercise_details = request.form.get(f'exercise_{exercise.id}_details')
+        if exercise_details and exercise_details.strip():
+            # Create exercise log entry
+            log = ExerciseLog(
+                session_id=session.id,
+                exercise_name=exercise.name,
+                details=exercise_details.strip(),
+                include_details=exercise.include_details
+            )
+            db.session.add(log)
+            exercises_logged += 1
+    
+    db.session.commit()
+    
+    if exercises_logged > 0:
+        flash(f'Workout completed! Logged {exercises_logged} exercises.', category='success')
+    else:
+        flash('Workout completed, but no exercise details were recorded.', category='info')
+    
+    return redirect(url_for('views.workout'))
