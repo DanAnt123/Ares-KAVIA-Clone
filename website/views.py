@@ -275,8 +275,13 @@ def log_workout_session():
 @views.route("/")
 @login_required
 def home():
+    # Calculate total exercises across all user workouts
+    total_exercises = 0
+    for workout in current_user.workouts:
+        total_exercises += len(workout.exercises)
+    
     # Display home page to user
-    return render_template("home.html", user=current_user)
+    return render_template("home.html", user=current_user, total_exercises=total_exercises)
 
 
 @views.route("/workout", methods=["GET", "POST"])
