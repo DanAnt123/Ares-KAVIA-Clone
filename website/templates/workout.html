@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/workout-modern.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/previous-session-hints.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/workout-input-improvements.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/workout-no-progress.css') }}">
 {% endblock %}
 
 {% block active %}
@@ -270,26 +271,14 @@
                                 <i class="fa-solid fa-fire"></i>
                                 Training Exercises
                             </h3>
-                            <div class="progress-overview">
-                                <span class="progress-text">Progress:</span>
-                                <div class="mini-progress-bar">
-                                    {% set completed_exercises = [] %}
-                                    {% for exercise in workout.exercises %}
-                                        {% if exercise.weight is not none and exercise.weight > 0 and exercise.reps is not none and exercise.reps.strip() != '' %}
-                                            {% set _ = completed_exercises.append(exercise.name) %}
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% set completed_count = completed_exercises | length %}
-                                    {% set total = workout.exercises|length %}
-                                    <div class="progress-fill" id="mini-progress-{{ workout.id }}" 
-                                         style="width: {{ ((completed_count / total * 100) | round(0) | int) if total > 0 else 0 }}%">
-                                    </div>
-                                </div>
-                                <span class="progress-percentage" id="mini-progress-text-{{ workout.id }}">
-                                    {{ ((completed_count / total * 100) | round(0) | int) if total > 0 else 0 }}%
+                            <div class="exercise-count-info">
+                                <span class="exercise-count-text">
+                                    <i class="fa-solid fa-list"></i>
+                                    {{ workout.exercises|length }} exercise{{ 's' if workout.exercises|length != 1 else '' }}
                                 </span>
                             </div>
                         </div>
+=======
                         
                         <div class="exercises-grid-modern">
                             {% for exercise in workout.exercises %}
@@ -483,85 +472,39 @@
                         </div>
                     </section>
 
-                    <!-- Enhanced Progress Summary -->
-                    <section class="workout-progress-summary">
-                        <div class="progress-card">
-                            <div class="progress-card-header">
-                                <div class="progress-icon">
-                                    <i class="fa-solid fa-chart-line"></i>
+                    <!-- Workout Actions Section -->
+                    <section class="workout-actions-summary">
+                        <div class="actions-card">
+                            <div class="actions-header">
+                                <div class="actions-icon">
+                                    <i class="fa-solid fa-rocket"></i>
                                 </div>
-                                <div class="progress-title-section">
-                                    <h3 class="progress-title">Workout Progress</h3>
-                                    <p class="progress-subtitle">Track your completion status</p>
+                                <div class="actions-title-section">
+                                    <h3 class="actions-title">Ready to Train</h3>
+                                    <p class="actions-subtitle">Complete your exercises and save your progress</p>
                                 </div>
                             </div>
                             
-                            <div class="progress-metrics">
-                                <div class="progress-stats-grid">
-                                    <div class="progress-stat completed-stat">
+                            <div class="workout-summary-info">
+                                <div class="summary-stats">
+                                    <div class="summary-stat">
                                         <div class="stat-icon">
-                                            <i class="fa-solid fa-check-circle"></i>
-                                        </div>
-                                        <div class="stat-info">
-                                            <span class="stat-value" id="completed-exercises-{{ workout.id }}">
-                                                {% set completed_exercises_count = [] %}
-                                                {% for exercise in workout.exercises %}
-                                                    {% if exercise.weight is not none and exercise.weight > 0 and exercise.reps is not none and exercise.reps.strip() != '' %}
-                                                        {% set _ = completed_exercises_count.append(exercise.name) %}
-                                                    {% endif %}
-                                                {% endfor %}
-                                                {{ completed_exercises_count | length }}
-                                            </span>
-                                            <span class="stat-label">Completed</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="progress-stat total-stat">
-                                        <div class="stat-icon">
-                                            <i class="fa-solid fa-list"></i>
+                                            <i class="fa-solid fa-list-check"></i>
                                         </div>
                                         <div class="stat-info">
                                             <span class="stat-value">{{ workout.exercises|length }}</span>
-                                            <span class="stat-label">Total</span>
+                                            <span class="stat-label">Exercise{{ 's' if workout.exercises|length != 1 else '' }}</span>
                                         </div>
                                     </div>
                                     
-                                    <div class="progress-stat percentage-stat">
+                                    <div class="summary-stat">
                                         <div class="stat-icon">
-                                            <i class="fa-solid fa-percentage"></i>
+                                            <i class="fa-solid fa-clock"></i>
                                         </div>
                                         <div class="stat-info">
-                                            <span class="stat-value" id="completion-percentage-{{ workout.id }}">
-                                                {% set completed_exercises_pct = [] %}
-                                                {% for exercise in workout.exercises %}
-                                                    {% if exercise.weight is not none and exercise.weight > 0 and exercise.reps is not none and exercise.reps.strip() != '' %}
-                                                        {% set _ = completed_exercises_pct.append(exercise.name) %}
-                                                    {% endif %}
-                                                {% endfor %}
-                                                {{ ((completed_exercises_pct | length / workout.exercises|length * 100) | round(0) | int) if workout.exercises|length > 0 else 0 }}%
-                                            </span>
-                                            <span class="stat-label">Complete</span>
+                                            <span class="stat-value">~{{ (workout.exercises|length * 15) }}</span>
+                                            <span class="stat-label">Minutes</span>
                                         </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="progress-bar-container">
-                                    <div class="progress-bar-track">
-                                        {% set completed_exercises_progress = [] %}
-                                        {% for exercise in workout.exercises %}
-                                            {% if exercise.weight is not none and exercise.weight > 0 and exercise.reps is not none and exercise.reps.strip() != '' %}
-                                                {% set _ = completed_exercises_progress.append(exercise.name) %}
-                                            {% endif %}
-                                        {% endfor %}
-                                        <div class="progress-bar-fill" id="progress-fill-{{ workout.id }}" 
-                                             style="width: {{ ((completed_exercises_progress | length / workout.exercises|length * 100) | round(0) | int) if workout.exercises|length > 0 else 0 }}%">
-                                            <div class="progress-bar-glow"></div>
-                                        </div>
-                                    </div>
-                                    <div class="progress-markers">
-                                        {% for i in range(workout.exercises|length) %}
-                                            <div class="progress-marker" data-exercise="{{ i }}"></div>
-                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
@@ -643,9 +586,6 @@
         // Initialize timer functionality
         initializeWorkoutTimer();
         
-        // Initialize progress animations
-        animateProgressBars();
-        
         // Initialize quick action buttons
         initializeQuickActions();
         
@@ -708,230 +648,23 @@
         }
     }
 
-    function updateProgressDisplay(workoutId) {
-        // Calculate progress based on Exercise table data (same as template logic)
-        // This ensures consistency between template rendering and JS updates
-        
-        // Make an AJAX call to get current completion status from backend
-        fetch(`/workout?ajax=1&workout_id=${workoutId}`, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.completion_status) {
-                updateProgressWithBackendData(workoutId, data.completion_status);
-            } else {
-                // Fallback to client-side calculation
-                updateProgressDisplayFallback(workoutId);
-            }
-        })
-        .catch(error => {
-            console.warn('Progress update failed, using fallback:', error);
-            updateProgressDisplayFallback(workoutId);
-        });
-    }
-    
-    function updateProgressDisplayFallback(workoutId) {
-        // Make AJAX call to get accurate progress from backend
-        // This ensures progress reflects actual saved Exercise table data
-        fetch(`/workout?ajax=1&workout_id=${workoutId}`, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.completion_status) {
-                updateProgressWithBackendData(workoutId, data.completion_status);
-                
-                // Update exercise status badges based on backend data
-                const workoutContainer = document.querySelector(`.workout-${workoutId}`);
-                if (workoutContainer) {
-                    const exerciseCards = workoutContainer.querySelectorAll('.exercise-card-modern');
-                    exerciseCards.forEach((card, index) => {
-                        const exerciseId = card.dataset.exerciseId;
-                        // Check if this exercise is completed based on backend data
-                        const isCompleted = checkExerciseCompletionFromBackend(exerciseId, data.completion_status);
-                        updateExerciseStatusBadge(card, isCompleted);
-                    });
-                }
-                
-                // Show completion celebration if workout is fully completed
-                if (data.completion_status.percentage === 100) {
-                    showWorkoutCompletionCelebration(workoutId);
-                }
-            }
-        })
-        .catch(error => {
-            console.warn('Progress update failed:', error);
-            // Fallback to client-side calculation only if backend fails
-            updateProgressDisplayClientSide(workoutId);
-        });
-    }
-    
-    function updateProgressDisplayClientSide(workoutId) {
-        // Client-side fallback that matches template logic
+    // PUBLIC_INTERFACE
+    /**
+     * Check if this is the last exercise in the workout and trigger celebration if so.
+     * Only shows congratulations popup after the LAST exercise has been saved.
+     */
+    function checkForWorkoutCompletion(workoutId, exerciseIndex) {
         const workoutContainer = document.querySelector(`.workout-${workoutId}`);
         if (!workoutContainer) return;
         
-        // Get all exercise cards for this workout
         const exerciseCards = workoutContainer.querySelectorAll('.exercise-card-modern');
-        let completedCount = 0;
-        const totalCount = exerciseCards.length;
+        const totalExercises = exerciseCards.length;
         
-        // Count completed exercises based on original Exercise table data
-        exerciseCards.forEach(card => {
-            const weightInput = card.querySelector('.weight-field');
-            const repsInput = card.querySelector('.reps-field');
-            
-            // Check original data from Exercise table (data attributes)
-            const originalWeight = weightInput ? weightInput.dataset.originalWeight : '';
-            const originalReps = repsInput ? repsInput.dataset.originalReps : '';
-            
-            const hasOriginalWeight = originalWeight && originalWeight.trim() !== '' && parseFloat(originalWeight) > 0;
-            const hasOriginalReps = originalReps && originalReps.trim() !== '';
-            
-            if (hasOriginalWeight && hasOriginalReps) {
-                completedCount++;
-                updateExerciseStatusBadge(card, true);
-            } else {
-                updateExerciseStatusBadge(card, false);
-            }
-        });
-        
-        // Calculate percentage
-        const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-        
-        // Update progress displays
-        updateProgressElementsWithData(workoutId, {
-            completed: completedCount,
-            total: totalCount,
-            percentage: percentage
-        });
-        
-        // Show completion celebration if workout is fully completed
-        if (percentage === 100 && completedCount === totalCount) {
+        // Check if this is the last exercise (by index)
+        if (exerciseIndex === totalExercises - 1) {
+            // This is the last exercise, show congratulations
             showWorkoutCompletionCelebration(workoutId);
         }
-    }
-    
-    function checkExerciseCompletionFromBackend(exerciseId, completionStatus) {
-        // This is a simplified check - in a more advanced implementation,
-        // the backend would return per-exercise completion status
-        // For now, we'll use a heuristic based on the overall progress
-        return false; // Default to not completed
-    }
-    
-    function updateProgressElementsWithData(workoutId, data) {
-        const { completed, total, percentage } = data;
-        
-        // Update mini progress bar
-        const miniProgressBar = document.getElementById(`mini-progress-${workoutId}`);
-        const miniProgressText = document.getElementById(`mini-progress-text-${workoutId}`);
-        
-        if (miniProgressBar) {
-            miniProgressBar.style.transition = 'width 0.5s ease-out';
-            miniProgressBar.style.width = `${percentage}%`;
-            miniProgressBar.classList.add('progress-updated');
-            setTimeout(() => {
-                miniProgressBar.classList.remove('progress-updated');
-            }, 1000);
-        }
-        if (miniProgressText) {
-            miniProgressText.textContent = `${percentage}%`;
-        }
-        
-        // Update main progress bar
-        const mainProgressBar = document.getElementById(`progress-fill-${workoutId}`);
-        if (mainProgressBar) {
-            mainProgressBar.style.transition = 'width 0.5s ease-out';
-            mainProgressBar.style.width = `${percentage}%`;
-            mainProgressBar.classList.add('progress-updated');
-            setTimeout(() => {
-                mainProgressBar.classList.remove('progress-updated');
-            }, 1000);
-        }
-        
-        // Update completed exercises count
-        const completedExercisesEl = document.getElementById(`completed-exercises-${workoutId}`);
-        if (completedExercisesEl) {
-            completedExercisesEl.textContent = completed;
-        }
-        
-        // Update completion percentage
-        const completionPercentageEl = document.getElementById(`completion-percentage-${workoutId}`);
-        if (completionPercentageEl) {
-            completionPercentageEl.textContent = `${percentage}%`;
-        }
-    }
-    
-    // PUBLIC_INTERFACE
-    /**
-     * Update progress indicators using backend completion status data.
-     * This is more accurate than client-side calculation.
-     */
-    function updateProgressWithBackendData(workoutId, completionStatus) {
-        const { completed, total, percentage } = completionStatus;
-        
-        // Update mini progress bar
-        const miniProgressBar = document.getElementById(`mini-progress-${workoutId}`);
-        const miniProgressText = document.getElementById(`mini-progress-text-${workoutId}`);
-        
-        if (miniProgressBar) {
-            miniProgressBar.style.transition = 'width 0.5s ease-out';
-            miniProgressBar.style.width = `${percentage}%`;
-            miniProgressBar.classList.add('progress-updated');
-            setTimeout(() => {
-                miniProgressBar.classList.remove('progress-updated');
-            }, 1000);
-        }
-        if (miniProgressText) {
-            miniProgressText.textContent = `${percentage}%`;
-        }
-        
-        // Update main progress bar
-        const mainProgressBar = document.getElementById(`progress-fill-${workoutId}`);
-        if (mainProgressBar) {
-            mainProgressBar.style.transition = 'width 0.5s ease-out';
-            mainProgressBar.style.width = `${percentage}%`;
-            mainProgressBar.classList.add('progress-updated');
-            setTimeout(() => {
-                mainProgressBar.classList.remove('progress-updated');
-            }, 1000);
-        }
-        
-        // Update completed exercises count
-        const completedExercisesEl = document.getElementById(`completed-exercises-${workoutId}`);
-        if (completedExercisesEl) {
-            completedExercisesEl.textContent = completed;
-        }
-        
-        // Update completion percentage
-        const completionPercentageEl = document.getElementById(`completion-percentage-${workoutId}`);
-        if (completionPercentageEl) {
-            completionPercentageEl.textContent = `${percentage}%`;
-        }
-        
-        // Show completion celebration if workout is fully completed
-        if (percentage === 100 && completed === total) {
-            showWorkoutCompletionCelebration(workoutId);
-        }
-    }
-
-    function animateProgressBars() {
-        const progressBars = document.querySelectorAll('.progress-bar-fill');
-        progressBars.forEach(bar => {
-            const width = bar.style.width;
-            bar.style.width = '0%';
-            setTimeout(() => {
-                bar.style.transition = 'width 1s ease-out';
-                bar.style.width = width;
-            }, 500);
-        });
     }
 
     function initializeWorkoutTimer() {
@@ -1132,18 +865,7 @@
                 clearValidationErrors(this.closest('.exercise-card-modern'));
             });
             
-            // Add real-time progress tracking
-            input.addEventListener('input', function() {
-                const exerciseCard = this.closest('.exercise-card-modern');
-                const workoutContainer = exerciseCard.closest('.workout-session-container');
-                const workoutId = workoutContainer.dataset.workoutId;
-                
-                // Update progress display after a short delay to avoid excessive updates
-                clearTimeout(this.progressUpdateTimer);
-                this.progressUpdateTimer = setTimeout(() => {
-                    updateProgressDisplayFallback(workoutId);
-                }, 500);
-            });
+            // Remove real-time progress tracking - only update on save
         });
     }
     
@@ -1311,9 +1033,13 @@
     /**
      * Save complete exercise data via AJAX after validation.
      * Only saves when all required fields are valid.
+     * Shows congratulations popup ONLY after the last exercise is saved.
      */
     function saveCompleteExercise(exerciseId, workoutId, exerciseData, exerciseCard) {
         showExerciseSaveStatus(exerciseCard, 'saving');
+        
+        // Get exercise index to check if this is the last one
+        const exerciseIndex = parseInt(exerciseCard.dataset.exerciseIndex);
         
         // Save all exercise fields
         fetch('/workout', {
@@ -1337,15 +1063,11 @@
                 // Update exercise status badge to completed
                 updateExerciseStatusBadge(exerciseCard, true);
                 
-                // Update progress indicators with backend data
-                if (data.completion_status) {
-                    updateProgressWithBackendData(workoutId, data.completion_status);
-                } else {
-                    updateProgressDisplay(workoutId);
-                }
-                
                 // Show success notification
                 showSuccessNotification(exerciseCard, 'Exercise saved and marked as complete!');
+                
+                // Check if this is the last exercise and show congratulations if so
+                checkForWorkoutCompletion(workoutId, exerciseIndex);
                 
             } else {
                 showExerciseSaveStatus(exerciseCard, 'error');
@@ -1681,24 +1403,8 @@
         observer.observe(card);
     });
     
-    // Add CSS for progress animations
-    const progressAnimationStyles = `
-        .progress-updated {
-            animation: progressPulse 1s ease-out;
-        }
-        
-        @keyframes progressPulse {
-            0% { 
-                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-            }
-            50% {
-                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.3);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-            }
-        }
-        
+    // Add essential styles for exercise interactions (non-progress related)
+    const essentialStyles = `
         .exercise-validation-error {
             display: flex;
             align-items: center;
@@ -1796,24 +1502,6 @@
             }
         }
         
-        /* Exercise card enabled state */
-        .exercise-card-modern.exercise-enabled {
-            border-color: #10b981 !important;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
-            animation: cardEnable 0.4s ease-out !important;
-        }
-        
-        @keyframes cardEnable {
-            from {
-                border-color: #e5e7eb;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            }
-            to {
-                border-color: #10b981;
-                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-            }
-        }
-        
         /* Quick log notification */
         .exercise-quicklog-notification {
             position: absolute;
@@ -1841,24 +1529,6 @@
             }
         }
         
-        /* Status badge active state */
-        .status-badge.active {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
-            color: white !important;
-            animation: badgeActivate 0.3s ease-out !important;
-        }
-        
-        @keyframes badgeActivate {
-            from {
-                background: #e5e7eb;
-                color: #6b7280;
-            }
-            to {
-                background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-                color: white;
-            }
-        }
-        
         /* Quick log button disabled state */
         .quick-log-btn:disabled {
             background: #059669 !important;
@@ -1872,10 +1542,10 @@
         }
     `;
     
-    // Add progress animation styles to document
-    const progressStyleSheet = document.createElement('style');
-    progressStyleSheet.textContent = progressAnimationStyles;
-    document.head.appendChild(progressStyleSheet);
+    // Add essential styles to document
+    const essentialStyleSheet = document.createElement('style');
+    essentialStyleSheet.textContent = essentialStyles;
+    document.head.appendChild(essentialStyleSheet);
 </script>
 
 <script type="text/javascript" src="/static/js/workout.js"></script>

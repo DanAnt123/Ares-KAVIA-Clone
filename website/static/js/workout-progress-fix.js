@@ -203,9 +203,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Enhanced save function that updates progress only after successful save
+// Enhanced save function with congratulations popup only after last exercise
 function saveCompleteExerciseWithProgressUpdate(exerciseId, workoutId, exerciseData, exerciseCard) {
     showExerciseSaveStatus(exerciseCard, 'saving');
+    
+    // Get exercise index to check if this is the last one
+    const exerciseIndex = parseInt(exerciseCard.dataset.exerciseIndex);
     
     // Save all exercise fields
     fetch('/workout', {
@@ -238,15 +241,11 @@ function saveCompleteExerciseWithProgressUpdate(exerciseId, workoutId, exerciseD
             if (repsInput) repsInput.dataset.originalReps = exerciseData.reps;
             if (detailsInput) detailsInput.dataset.originalDetails = exerciseData.details;
             
-            // ONLY NOW UPDATE PROGRESS - after successful save
-            if (data.completion_status) {
-                updateProgressWithBackendData(workoutId, data.completion_status);
-            } else {
-                updateProgressDisplay(workoutId);
-            }
-            
             // Show success notification
             showSuccessNotification(exerciseCard, 'Exercise saved and marked as complete!');
+            
+            // Check if this is the last exercise and show congratulations if so
+            checkForWorkoutCompletion(workoutId, exerciseIndex);
             
         } else {
             showExerciseSaveStatus(exerciseCard, 'error');
@@ -264,6 +263,163 @@ function saveCompleteExerciseWithProgressUpdate(exerciseId, workoutId, exerciseD
         console.error('Network error:', error);
         showExerciseSaveStatus(exerciseCard, 'error');
         showValidationError(exerciseCard, 'Network error - please try again');
+    });
+}
+
+// PUBLIC_INTERFACE
+/**
+ * Check if this is the last exercise in the workout and trigger celebration if so.
+ * Only shows congratulations popup after the LAST exercise has been saved.
+ */
+function checkForWorkoutCompletion(workoutId, exerciseIndex) {
+    const workoutContainer = document.querySelector(`.workout-${workoutId}`);
+    if (!workoutContainer) return;
+    
+    const exerciseCards = workoutContainer.querySelectorAll('.exercise-card-modern');
+    const totalExercises = exerciseCards.length;
+    
+    // Check if this is the last exercise (by index)
+    if (exerciseIndex === totalExercises - 1) {
+        // This is the last exercise, show congratulations
+        showWorkoutCompletionCelebration(workoutId);
+    }
+}
+
+// PUBLIC_INTERFACE
+/**
+ * Show celebration when the last exercise is completed.
+ */
+function showWorkoutCompletionCelebration(workoutId) {
+    const workoutContainer = document.querySelector(`.workout-${workoutId}`);
+    if (!workoutContainer) return;
+    
+    // Avoid showing multiple celebrations
+    if (workoutContainer.dataset.celebrationShown === 'true') return;
+    workoutContainer.dataset.celebrationShown = 'true';
+    
+    // Create celebration overlay
+    const celebration = document.createElement('div');
+    celebration.className = 'workout-completion-celebration';
+    celebration.innerHTML = `
+        <div class="celebration-content">
+            <div class="celebration-icon">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h3 class="celebration-title">Workout Complete!</h3>
+            <p class="celebration-message">Amazing job! You've completed your workout.</p>
+            <div class="celebration-confetti">
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+                <div class="confetti-piece"></div>
+            </div>
+        </div>
+    `;
+    
+    celebration.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: fadeIn 0.5s ease-out;
+    `;
+    
+    // Add celebration styles
+    const celebrationStyles = `
+        .celebration-content {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .celebration-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: bounce 1s infinite;
+        }
+        .celebration-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        .celebration-message {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .celebration-confetti {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            animation: confettiFall 3s linear infinite;
+        }
+        .confetti-piece:nth-child(1) { left: 10%; animation-delay: 0s; background: #ff6b6b; }
+        .confetti-piece:nth-child(2) { left: 30%; animation-delay: 0.5s; background: #4ecdc4; }
+        .confetti-piece:nth-child(3) { left: 50%; animation-delay: 1s; background: #45b7d1; }
+        .confetti-piece:nth-child(4) { left: 70%; animation-delay: 1.5s; background: #96ceb4; }
+        .confetti-piece:nth-child(5) { left: 90%; animation-delay: 2s; background: #feca57; }
+        @keyframes confettiFall {
+            0% { transform: translateY(-100vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-30px); }
+            60% { transform: translateY(-15px); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    `;
+    
+    // Add styles to document
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = celebrationStyles;
+    document.head.appendChild(styleSheet);
+    
+    document.body.appendChild(celebration);
+    
+    // Remove celebration after delay
+    setTimeout(() => {
+        celebration.style.opacity = '0';
+        setTimeout(() => {
+            celebration.remove();
+            styleSheet.remove();
+            // Reset celebration flag after some time
+            setTimeout(() => {
+                workoutContainer.dataset.celebrationShown = 'false';
+            }, 30000); // 30 seconds
+        }, 500);
+    }, 4000);
+    
+    // Allow clicking to dismiss
+    celebration.addEventListener('click', () => {
+        celebration.style.opacity = '0';
+        setTimeout(() => {
+            celebration.remove();
+            styleSheet.remove();
+            workoutContainer.dataset.celebrationShown = 'false';
+        }, 300);
     });
 }
 

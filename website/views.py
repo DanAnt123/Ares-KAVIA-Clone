@@ -231,8 +231,7 @@ def handle_complete_exercise_save(data):
             "message": "Exercise saved and marked as complete",
             "exercise_id": exercise_id,
             "exercise_completed": True,
-            "workout_id": workout_id,
-            "completion_status": get_workout_completion_status(workout_id, current_user.id)
+            "workout_id": workout_id
         }), 200
         
     except Exception as e:
@@ -525,21 +524,7 @@ def workout():
             last_session_data=last_session_data
         )
 
-    # GET - Handle AJAX progress requests
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        workout_id = request.args.get('workout_id')
-        if workout_id:
-            try:
-                workout_id = int(workout_id)
-                completion_status = get_workout_completion_status(workout_id, current_user.id)
-                return jsonify({
-                    'success': True,
-                    'completion_status': completion_status
-                })
-            except (ValueError, TypeError):
-                return jsonify({'success': False, 'error': 'Invalid workout_id'}), 400
-        else:
-            return jsonify({'success': False, 'error': 'Missing workout_id'}), 400
+    # GET - Standard template rendering (removed AJAX progress requests)
     
     # GET - Get last session data for all user workouts
     last_session_data = {}
