@@ -38,7 +38,7 @@ class Exercise(db.Model):
     weight = db.Column(db.Float(5))
     sets = db.Column(db.Integer)
     reps = db.Column(db.String(20))  # Support ranges like "8-12" or "10"
-    details = db.Column(db.String(5))
+    details = db.Column(db.String(50))  # Increased from 5 to 50 characters for interactive inputs
     include_details = db.Column(db.Boolean)
     workout_id = db.Column(db.Integer, db.ForeignKey("workout.id"))
 

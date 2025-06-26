@@ -7,6 +7,109 @@ from flask_login import login_required, current_user
 views = Blueprint('views', __name__)
 
 
+# PUBLIC_INTERFACE
+def handle_single_field_update(data):
+    """
+    Handle single field updates for interactive workout inputs.
+    Provides real-time saving of individual exercise fields.
+    
+    Args:
+        data (dict): JSON data containing field update information
+        
+    Returns:
+        flask.Response: JSON response with success/error status
+    """
+    
+    try:
+        workout_id = data.get("workout_id")
+        exercise_id = data.get("exercise_id")
+        field_type = data.get("field_type")
+        value = data.get("value")
+        
+        # Validate required fields
+        if not all([workout_id, exercise_id, field_type]):
+            return jsonify({
+                "success": False, 
+                "error": "Missing required fields: workout_id, exercise_id, or field_type"
+            }), 400
+        
+        # Validate field type
+        if field_type not in ["weight", "reps", "details"]:
+            return jsonify({
+                "success": False, 
+                "error": "Invalid field_type. Allowed: weight, reps, details"
+            }), 400
+        
+        # Find exercise and verify ownership
+        exercise = db.session.query(Exercise).join(Workout).filter(
+            Exercise.id == exercise_id,
+            Workout.id == workout_id,
+            Workout.user_id == current_user.id
+        ).first()
+        
+        if not exercise:
+            return jsonify({
+                "success": False, 
+                "error": "Exercise not found or access denied"
+            }), 404
+        
+        # Process and validate the value based on field type
+        if field_type == "weight":
+            if value is None or str(value).strip() == "":
+                exercise.weight = None
+            else:
+                try:
+                    weight_val = float(value)
+                    if weight_val < 0 or weight_val > 999.99:
+                        return jsonify({
+                            "success": False, 
+                            "error": "Weight must be between 0 and 999.99"
+                        }), 400
+                    exercise.weight = weight_val
+                except (ValueError, TypeError):
+                    return jsonify({
+                        "success": False, 
+                        "error": "Invalid weight value. Must be a number."
+                    }), 400
+        
+        elif field_type == "reps":
+            # Reps can be text like "8-12" or "3x10"
+            reps_val = str(value).strip() if value is not None else ""
+            if len(reps_val) > 20:
+                return jsonify({
+                    "success": False, 
+                    "error": "Reps value too long (max 20 characters)"
+                }), 400
+            exercise.reps = reps_val if reps_val else None
+        
+        elif field_type == "details":
+            details_val = str(value).strip() if value is not None else ""
+            if len(details_val) > 50:
+                return jsonify({
+                    "success": False, 
+                    "error": "Details too long (max 50 characters)"
+                }), 400
+            exercise.details = details_val if details_val else ""
+        
+        # Save to database
+        db.session.commit()
+        
+        return jsonify({
+            "success": True, 
+            "message": f"{field_type.capitalize()} updated successfully",
+            "exercise_id": exercise_id,
+            "field_type": field_type,
+            "value": value
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "success": False, 
+            "error": f"Database error: {str(e)}"
+        }), 500
+
+
 def _create_workout_session(workout_id, exercises_data, user_id):
     """
     Unified function to create a workout session with exercise logs.
@@ -188,6 +291,12 @@ def workout():
         is_json = request.is_json or "application/json" in request.headers.get("Content-Type", "")
         if is_json:
             data = request.get_json(force=True, silent=True) or {}
+            
+            # Handle single field updates for interactive inputs
+            if data.get("action") == "update_single_field":
+                return handle_single_field_update(data)
+            
+            # Original bulk update logic
             workout_id = data.get("workout_id") or data.get("workout")
             weights = data.get("weights")
             details = data.get("details")

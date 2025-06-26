@@ -286,151 +286,153 @@
                         </div>
                         
                         <div class="exercises-grid-modern">
-                            <form method="POST" autocomplete="off" class="workout-form" id="workout-form-{{ workout.id }}">
-                                {% for exercise in workout.exercises %}
-                                    <article class="exercise-card-modern" data-exercise-index="{{ loop.index0 }}" data-exercise-id="{{ exercise.id }}">
-                                        <!-- Exercise Card Header -->
-                                        <header class="exercise-card-header">
-                                            <div class="exercise-number-badge">
-                                                <span class="exercise-position">{{ loop.index }}</span>
-                                            </div>
-                                            <div class="exercise-info">
-                                                <h4 class="exercise-name">{{ exercise.name }}</h4>
-                                                <div class="exercise-status-indicator">
-                                                    {% if exercise.weight is not none and exercise.weight > 0 %}
-                                                        <span class="status-badge completed">
-                                                            <i class="fa-solid fa-check-circle"></i>
-                                                            Completed
-                                                        </span>
-                                                    {% else %}
-                                                        <span class="status-badge pending">
-                                                            <i class="fa-regular fa-circle"></i>
-                                                            Pending
-                                                        </span>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                        </header>
-                                        
-                                        <!-- Exercise Card Body -->
-                                        <div class="exercise-card-body">
-                                            <div class="exercise-metrics-container">
-                                                
-                                                <!-- Weight Metric -->
-                                                <div class="metric-group weight-metric">
-                                                    <label class="metric-label">
-                                                        <i class="fa-solid fa-weight-hanging"></i>
-                                                        Weight
-                                                    </label>
-                                                    
-                                                    <!-- Display Mode -->
-                                                    <div class="metric-display weight-display">
-                                                        <div class="metric-value-container">
-                                                            <span class="metric-value weight-value">
-                                                                {% if (exercise.weight | float | is_integer) and (exercise.weight is not none) %}
-                                                                    {{ exercise.weight | int }}
-                                                                {% elif exercise.weight is none %}
-                                                                    —
-                                                                {% else %}
-                                                                    {{ exercise.weight }}
-                                                                {% endif %}
-                                                            </span>
-                                                            <span class="metric-unit">kg</span>
-                                                        </div>
-                                                        <div class="metric-icon">
-                                                            <i class="fa-solid fa-weight-hanging"></i>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <!-- Edit Mode -->
-                                                    <div class="metric-input weight-input" hidden>
-                                                        <div class="input-group-modern">
-                                                            <input 
-                                                                id="weight-{{ workout.id }}-{{ loop.index0 }}" 
-                                                                class="metric-input-field weight-field" 
-                                                                type="number" 
-                                                                step="0.01" 
-                                                                placeholder="0" 
-                                                                name="weight" 
-                                                                value="{% if exercise.weight is not none %}{{ (exercise.weight | int) if (exercise.weight | float | is_integer) else exercise.weight }}{% endif %}"
-                                                                min="0"
-                                                                max="999.99"
-                                                                aria-label="Weight for {{ exercise.name }}"
-                                                            >
-                                                            <span class="input-unit">kg</span>
-                                                            <div class="input-focus-line"></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Details Section (if applicable) -->
-                                                {% if exercise.include_details %}
-                                                    <div class="metric-group details-metric">
-                                                        <label class="metric-label">
-                                                            <i class="fa-solid fa-clipboard-list"></i>
-                                                            Details
-                                                        </label>
-                                                        
-                                                        <!-- Display Mode -->
-                                                        <div class="metric-display details-display">
-                                                            <div class="metric-value-container">
-                                                                <span class="metric-value details-value">
-                                                                    {{ exercise.details or "—" }}
-                                                                </span>
-                                                            </div>
-                                                            <div class="metric-icon">
-                                                                <i class="fa-solid fa-clipboard-list"></i>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- Edit Mode -->
-                                                        <div class="metric-input details-input" hidden>
-                                                            <div class="input-group-modern">
-                                                                <input 
-                                                                    id="details-{{ workout.id }}-{{ loop.index0 }}" 
-                                                                    class="metric-input-field details-field" 
-                                                                    type="text" 
-                                                                    placeholder="e.g., 3x8, seat 5" 
-                                                                    name="details" 
-                                                                    value="{{ exercise.details or '' }}" 
-                                                                    maxlength="50"
-                                                                    aria-label="Details for {{ exercise.name }}"
-                                                                >
-                                                                <div class="input-focus-line"></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                            {% for exercise in workout.exercises %}
+                                <article class="exercise-card-modern" data-exercise-index="{{ loop.index0 }}" data-exercise-id="{{ exercise.id }}">
+                                    <!-- Exercise Card Header -->
+                                    <header class="exercise-card-header">
+                                        <div class="exercise-number-badge">
+                                            <span class="exercise-position">{{ loop.index }}</span>
+                                        </div>
+                                        <div class="exercise-info">
+                                            <h4 class="exercise-name">{{ exercise.name }}</h4>
+                                            <div class="exercise-status-indicator">
+                                                {% if exercise.weight is not none and exercise.weight > 0 %}
+                                                    <span class="status-badge completed">
+                                                        <i class="fa-solid fa-check-circle"></i>
+                                                        Completed
+                                                    </span>
                                                 {% else %}
-                                                    <input type="hidden" name="details" value="">
+                                                    <span class="status-badge pending">
+                                                        <i class="fa-regular fa-circle"></i>
+                                                        Pending
+                                                    </span>
                                                 {% endif %}
-
                                             </div>
                                         </div>
-                                        
-                                        <!-- Exercise Card Footer -->
-                                        <footer class="exercise-card-footer">
-                                            <div class="exercise-actions">
-                                                <button type="button" class="exercise-action-btn quick-log-btn" data-exercise-index="{{ loop.index0 }}">
-                                                    <i class="fa-solid fa-plus-circle"></i>
-                                                    Quick Log
-                                                </button>
-                                                <button type="button" class="exercise-action-btn notes-btn" data-exercise-index="{{ loop.index0 }}">
-                                                    <i class="fa-solid fa-sticky-note"></i>
-                                                    Notes
-                                                </button>
+                                    </header>
+                                    
+                                    <!-- Exercise Card Body -->
+                                    <div class="exercise-card-body">
+                                        <div class="exercise-metrics-container">
+                                            
+                                            <!-- Interactive Weight Input -->
+                                            <div class="metric-group weight-metric">
+                                                <label class="metric-label">
+                                                    <i class="fa-solid fa-weight-hanging"></i>
+                                                    Weight
+                                                </label>
+                                                
+                                                <div class="metric-input weight-input-interactive">
+                                                    <div class="input-group-modern">
+                                                        <input 
+                                                            id="weight-{{ workout.id }}-{{ loop.index0 }}" 
+                                                            class="metric-input-field weight-field interactive-input" 
+                                                            type="number" 
+                                                            step="0.01" 
+                                                            placeholder="Enter weight" 
+                                                            name="weight" 
+                                                            value="{% if exercise.weight is not none %}{{ (exercise.weight | int) if (exercise.weight | float | is_integer) else exercise.weight }}{% endif %}"
+                                                            min="0"
+                                                            max="999.99"
+                                                            aria-label="Weight for {{ exercise.name }}"
+                                                            data-exercise-id="{{ exercise.id }}"
+                                                            data-workout-id="{{ workout.id }}"
+                                                            data-field-type="weight"
+                                                        >
+                                                        <span class="input-unit">kg</span>
+                                                        <div class="input-focus-line"></div>
+                                                    </div>
+                                                    <div class="save-indicator" style="display: none;">
+                                                        <i class="fa-solid fa-check"></i>
+                                                        <span>Saved</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </footer>
-                                    </article>
-                                {% endfor %}
 
-                                <!-- Form Hidden Fields -->
-                                <input type="hidden" name="workout" value="{{ workout.id }}">
-                                <input type="hidden" name="request_type" value="save">
-                            </form>
+                                            <!-- Interactive Reps Input -->
+                                            <div class="metric-group reps-metric">
+                                                <label class="metric-label">
+                                                    <i class="fa-solid fa-repeat"></i>
+                                                    Reps
+                                                </label>
+                                                
+                                                <div class="metric-input reps-input-interactive">
+                                                    <div class="input-group-modern">
+                                                        <input 
+                                                            id="reps-{{ workout.id }}-{{ loop.index0 }}" 
+                                                            class="metric-input-field reps-field interactive-input" 
+                                                            type="text" 
+                                                            placeholder="e.g., 8-12 or 10" 
+                                                            name="reps" 
+                                                            value="{{ exercise.reps or '' }}" 
+                                                            maxlength="20"
+                                                            aria-label="Reps for {{ exercise.name }}"
+                                                            data-exercise-id="{{ exercise.id }}"
+                                                            data-workout-id="{{ workout.id }}"
+                                                            data-field-type="reps"
+                                                        >
+                                                        <div class="input-focus-line"></div>
+                                                    </div>
+                                                    <div class="save-indicator" style="display: none;">
+                                                        <i class="fa-solid fa-check"></i>
+                                                        <span>Saved</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Interactive Details Section (if applicable) -->
+                                            {% if exercise.include_details %}
+                                                <div class="metric-group details-metric">
+                                                    <label class="metric-label">
+                                                        <i class="fa-solid fa-clipboard-list"></i>
+                                                        Details
+                                                    </label>
+                                                    
+                                                    <div class="metric-input details-input-interactive">
+                                                        <div class="input-group-modern">
+                                                            <input 
+                                                                id="details-{{ workout.id }}-{{ loop.index0 }}" 
+                                                                class="metric-input-field details-field interactive-input" 
+                                                                type="text" 
+                                                                placeholder="e.g., 3x8, seat 5" 
+                                                                name="details" 
+                                                                value="{{ exercise.details or '' }}" 
+                                                                maxlength="50"
+                                                                aria-label="Details for {{ exercise.name }}"
+                                                                data-exercise-id="{{ exercise.id }}"
+                                                                data-workout-id="{{ workout.id }}"
+                                                                data-field-type="details"
+                                                            >
+                                                            <div class="input-focus-line"></div>
+                                                        </div>
+                                                        <div class="save-indicator" style="display: none;">
+                                                            <i class="fa-solid fa-check"></i>
+                                                            <span>Saved</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Exercise Card Footer -->
+                                    <footer class="exercise-card-footer">
+                                        <div class="exercise-actions">
+                                            <button type="button" class="exercise-action-btn quick-log-btn" data-exercise-index="{{ loop.index0 }}">
+                                                <i class="fa-solid fa-plus-circle"></i>
+                                                Quick Log
+                                            </button>
+                                            <button type="button" class="exercise-action-btn notes-btn" data-exercise-index="{{ loop.index0 }}">
+                                                <i class="fa-solid fa-sticky-note"></i>
+                                                Notes
+                                            </button>
+                                        </div>
+                                    </footer>
+                                </article>
+                            {% endfor %}
                         </div>
                     </section>
-
-=======
 
                     <!-- Enhanced Progress Summary -->
                     <section class="workout-progress-summary">
@@ -573,8 +575,6 @@
             });
         }
 
-=======
-
         // Initialize timer functionality
         initializeWorkoutTimer();
         
@@ -583,6 +583,9 @@
         
         // Initialize quick action buttons
         initializeQuickActions();
+        
+        // Initialize interactive input fields
+        initializeInteractiveInputs();
     });
 
     function showSelectedWorkout(workoutId) {
@@ -637,8 +640,6 @@
         }
     }
 
-=======
-
     function updateProgressDisplay(workoutId) {
         const workoutContainer = document.querySelector(`.workout-${workoutId}`);
         const exercises = workoutContainer.querySelectorAll('.exercise-card-modern');
@@ -647,7 +648,11 @@
 
         exercises.forEach(exercise => {
             const weightInput = exercise.querySelector('.weight-field');
-            if (weightInput && weightInput.value && parseFloat(weightInput.value) > 0) {
+            const repsInput = exercise.querySelector('.reps-field');
+            const hasWeight = weightInput && weightInput.value && parseFloat(weightInput.value) > 0;
+            const hasReps = repsInput && repsInput.value && repsInput.value.trim() !== '';
+            
+            if (hasWeight || hasReps) {
                 completed++;
             }
         });
@@ -770,6 +775,9 @@
                     weightInput.value = lastWeight;
                     weightInput.focus();
                     
+                    // Trigger save after setting value
+                    weightInput.dispatchEvent(new Event('input'));
+                    
                     // Save for next time
                     weightInput.addEventListener('blur', function() {
                         if (this.value) {
@@ -789,7 +797,246 @@
         });
     }
 
-=======
+    // PUBLIC_INTERFACE
+    function initializeInteractiveInputs() {
+        """
+        Initialize real-time interactive input fields for exercise data.
+        Provides immediate feedback and AJAX saving for smooth user experience.
+        """
+        
+        const debounceTimers = new Map();
+        const DEBOUNCE_DELAY = 800; // ms to wait before saving
+        
+        // Add event listeners to all interactive input fields
+        document.querySelectorAll('.interactive-input').forEach(input => {
+            const exerciseId = input.dataset.exerciseId;
+            const workoutId = input.dataset.workoutId;
+            const fieldType = input.dataset.fieldType;
+            
+            // Handle input changes with debouncing
+            input.addEventListener('input', function() {
+                // Clear existing timer for this input
+                const timerId = `${exerciseId}-${fieldType}`;
+                if (debounceTimers.has(timerId)) {
+                    clearTimeout(debounceTimers.get(timerId));
+                }
+                
+                // Show typing indicator
+                showSaveIndicator(this, 'typing');
+                
+                // Set new timer
+                const timer = setTimeout(() => {
+                    saveExerciseField(exerciseId, workoutId, fieldType, this.value, this);
+                    debounceTimers.delete(timerId);
+                }, DEBOUNCE_DELAY);
+                
+                debounceTimers.set(timerId, timer);
+            });
+            
+            // Handle enter key for immediate save
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    
+                    // Clear debounce timer and save immediately
+                    const timerId = `${exerciseId}-${fieldType}`;
+                    if (debounceTimers.has(timerId)) {
+                        clearTimeout(debounceTimers.get(timerId));
+                        debounceTimers.delete(timerId);
+                    }
+                    
+                    saveExerciseField(exerciseId, workoutId, fieldType, this.value, this);
+                    this.blur(); // Remove focus after save
+                }
+            });
+            
+            // Handle blur event for final save
+            input.addEventListener('blur', function() {
+                const timerId = `${exerciseId}-${fieldType}`;
+                if (debounceTimers.has(timerId)) {
+                    clearTimeout(debounceTimers.get(timerId));
+                    debounceTimers.delete(timerId);
+                    saveExerciseField(exerciseId, workoutId, fieldType, this.value, this);
+                }
+            });
+        });
+    }
+    
+    // PUBLIC_INTERFACE
+    function saveExerciseField(exerciseId, workoutId, fieldType, value, inputElement) {
+        """
+        Save individual exercise field via AJAX.
+        Provides immediate visual feedback and error handling.
+        """
+        
+        showSaveIndicator(inputElement, 'saving');
+        
+        // Use existing workout endpoint with enhanced functionality
+        fetch('/workout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                workout_id: workoutId,
+                exercise_id: exerciseId,
+                field_type: fieldType,
+                value: value,
+                action: 'update_single_field'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSaveIndicator(inputElement, 'success');
+                
+                // Update progress indicators
+                updateProgressDisplay(workoutId);
+                
+                // Update exercise status badge
+                updateExerciseStatus(inputElement);
+                
+            } else {
+                showSaveIndicator(inputElement, 'error');
+                console.error('Save failed:', data.errors || data.error);
+                
+                // Show user-friendly error
+                if (data.errors && data.errors.length > 0) {
+                    showTemporaryError(inputElement, data.errors[0]);
+                } else if (data.error) {
+                    showTemporaryError(inputElement, data.error);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Network error:', error);
+            showSaveIndicator(inputElement, 'error');
+            showTemporaryError(inputElement, 'Network error - please try again');
+        });
+    }
+    
+    // PUBLIC_INTERFACE
+    function showSaveIndicator(inputElement, status) {
+        """
+        Show visual feedback for save operations.
+        """
+        
+        const container = inputElement.closest('.metric-input');
+        if (!container) return;
+        
+        const indicator = container.querySelector('.save-indicator');
+        if (!indicator) return;
+        
+        // Reset classes
+        indicator.className = 'save-indicator';
+        
+        switch (status) {
+            case 'typing':
+                indicator.innerHTML = '<i class="fa-solid fa-pencil"></i><span>Typing...</span>';
+                indicator.classList.add('typing');
+                indicator.style.display = 'flex';
+                break;
+                
+            case 'saving':
+                indicator.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Saving...</span>';
+                indicator.classList.add('saving');
+                indicator.style.display = 'flex';
+                break;
+                
+            case 'success':
+                indicator.innerHTML = '<i class="fa-solid fa-check"></i><span>Saved</span>';
+                indicator.classList.add('success');
+                indicator.style.display = 'flex';
+                
+                // Hide after delay
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 2000);
+                break;
+                
+            case 'error':
+                indicator.innerHTML = '<i class="fa-solid fa-exclamation-triangle"></i><span>Error</span>';
+                indicator.classList.add('error');
+                indicator.style.display = 'flex';
+                
+                // Hide after delay
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 3000);
+                break;
+        }
+    }
+    
+    // PUBLIC_INTERFACE
+    function updateExerciseStatus(inputElement) {
+        """
+        Update exercise completion status badge based on input values.
+        """
+        
+        const exerciseCard = inputElement.closest('.exercise-card-modern');
+        if (!exerciseCard) return;
+        
+        const statusBadge = exerciseCard.querySelector('.status-badge');
+        const weightField = exerciseCard.querySelector('.weight-field');
+        const repsField = exerciseCard.querySelector('.reps-field');
+        
+        if (!statusBadge) return;
+        
+        // Check if exercise has meaningful data
+        const hasWeight = weightField && weightField.value && parseFloat(weightField.value) > 0;
+        const hasReps = repsField && repsField.value && repsField.value.trim() !== '';
+        
+        if (hasWeight || hasReps) {
+            statusBadge.className = 'status-badge completed';
+            statusBadge.innerHTML = '<i class="fa-solid fa-check-circle"></i>Completed';
+        } else {
+            statusBadge.className = 'status-badge pending';
+            statusBadge.innerHTML = '<i class="fa-regular fa-circle"></i>Pending';
+        }
+    }
+    
+    // PUBLIC_INTERFACE
+    function showTemporaryError(inputElement, message) {
+        """
+        Show temporary error message near input field.
+        """
+        
+        const container = inputElement.closest('.metric-group');
+        if (!container) return;
+        
+        // Remove existing error messages
+        const existingError = container.querySelector('.temp-error-message');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        // Create error element
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'temp-error-message';
+        errorDiv.innerHTML = `<i class="fa-solid fa-exclamation-triangle"></i> ${message}`;
+        errorDiv.style.cssText = `
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            background: var(--error-bg);
+            color: var(--text-on-primary);
+            border-radius: var(--radius-md);
+            font-size: var(--fs-sm);
+            margin-top: var(--space-2);
+            animation: slideInUp 0.3s ease-out;
+        `;
+        
+        container.appendChild(errorDiv);
+        
+        // Remove after delay
+        setTimeout(() => {
+            errorDiv.style.opacity = '0';
+            errorDiv.style.transform = 'translateY(-10px)';
+            setTimeout(() => errorDiv.remove(), 300);
+        }, 4000);
+    }
 
     // Intersection Observer for animations
     const observerOptions = {

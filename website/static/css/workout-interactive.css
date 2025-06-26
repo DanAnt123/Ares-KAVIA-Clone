@@ -1,0 +1,200 @@
+/* Interactive Input Enhancements for Workout Page */
+
+/* Interactive Input Container Styling */
+.metric-input.weight-input-interactive,
+.metric-input.reps-input-interactive,
+.metric-input.details-input-interactive {
+  position: relative;
+}
+
+/* Save Indicator Styling */
+.save-indicator {
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-base);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  position: absolute;
+  top: -8px;
+  right: 8px;
+  z-index: 10;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(4px);
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-sm);
+}
+
+.save-indicator.typing {
+  background: var(--surface-elevated);
+  color: var(--text-secondary);
+  border-color: var(--tertiary);
+}
+
+.save-indicator.saving {
+  background: var(--primary-subtle);
+  color: var(--primary-light);
+  border-color: var(--primary-light);
+}
+
+.save-indicator.success {
+  background: var(--success-bg);
+  color: var(--text-on-primary);
+  border-color: var(--success-border);
+}
+
+.save-indicator.error {
+  background: var(--error-bg);
+  color: var(--text-on-primary);
+  border-color: var(--error-border);
+}
+
+.save-indicator i {
+  font-size: var(--fs-xs);
+}
+
+/* Interactive Input Field Enhancements */
+.interactive-input {
+  transition: all var(--transition-base);
+  border-radius: var(--radius-md);
+}
+
+.interactive-input:focus {
+  box-shadow: 0 0 0 3px var(--primary-subtle), var(--shadow-lg);
+  transform: scale(1.02);
+}
+
+.interactive-input:hover:not(:focus) {
+  border-color: var(--primary-light);
+  box-shadow: var(--shadow-md);
+}
+
+/* Temporary Error Message Styling */
+.temp-error-message {
+  animation: slideInUp 0.3s ease-out;
+  font-weight: var(--fw-medium);
+  border: 1px solid var(--error-border);
+  box-shadow: var(--shadow-sm);
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reps Metric Specific Styling */
+.reps-metric .metric-label i {
+  color: var(--accent);
+}
+
+.reps-metric .input-focus-line {
+  background: linear-gradient(90deg, var(--accent), var(--primary-light));
+}
+
+/* Enhanced Focus States for Better UX */
+.input-group-modern:focus-within {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px var(--primary-subtle);
+  transform: translateY(-1px);
+}
+
+/* Typing Animation for Active Fields */
+.interactive-input:focus {
+  animation: subtle-pulse 2s ease-in-out infinite;
+}
+
+@keyframes subtle-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px var(--primary-subtle), var(--shadow-lg);
+  }
+  50% {
+    box-shadow: 0 0 0 4px var(--primary-subtle), var(--shadow-xl);
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .save-indicator {
+    top: -6px;
+    right: 6px;
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--fs-2xs);
+  }
+  
+  .interactive-input:focus {
+    transform: scale(1.01);
+  }
+  
+  .temp-error-message {
+    font-size: var(--fs-xs);
+    padding: var(--space-1) var(--space-2);
+  }
+}
+
+@media (max-width: 480px) {
+  .save-indicator {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-top: var(--space-2);
+    align-self: flex-start;
+  }
+  
+  .metric-input.weight-input-interactive,
+  .metric-input.reps-input-interactive,
+  .metric-input.details-input-interactive {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .save-indicator {
+    border-width: 2px;
+  }
+  
+  .interactive-input:focus {
+    outline: 3px solid var(--focus-outline);
+    outline-offset: 2px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .interactive-input:focus {
+    animation: none;
+    transform: none;
+  }
+  
+  .save-indicator,
+  .temp-error-message {
+    transition: none;
+    animation: none;
+  }
+  
+  .input-group-modern:focus-within {
+    transform: none;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .save-indicator,
+  .temp-error-message {
+    display: none !important;
+  }
+  
+  .interactive-input {
+    border: 2px solid var(--tertiary) !important;
+    box-shadow: none !important;
+  }
+}
