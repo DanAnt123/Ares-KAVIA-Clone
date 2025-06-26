@@ -1,0 +1,327 @@
+/* Input Field Sizing Improvements for Better Visual Balance */
+
+/* Enhanced Input Fields with improved sizing and consistency */
+.metric-input-field {
+  flex: 1;
+  padding: var(--space-4) var(--space-4);
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+  outline: none;
+  transition: var(--input-transition-fast);
+  line-height: 1.4;
+  min-height: 44px; /* Consistent minimum touch target */
+  box-sizing: border-box;
+  width: 100%; /* Ensure full width within flex container */
+}
+
+/* Modern Input Groups with improved sizing */
+.input-group-modern {
+  display: flex;
+  align-items: stretch; /* Ensure all elements have same height */
+  background: var(--input-field-bg);
+  border: 2px solid var(--input-field-border);
+  border-radius: var(--input-radius-inner);
+  overflow: hidden;
+  transition: var(--input-transition);
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-height: 48px; /* Consistent minimum height for all input groups */
+}
+
+/* Input Units with improved sizing and alignment */
+.input-unit {
+  padding: var(--space-4) var(--space-4);
+  background: linear-gradient(135deg, var(--surface), var(--surface-elevated));
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  border-left: 2px solid var(--tertiary);
+  transition: var(--input-transition-fast);
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  min-width: 40px; /* Consistent minimum width */
+  justify-content: center;
+}
+
+/* Specific input field widths for better visual balance */
+.weight-metric .input-group-modern {
+  max-width: 180px; /* Optimal width for weight values */
+}
+
+.reps-metric .input-group-modern {
+  max-width: 160px; /* Optimal width for reps values */
+}
+
+.details-metric .input-group-modern {
+  max-width: 250px; /* More space for details/notes */
+}
+
+/* Tablet Design Improvements */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .weight-metric .input-group-modern {
+    max-width: 160px;
+  }
+
+  .reps-metric .input-group-modern {
+    max-width: 140px;
+  }
+
+  .details-metric .input-group-modern {
+    max-width: 220px;
+  }
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+  .exercise-card-modern {
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+  
+  .exercise-number-badge {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .exercise-position {
+    font-size: var(--fs-base);
+  }
+  
+  .exercise-name {
+    font-size: var(--fs-lg);
+  }
+  
+  .metric-input-field {
+    padding: var(--space-3) var(--space-3);
+    font-size: var(--fs-base);
+    min-height: 40px; /* Slightly smaller for mobile but still accessible */
+  }
+  
+  .input-unit {
+    padding: var(--space-3) var(--space-3);
+    font-size: var(--fs-xs);
+    min-width: 35px; /* Smaller minimum width for mobile */
+  }
+  
+  .input-group-modern {
+    min-height: 44px; /* Maintain touch target size on mobile */
+  }
+  
+  .exercise-actions {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .exercise-action-btn {
+    min-width: auto;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .previous-session-badge {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-bottom: var(--space-2);
+    align-self: flex-start;
+  }
+
+  /* Reset input width restrictions on mobile for full width usage */
+  .weight-metric .input-group-modern,
+  .reps-metric .input-group-modern,
+  .details-metric .input-group-modern {
+    max-width: none; /* Allow full width on mobile */
+    width: 100%;
+  }
+  
+  /* Ensure metric groups stack nicely on mobile */
+  .exercise-metrics-container {
+    gap: var(--space-3);
+  }
+  
+  .metric-group {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .exercise-card-modern {
+    padding: var(--space-3);
+  }
+  
+  .exercise-card-header {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-3);
+  }
+  
+  .exercise-number-badge {
+    align-self: center;
+  }
+  
+  .exercise-metrics-container {
+    gap: var(--space-4);
+  }
+  
+  .metric-group {
+    padding: var(--space-3);
+  }
+  
+  .metric-label {
+    font-size: var(--fs-xs);
+    gap: var(--space-2);
+  }
+  
+  .metric-label i {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .exercise-success-notification,
+  .exercise-quicklog-notification {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    margin-bottom: var(--space-2);
+    align-self: flex-start;
+  }
+}
+
+/* Enhanced focus states for better accessibility */
+.metric-input-field:focus {
+  box-shadow: 0 0 0 3px var(--primary-subtle), var(--shadow-lg);
+  transform: scale(1.01);
+}
+
+.metric-input-field:hover:not(:focus) {
+  border-color: var(--primary-light);
+  box-shadow: var(--shadow-md);
+}
+
+/* Improved disabled field styles */
+.metric-input-field:disabled,
+.metric-input-field[readonly] {
+  background-color: #f3f4f6 !important;
+  color: #6b7280 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  border-color: #d1d5db !important;
+}
+
+/* Enhanced enabled field styles */
+.metric-input-field.field-enabled {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+  cursor: text !important;
+  opacity: 1 !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+  animation: fieldEnable 0.3s ease-out !important;
+}
+
+@keyframes fieldEnable {
+  from {
+    opacity: 0.6;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Input group enabled state animation */
+.input-group-modern:has(.metric-input-field.field-enabled) {
+  border-color: var(--primary-light) !important;
+  box-shadow: 0 0 0 3px var(--primary-subtle) !important;
+  animation: inputGroupEnable 0.4s ease-out !important;
+}
+
+@keyframes inputGroupEnable {
+  from {
+    border-color: var(--tertiary);
+    box-shadow: none;
+  }
+  to {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px var(--primary-subtle);
+  }
+}
+
+/* Exercise card enabled state */
+.exercise-card-modern.exercise-enabled {
+  border-color: var(--primary) !important;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2) !important;
+  animation: cardEnable 0.5s ease-out !important;
+}
+
+@keyframes cardEnable {
+  from {
+    border-color: var(--tertiary);
+    box-shadow: var(--input-card-shadow);
+  }
+  to {
+    border-color: var(--primary);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+  }
+}
+
+/* Improved responsive typography for better balance */
+@media (max-width: 768px) {
+  .exercise-name {
+    font-size: var(--fs-base);
+  }
+  
+  .metric-value {
+    font-size: var(--fs-lg);
+  }
+}
+
+/* High contrast support for better accessibility */
+@media (prefers-contrast: high) {
+  .input-group-modern,
+  .metric-group {
+    border-width: 3px;
+  }
+  
+  .metric-input-field:focus {
+    outline: 3px solid var(--focus-outline);
+    outline-offset: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .metric-input-field:focus {
+    animation: none;
+    transform: none;
+  }
+  
+  .input-group-modern:focus-within {
+    transform: none;
+  }
+  
+  .exercise-card-modern,
+  .metric-group {
+    transition: none;
+  }
+}
+
+/* Print styles for better document output */
+@media print {
+  .input-group-modern {
+    border: 2px solid var(--tertiary) !important;
+    box-shadow: none !important;
+  }
+  
+  .exercise-card-modern {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 2px solid var(--tertiary);
+  }
+}
