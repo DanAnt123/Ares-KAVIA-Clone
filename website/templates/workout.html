@@ -182,16 +182,10 @@
                             </div>
                             <div class="stat-content">
                                 <span class="stat-number">{{ (user.workouts | map(attribute='exercises') | map('length') | sum) if user.workouts else 0 }}</span>
-                                {# 
-                          Pluralize 'Exercise(s)' correctly based on total exercises.
-                          Approach: Use Jinja2's map filter to map user.workouts to their exercises, map each to its |length, then sum.
-                          Handles 0 (Exercises), 1 (Exercise), N (Exercises).
-                        #}
-                        {% set ex_counts = user.workouts | map(attribute='exercises') | map('length') | list %}
-                        {% set total_exercises = ex_counts | sum %}
-                        <span class="stat-label">
-                          Exercise{{ 's' if total_exercises != 1 else '' }}
-                        </span>
+                                <span class="stat-label">
+                                    {% set total_exercises = (user.workouts | map(attribute='exercises') | map('length') | sum) if user.workouts else 0 %}
+                                    Exercise{{ 's' if total_exercises != 1 else '' }}
+                                </span>
                             </div>
                             <div class="stat-trend">
                                 <i class="fa-solid fa-fire"></i>
@@ -802,11 +796,11 @@
     }
 
     // PUBLIC_INTERFACE
+    /**
+     * Initialize real-time interactive input fields for exercise data.
+     * Provides immediate feedback and AJAX saving for smooth user experience.
+     */
     function initializeInteractiveInputs() {
-        """
-        Initialize real-time interactive input fields for exercise data.
-        Provides immediate feedback and AJAX saving for smooth user experience.
-        """
         
         const debounceTimers = new Map();
         const DEBOUNCE_DELAY = 800; // ms to wait before saving
@@ -867,11 +861,11 @@
     }
     
     // PUBLIC_INTERFACE
+    /**
+     * Save individual exercise field via AJAX.
+     * Provides immediate visual feedback and error handling.
+     */
     function saveExerciseField(exerciseId, workoutId, fieldType, value, inputElement) {
-        """
-        Save individual exercise field via AJAX.
-        Provides immediate visual feedback and error handling.
-        """
         
         showSaveIndicator(inputElement, 'saving');
         
@@ -921,10 +915,10 @@
     }
     
     // PUBLIC_INTERFACE
+    /**
+     * Show visual feedback for save operations.
+     */
     function showSaveIndicator(inputElement, status) {
-        """
-        Show visual feedback for save operations.
-        """
         
         const container = inputElement.closest('.metric-input');
         if (!container) return;
@@ -973,10 +967,10 @@
     }
     
     // PUBLIC_INTERFACE
+    /**
+     * Update exercise completion status badge based on input values.
+     */
     function updateExerciseStatus(inputElement) {
-        """
-        Update exercise completion status badge based on input values.
-        """
         
         const exerciseCard = inputElement.closest('.exercise-card-modern');
         if (!exerciseCard) return;
@@ -1001,10 +995,10 @@
     }
     
     // PUBLIC_INTERFACE
+    /**
+     * Show temporary error message near input field.
+     */
     function showTemporaryError(inputElement, message) {
-        """
-        Show temporary error message near input field.
-        """
         
         const container = inputElement.closest('.metric-group');
         if (!container) return;
