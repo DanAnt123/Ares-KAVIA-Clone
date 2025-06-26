@@ -179,42 +179,99 @@ def home():
 @views.route("/workout", methods=["GET", "POST"])
 @login_required
 def workout():
+    """
+    Renders or updates the workout page. 
+    Supports standard POST, in-page AJAX saves via JSON, robust validation, and feedback.
+    """
+    # AJAX/JSON save handler
     if request.method == "POST":
-        # Check request type
-        request_type = request.form.get("request_type")
+        is_json = request.is_json or "application/json" in request.headers.get("Content-Type", "")
+        if is_json:
+            data = request.get_json(force=True, silent=True) or {}
+            workout_id = data.get("workout_id") or data.get("workout")
+            weights = data.get("weights")
+            details = data.get("details")
+            # Validate
+            errors = []
+            if not workout_id:
+                errors.append("Missing workout_id.")
+            workout = Workout.query.filter_by(id=workout_id, user_id=current_user.id).first() if workout_id else None
+            if not workout:
+                errors.append("Workout not found or access denied.")
 
+            if weights is None or details is None or not isinstance(weights, list) or not isinstance(details, list):
+                errors.append("Weights/details must be provided as lists.")
+            if workout and (len(weights) != len(workout.exercises) or len(details) != len(workout.exercises)):
+                errors.append("Mismatch between exercises and provided data.")
+
+            # Inline robust validation for numeric weights:
+            if not errors:
+                for i, w in enumerate(weights):
+                    if w is not None and str(w).strip() != "":
+                        try:
+                            float(w)
+                        except Exception:
+                            errors.append(f"Invalid weight value in entry {i+1}.")
+            # Only allow saving with valid inputs
+            if errors:
+                return jsonify({"success": False, "errors": errors}), 400
+
+            # Update DB
+            for i, exercise in enumerate(workout.exercises):
+                weight = weights[i]
+                detail = details[i]
+                if weight is not None and str(weight).strip() != "":
+                    exercise.weight = float(weight)
+                else:
+                    exercise.weight = None
+                exercise.details = detail
+            db.session.commit()
+            return jsonify({"success": True, "message": "Workout saved.", "workout_id": workout.id}), 200
+
+        # Standard HTML form fallback
+        request_type = request.form.get("request_type")
         if request_type == "save":
-            # Collect form information
             workout_id = request.form.get("workout")
             weight_list = request.form.getlist("weight")
             details_list = request.form.getlist("details")
 
-            # Query database for workout
-            workout = Workout.query.filter_by(id=workout_id).first()
+            workout = Workout.query.filter_by(id=workout_id, user_id=current_user.id).first()
+            if not workout:
+                flash("Workout not found or access denied.", category="error")
+                return render_template("workout.html", user=current_user)
 
-            # Update workout
-            for i in range(len(workout.exercises)):
-                if weight_list[i]:
-                    weight = float(weight_list[i])
-                    workout.exercises[i].weight = weight
+            # Validation
+            if len(weight_list) != len(workout.exercises) or len(details_list) != len(workout.exercises):
+                flash("Mismatch between submitted data and the number of exercises.", category="error")
+            else:
+                error_indices = []
+                for i, w in enumerate(weight_list):
+                    if w:
+                        try:
+                            float(w)
+                        except Exception:
+                            error_indices.append(i + 1)
+                if error_indices:
+                    flash(f"Invalid weights at positions: {', '.join(map(str, error_indices))}.", category="error")
                 else:
-                    workout.exercises[i].weight = None
-                details = details_list[i]
-                workout.exercises[i].details = details
-            db.session.commit()
+                    # Commit changes
+                    for i, exercise in enumerate(workout.exercises):
+                        # Accept blank = clear weight
+                        w = weight_list[i]
+                        exercise.weight = float(w) if w.strip() != "" else None
+                        exercise.details = details_list[i]
+                    db.session.commit()
+                    flash("Workout saved successfully!", category="success")
 
-        # Collect form information
         requested_workout = request.form.get("workout")
-
-        # Display requested workout
         return render_template(
             "workout.html",
             user=current_user,
             requested_workout=requested_workout,
-            displayRequested="True",
+            displayRequested="True"
         )
 
-    # Display workout
+    # GET
     return render_template("workout.html", user=current_user)
 
 
