@@ -1150,59 +1150,116 @@
   transform: translateY(-1px);
 }
 
-/* Interactive Input Container Styling - Merged from workout-interactive.css */
-.metric-input.weight-input-interactive,
-.metric-input.reps-input-interactive,
-.metric-input.details-input-interactive {
-  position: relative;
+/* Save Exercise Button Styling */
+.save-exercise-btn {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--text-on-primary);
 }
 
-/* Save Indicator Styling */
-.save-indicator {
-  display: none;
+.save-exercise-btn:hover,
+.save-exercise-btn:focus {
+  background: var(--primary);
+  border-color: var(--primary-light);
+  color: var(--text-on-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.save-exercise-btn.saving {
+  background: var(--primary-subtle);
+  border-color: var(--primary-light);
+  color: var(--primary-light);
+  cursor: not-allowed;
+}
+
+.save-exercise-btn.success {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--text-on-primary);
+  animation: success-pulse 0.5s ease-out;
+}
+
+.save-exercise-btn.error {
+  background: var(--error-bg);
+  border-color: var(--error-border);
+  color: var(--text-on-primary);
+  animation: error-shake 0.5s ease-out;
+}
+
+@keyframes success-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes error-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Exercise Validation Error Styling */
+.exercise-validation-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--error-bg);
+  color: var(--text-on-primary);
+  border: 1px solid var(--error-border);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  margin-bottom: var(--space-3);
+  animation: slideInDown 0.3s ease-out;
+}
+
+.exercise-validation-error i {
+  color: var(--text-on-primary);
+  font-size: var(--fs-sm);
+}
+
+/* Exercise Success Notification */
+.exercise-success-notification {
+  position: absolute;
+  top: -12px;
+  right: var(--space-4);
+  display: flex;
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-base);
-  font-size: var(--fs-xs);
-  font-weight: var(--fw-medium);
-  position: absolute;
-  top: -8px;
-  right: 8px;
-  z-index: 10;
-  transition: all var(--transition-fast);
-  backdrop-filter: blur(4px);
-  border: 1px solid transparent;
-  box-shadow: var(--shadow-sm);
-}
-
-.save-indicator.typing {
-  background: var(--surface-elevated);
-  color: var(--text-secondary);
-  border-color: var(--tertiary);
-}
-
-.save-indicator.saving {
-  background: var(--primary-subtle);
-  color: var(--primary-light);
-  border-color: var(--primary-light);
-}
-
-.save-indicator.success {
   background: var(--success-bg);
   color: var(--text-on-primary);
-  border-color: var(--success-border);
+  border: 1px solid var(--success-border);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  z-index: 100;
+  box-shadow: var(--shadow-lg);
+  animation: slideInDown 0.3s ease-out;
+  transition: all var(--transition-base);
 }
 
-.save-indicator.error {
-  background: var(--error-bg);
+.exercise-success-notification i {
   color: var(--text-on-primary);
-  border-color: var(--error-border);
+  font-size: var(--fs-sm);
 }
 
-.save-indicator i {
-  font-size: var(--fs-xs);
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
+/* Manual save system - removed auto-completion styling */
+
+/* Removed auto-completion save indicator styling - replaced with manual save system */
 
 /* Interactive Input Field Enhancements */
 .interactive-input {

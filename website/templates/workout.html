@@ -447,6 +447,13 @@
                                                 <i class="fa-solid fa-plus-circle"></i>
                                                 Quick Log
                                             </button>
+                                            <button type="button" class="exercise-action-btn save-exercise-btn" 
+                                                    data-exercise-id="{{ exercise.id }}" 
+                                                    data-workout-id="{{ workout.id }}"
+                                                    data-exercise-index="{{ loop.index0 }}">
+                                                <i class="fa-solid fa-save"></i>
+                                                Save
+                                            </button>
                                             <button type="button" class="exercise-action-btn notes-btn" data-exercise-index="{{ loop.index0 }}">
                                                 <i class="fa-solid fa-sticky-note"></i>
                                                 Notes
@@ -843,79 +850,99 @@
 
     // PUBLIC_INTERFACE
     /**
-     * Initialize real-time interactive input fields for exercise data.
-     * Provides immediate feedback and AJAX saving for smooth user experience.
+     * Initialize manual save buttons for exercise data.
+     * Removes auto-completion and provides explicit save functionality.
      */
     function initializeInteractiveInputs() {
+        // Initialize save buttons
+        document.querySelectorAll('.save-exercise-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const exerciseId = this.dataset.exerciseId;
+                const workoutId = this.dataset.workoutId;
+                const exerciseIndex = this.dataset.exerciseIndex;
+                
+                // Find the exercise card
+                const exerciseCard = this.closest('.exercise-card-modern');
+                if (!exerciseCard) return;
+                
+                // Collect all field values
+                const weightInput = exerciseCard.querySelector('.weight-field');
+                const repsInput = exerciseCard.querySelector('.reps-field');
+                const detailsInput = exerciseCard.querySelector('.details-field');
+                
+                const exerciseData = {
+                    weight: weightInput ? weightInput.value.trim() : '',
+                    reps: repsInput ? repsInput.value.trim() : '',
+                    details: detailsInput ? detailsInput.value.trim() : ''
+                };
+                
+                // Validate required fields
+                const validationResult = validateExerciseData(exerciseData);
+                if (!validationResult.isValid) {
+                    showValidationError(exerciseCard, validationResult.message);
+                    return;
+                }
+                
+                // Save the exercise
+                saveCompleteExercise(exerciseId, workoutId, exerciseData, exerciseCard);
+            });
+        });
         
-        const debounceTimers = new Map();
-        const DEBOUNCE_DELAY = 800; // ms to wait before saving
-        
-        // Add event listeners to all interactive input fields
+        // Add input validation on focus/blur for immediate feedback
         document.querySelectorAll('.interactive-input').forEach(input => {
-            const exerciseId = input.dataset.exerciseId;
-            const workoutId = input.dataset.workoutId;
-            const fieldType = input.dataset.fieldType;
-            
-            // Handle input changes with debouncing
-            input.addEventListener('input', function() {
-                // Clear existing timer for this input
-                const timerId = `${exerciseId}-${fieldType}`;
-                if (debounceTimers.has(timerId)) {
-                    clearTimeout(debounceTimers.get(timerId));
-                }
-                
-                // Show typing indicator
-                showSaveIndicator(this, 'typing');
-                
-                // Set new timer
-                const timer = setTimeout(() => {
-                    saveExerciseField(exerciseId, workoutId, fieldType, this.value, this);
-                    debounceTimers.delete(timerId);
-                }, DEBOUNCE_DELAY);
-                
-                debounceTimers.set(timerId, timer);
-            });
-            
-            // Handle enter key for immediate save
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    
-                    // Clear debounce timer and save immediately
-                    const timerId = `${exerciseId}-${fieldType}`;
-                    if (debounceTimers.has(timerId)) {
-                        clearTimeout(debounceTimers.get(timerId));
-                        debounceTimers.delete(timerId);
-                    }
-                    
-                    saveExerciseField(exerciseId, workoutId, fieldType, this.value, this);
-                    this.blur(); // Remove focus after save
-                }
-            });
-            
-            // Handle blur event for final save
-            input.addEventListener('blur', function() {
-                const timerId = `${exerciseId}-${fieldType}`;
-                if (debounceTimers.has(timerId)) {
-                    clearTimeout(debounceTimers.get(timerId));
-                    debounceTimers.delete(timerId);
-                    saveExerciseField(exerciseId, workoutId, fieldType, this.value, this);
-                }
+            input.addEventListener('focus', function() {
+                clearValidationErrors(this.closest('.exercise-card-modern'));
             });
         });
     }
     
     // PUBLIC_INTERFACE
     /**
-     * Save individual exercise field via AJAX.
-     * Provides immediate visual feedback and error handling.
+     * Validate exercise data before saving.
+     * Checks that required fields are filled.
      */
-    function saveExerciseField(exerciseId, workoutId, fieldType, value, inputElement) {
+    function validateExerciseData(exerciseData) {
+        const errors = [];
         
-        showSaveIndicator(inputElement, 'saving');
+        // Weight is required and must be a valid number > 0
+        if (!exerciseData.weight || exerciseData.weight === '') {
+            errors.push('Weight is required');
+        } else {
+            const weightNum = parseFloat(exerciseData.weight);
+            if (isNaN(weightNum) || weightNum <= 0) {
+                errors.push('Weight must be a valid number greater than 0');
+            } else if (weightNum > 999.99) {
+                errors.push('Weight cannot exceed 999.99 kg');
+            }
+        }
         
-        // Use existing workout endpoint with enhanced functionality
+        // Reps is required
+        if (!exerciseData.reps || exerciseData.reps === '') {
+            errors.push('Reps is required');
+        } else if (exerciseData.reps.length > 20) {
+            errors.push('Reps value too long (max 20 characters)');
+        }
+        
+        // Details validation (if provided)
+        if (exerciseData.details && exerciseData.details.length > 50) {
+            errors.push('Details too long (max 50 characters)');
+        }
+        
+        return {
+            isValid: errors.length === 0,
+            message: errors.join(', ')
+        };
+    }
+    
+    // PUBLIC_INTERFACE
+    /**
+     * Save complete exercise data via AJAX after validation.
+     * Only saves when all required fields are valid.
+     */
+    function saveCompleteExercise(exerciseId, workoutId, exerciseData, exerciseCard) {
+        showExerciseSaveStatus(exerciseCard, 'saving');
+        
+        // Save all exercise fields
         fetch('/workout', {
             method: 'POST',
             headers: {
@@ -925,96 +952,179 @@
             body: JSON.stringify({
                 workout_id: workoutId,
                 exercise_id: exerciseId,
-                field_type: fieldType,
-                value: value,
-                action: 'update_single_field'
+                exercise_data: exerciseData,
+                action: 'save_complete_exercise'
             })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showSaveIndicator(inputElement, 'success');
+                showExerciseSaveStatus(exerciseCard, 'success');
+                
+                // Update exercise status badge to completed
+                updateExerciseStatusBadge(exerciseCard, true);
                 
                 // Update progress indicators
                 updateProgressDisplay(workoutId);
                 
-                // Update exercise status badge
-                updateExerciseStatus(inputElement);
-                
-                // If a top set was logged, show special notification
-                if (data.top_set_logged) {
-                    showTopSetNotification(inputElement);
-                }
+                // Show success notification
+                showSuccessNotification(exerciseCard, 'Exercise saved and marked as complete!');
                 
             } else {
-                showSaveIndicator(inputElement, 'error');
+                showExerciseSaveStatus(exerciseCard, 'error');
                 console.error('Save failed:', data.errors || data.error);
                 
                 // Show user-friendly error
                 if (data.errors && data.errors.length > 0) {
-                    showTemporaryError(inputElement, data.errors[0]);
+                    showValidationError(exerciseCard, data.errors[0]);
                 } else if (data.error) {
-                    showTemporaryError(inputElement, data.error);
+                    showValidationError(exerciseCard, data.error);
                 }
             }
         })
         .catch(error => {
             console.error('Network error:', error);
-            showSaveIndicator(inputElement, 'error');
-            showTemporaryError(inputElement, 'Network error - please try again');
+            showExerciseSaveStatus(exerciseCard, 'error');
+            showValidationError(exerciseCard, 'Network error - please try again');
         });
     }
     
     // PUBLIC_INTERFACE
     /**
-     * Show visual feedback for save operations.
+     * Show save status for the entire exercise card.
      */
-    function showSaveIndicator(inputElement, status) {
+    function showExerciseSaveStatus(exerciseCard, status) {
+        const saveBtn = exerciseCard.querySelector('.save-exercise-btn');
+        if (!saveBtn) return;
         
-        const container = inputElement.closest('.metric-input');
-        if (!container) return;
+        const icon = saveBtn.querySelector('i');
+        const text = saveBtn.querySelector('span') || saveBtn.lastChild;
         
-        const indicator = container.querySelector('.save-indicator');
-        if (!indicator) return;
-        
-        // Reset classes
-        indicator.className = 'save-indicator';
+        // Reset button classes
+        saveBtn.className = 'exercise-action-btn save-exercise-btn';
         
         switch (status) {
-            case 'typing':
-                indicator.innerHTML = '<i class="fa-solid fa-pencil"></i><span>Typing...</span>';
-                indicator.classList.add('typing');
-                indicator.style.display = 'flex';
-                break;
-                
             case 'saving':
-                indicator.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Saving...</span>';
-                indicator.classList.add('saving');
-                indicator.style.display = 'flex';
+                saveBtn.classList.add('saving');
+                saveBtn.disabled = true;
+                icon.className = 'fa-solid fa-spinner fa-spin';
+                if (text.nodeType === Node.TEXT_NODE) {
+                    text.textContent = ' Saving...';
+                } else {
+                    text.textContent = 'Saving...';
+                }
                 break;
                 
             case 'success':
-                indicator.innerHTML = '<i class="fa-solid fa-check"></i><span>Saved</span>';
-                indicator.classList.add('success');
-                indicator.style.display = 'flex';
+                saveBtn.classList.add('success');
+                saveBtn.disabled = false;
+                icon.className = 'fa-solid fa-check';
+                if (text.nodeType === Node.TEXT_NODE) {
+                    text.textContent = ' Saved';
+                } else {
+                    text.textContent = 'Saved';
+                }
                 
-                // Hide after delay
+                // Reset after delay
                 setTimeout(() => {
-                    indicator.style.display = 'none';
-                }, 2000);
+                    saveBtn.className = 'exercise-action-btn save-exercise-btn';
+                    icon.className = 'fa-solid fa-save';
+                    if (text.nodeType === Node.TEXT_NODE) {
+                        text.textContent = ' Save';
+                    } else {
+                        text.textContent = 'Save';
+                    }
+                }, 3000);
                 break;
                 
             case 'error':
-                indicator.innerHTML = '<i class="fa-solid fa-exclamation-triangle"></i><span>Error</span>';
-                indicator.classList.add('error');
-                indicator.style.display = 'flex';
+                saveBtn.classList.add('error');
+                saveBtn.disabled = false;
+                icon.className = 'fa-solid fa-exclamation-triangle';
+                if (text.nodeType === Node.TEXT_NODE) {
+                    text.textContent = ' Error';
+                } else {
+                    text.textContent = 'Error';
+                }
                 
-                // Hide after delay
+                // Reset after delay
                 setTimeout(() => {
-                    indicator.style.display = 'none';
+                    saveBtn.className = 'exercise-action-btn save-exercise-btn';
+                    icon.className = 'fa-solid fa-save';
+                    if (text.nodeType === Node.TEXT_NODE) {
+                        text.textContent = ' Save';
+                    } else {
+                        text.textContent = 'Save';
+                    }
                 }, 3000);
                 break;
         }
+    }
+    
+    // PUBLIC_INTERFACE
+    /**
+     * Show validation error message on exercise card.
+     */
+    function showValidationError(exerciseCard, message) {
+        clearValidationErrors(exerciseCard);
+        
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'exercise-validation-error';
+        errorDiv.innerHTML = `<i class="fa-solid fa-exclamation-triangle"></i> ${message}`;
+        
+        const footer = exerciseCard.querySelector('.exercise-card-footer');
+        footer.insertBefore(errorDiv, footer.firstChild);
+        
+        // Remove after delay
+        setTimeout(() => {
+            errorDiv.remove();
+        }, 5000);
+    }
+    
+    // PUBLIC_INTERFACE
+    /**
+     * Clear validation errors from exercise card.
+     */
+    function clearValidationErrors(exerciseCard) {
+        const existingErrors = exerciseCard.querySelectorAll('.exercise-validation-error');
+        existingErrors.forEach(error => error.remove());
+    }
+    
+    // PUBLIC_INTERFACE
+    /**
+     * Update exercise status badge based on completion.
+     */
+    function updateExerciseStatusBadge(exerciseCard, isCompleted) {
+        const statusBadge = exerciseCard.querySelector('.status-badge');
+        if (!statusBadge) return;
+        
+        if (isCompleted) {
+            statusBadge.className = 'status-badge completed';
+            statusBadge.innerHTML = '<i class="fa-solid fa-check-circle"></i> Completed';
+        } else {
+            statusBadge.className = 'status-badge pending';
+            statusBadge.innerHTML = '<i class="fa-regular fa-circle"></i> Pending';
+        }
+    }
+    
+    // PUBLIC_INTERFACE
+    /**
+     * Show success notification for exercise completion.
+     */
+    function showSuccessNotification(exerciseCard, message) {
+        const notification = document.createElement('div');
+        notification.className = 'exercise-success-notification';
+        notification.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${message}`;
+        
+        exerciseCard.style.position = 'relative';
+        exerciseCard.appendChild(notification);
+        
+        // Remove after delay
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(-20px)';
+            setTimeout(() => notification.remove(), 300);
+        }, 4000);
     }
     
     // PUBLIC_INTERFACE

@@ -65,13 +65,13 @@ def _create_top_set_log(exercise, workout_id, user_id):
         print(f"Error creating top set log: {str(e)}")
 
 
-def handle_single_field_update(data):
+def handle_complete_exercise_save(data):
     """
-    Handle single field updates for interactive workout inputs.
-    Provides real-time saving of individual exercise fields.
+    Handle complete exercise save with validation.
+    Only saves and marks as complete when all required fields are valid.
     
     Args:
-        data (dict): JSON data containing field update information
+        data (dict): JSON data containing complete exercise information
         
     Returns:
         flask.Response: JSON response with success/error status
@@ -80,21 +80,13 @@ def handle_single_field_update(data):
     try:
         workout_id = data.get("workout_id")
         exercise_id = data.get("exercise_id")
-        field_type = data.get("field_type")
-        value = data.get("value")
+        exercise_data = data.get("exercise_data", {})
         
         # Validate required fields
-        if not all([workout_id, exercise_id, field_type]):
+        if not all([workout_id, exercise_id]):
             return jsonify({
                 "success": False, 
-                "error": "Missing required fields: workout_id, exercise_id, or field_type"
-            }), 400
-        
-        # Validate field type
-        if field_type not in ["weight", "reps", "details"]:
-            return jsonify({
-                "success": False, 
-                "error": "Invalid field_type. Allowed: weight, reps, details"
+                "error": "Missing required fields: workout_id or exercise_id"
             }), 400
         
         # Find exercise and verify ownership
@@ -110,70 +102,57 @@ def handle_single_field_update(data):
                 "error": "Exercise not found or access denied"
             }), 404
         
-        # Process and validate the value based on field type
-        if field_type == "weight":
-            if value is None or str(value).strip() == "":
-                exercise.weight = None
-            else:
-                try:
-                    weight_val = float(value)
-                    if weight_val < 0 or weight_val > 999.99:
-                        return jsonify({
-                            "success": False, 
-                            "error": "Weight must be between 0 and 999.99"
-                        }), 400
-                    exercise.weight = weight_val
-                except (ValueError, TypeError):
-                    return jsonify({
-                        "success": False, 
-                        "error": "Invalid weight value. Must be a number."
-                    }), 400
+        # Validate exercise data
+        errors = []
         
-        elif field_type == "reps":
-            # Reps can be text like "8-12" or "3x10"
-            reps_val = str(value).strip() if value is not None else ""
-            if len(reps_val) > 20:
-                return jsonify({
-                    "success": False, 
-                    "error": "Reps value too long (max 20 characters)"
-                }), 400
-            exercise.reps = reps_val if reps_val else None
-            
-            # Check if this completes a top set (has both weight and reps)
-            if reps_val and exercise.weight is not None and exercise.weight > 0:
-                # Create a workout session entry for this completed top set
-                _create_top_set_log(exercise, workout_id, current_user.id)
+        # Weight validation
+        weight_str = exercise_data.get("weight", "").strip()
+        if not weight_str:
+            errors.append("Weight is required")
+        else:
+            try:
+                weight_val = float(weight_str)
+                if weight_val <= 0:
+                    errors.append("Weight must be greater than 0")
+                elif weight_val > 999.99:
+                    errors.append("Weight cannot exceed 999.99 kg")
+            except (ValueError, TypeError):
+                errors.append("Invalid weight value. Must be a number.")
         
-        elif field_type == "details":
-            details_val = str(value).strip() if value is not None else ""
-            if len(details_val) > 50:
-                return jsonify({
-                    "success": False, 
-                    "error": "Details too long (max 50 characters)"
-                }), 400
-            exercise.details = details_val if details_val else ""
+        # Reps validation
+        reps_str = exercise_data.get("reps", "").strip()
+        if not reps_str:
+            errors.append("Reps is required")
+        elif len(reps_str) > 20:
+            errors.append("Reps value too long (max 20 characters)")
+        
+        # Details validation
+        details_str = exercise_data.get("details", "").strip()
+        if len(details_str) > 50:
+            errors.append("Details too long (max 50 characters)")
+        
+        if errors:
+            return jsonify({
+                "success": False, 
+                "errors": errors
+            }), 400
+        
+        # Update exercise with validated data
+        exercise.weight = float(weight_str)
+        exercise.reps = reps_str
+        exercise.details = details_str if details_str else ""
         
         # Save to database
         db.session.commit()
         
-        # Check if this constitutes a "top set" (has weight and reps) to create a workout session
-        top_set_logged = False
-        if field_type == "weight" and value is not None and float(value) > 0:
-            # Check if this exercise also has reps to constitute a complete top set
-            if exercise.reps and exercise.reps.strip():
-                # Create a workout session entry for this completed exercise
-                _create_top_set_log(exercise, workout_id, current_user.id)
-                top_set_logged = True
-        elif field_type == "reps" and value and exercise.weight is not None and exercise.weight > 0:
-            top_set_logged = True
+        # Create workout session log for this completed exercise
+        _create_top_set_log(exercise, workout_id, current_user.id)
         
         return jsonify({
             "success": True, 
-            "message": f"{field_type.capitalize()} updated successfully",
+            "message": "Exercise saved and marked as complete",
             "exercise_id": exercise_id,
-            "field_type": field_type,
-            "value": value,
-            "top_set_logged": top_set_logged
+            "exercise_completed": True
         }), 200
         
     except Exception as e:
@@ -371,9 +350,9 @@ def workout():
         if is_json:
             data = request.get_json(force=True, silent=True) or {}
             
-            # Handle single field updates for interactive inputs
-            if data.get("action") == "update_single_field":
-                return handle_single_field_update(data)
+            # Handle complete exercise save (replaces auto-completion)
+            if data.get("action") == "save_complete_exercise":
+                return handle_complete_exercise_save(data)
             
             # Original bulk update logic
             workout_id = data.get("workout_id") or data.get("workout")
