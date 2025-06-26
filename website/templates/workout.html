@@ -723,11 +723,133 @@
     }
 
     function updateProgressDisplay(workoutId) {
-        // Progress display is now handled server-side based on logged sessions
-        // This function can be used for real-time updates after successful saves
-        // For now, we'll keep the existing UI state until page refresh
-        console.log(`Progress updated for workout ${workoutId} - refresh page to see completion status`);
+        // Calculate progress based on current exercise completion status
+        const workoutContainer = document.querySelector(`.workout-${workoutId}`);
+        if (!workoutContainer) return;
+        
+        // Get all exercise cards for this workout
+        const exerciseCards = workoutContainer.querySelectorAll('.exercise-card-modern');
+        let completedCount = 0;
+        const totalCount = exerciseCards.length;
+        
+        // Count completed exercises (those with both weight and reps filled)
+        exerciseCards.forEach(card => {
+            const weightInput = card.querySelector('.weight-field');
+            const repsInput = card.querySelector('.reps-field');
+            
+            const hasWeight = weightInput && weightInput.value.trim() !== '' && parseFloat(weightInput.value) > 0;
+            const hasReps = repsInput && repsInput.value.trim() !== '';
+            
+            if (hasWeight && hasReps) {
+                completedCount++;
+            }
+        });
+        
+        // Calculate percentage
+        const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+        
+        // Update mini progress bar
+        const miniProgressBar = document.getElementById(`mini-progress-${workoutId}`);
+        const miniProgressText = document.getElementById(`mini-progress-text-${workoutId}`);
+        
+        if (miniProgressBar) {
+            miniProgressBar.style.width = `${percentage}%`;
+        }
+        if (miniProgressText) {
+            miniProgressText.textContent = `${percentage}%`;
+        }
+        
+        // Update main progress bar
+        const mainProgressBar = document.getElementById(`progress-fill-${workoutId}`);
+        if (mainProgressBar) {
+            mainProgressBar.style.width = `${percentage}%`;
+        }
+        
+        // Update completed exercises count
+        const completedExercisesEl = document.getElementById(`completed-exercises-${workoutId}`);
+        if (completedExercisesEl) {
+            completedExercisesEl.textContent = completedCount;
+        }
+        
+        // Update completion percentage
+        const completionPercentageEl = document.getElementById(`completion-percentage-${workoutId}`);
+        if (completionPercentageEl) {
+            completionPercentageEl.textContent = `${percentage}%`;
+        }
+        
+        // Add visual feedback with animation
+        const progressElements = [miniProgressBar, mainProgressBar];
+        progressElements.forEach(element => {
+            if (element) {
+                element.style.transition = 'width 0.5s ease-out';
+                
+                // Add a pulse effect when progress increases
+                element.classList.add('progress-updated');
+                setTimeout(() => {
+                    element.classList.remove('progress-updated');
+                }, 1000);
+            }
+        });
+        
+        // Show completion celebration if workout is fully completed
+        if (percentage === 100) {
+            showWorkoutCompletionCelebration(workoutId);
+        }
     }
+    
+    // PUBLIC_INTERFACE
+    /**
+     * Update progress indicators using backend completion status data.
+     * This is more accurate than client-side calculation.
+     */
+    function updateProgressWithBackendData(workoutId, completionStatus) {
+        const { completed, total, percentage } = completionStatus;
+        
+        // Update mini progress bar
+        const miniProgressBar = document.getElementById(`mini-progress-${workoutId}`);
+        const miniProgressText = document.getElementById(`mini-progress-text-${workoutId}`);
+        
+        if (miniProgressBar) {
+            miniProgressBar.style.transition = 'width 0.5s ease-out';
+            miniProgressBar.style.width = `${percentage}%`;
+            miniProgressBar.classList.add('progress-updated');
+            setTimeout(() => {
+                miniProgressBar.classList.remove('progress-updated');
+            }, 1000);
+        }
+        if (miniProgressText) {
+            miniProgressText.textContent = `${percentage}%`;
+        }
+        
+        // Update main progress bar
+        const mainProgressBar = document.getElementById(`progress-fill-${workoutId}`);
+        if (mainProgressBar) {
+            mainProgressBar.style.transition = 'width 0.5s ease-out';
+            mainProgressBar.style.width = `${percentage}%`;
+            mainProgressBar.classList.add('progress-updated');
+            setTimeout(() => {
+                mainProgressBar.classList.remove('progress-updated');
+            }, 1000);
+        }
+        
+        // Update completed exercises count
+        const completedExercisesEl = document.getElementById(`completed-exercises-${workoutId}`);
+        if (completedExercisesEl) {
+            completedExercisesEl.textContent = completed;
+        }
+        
+        // Update completion percentage
+        const completionPercentageEl = document.getElementById(`completion-percentage-${workoutId}`);
+        if (completionPercentageEl) {
+            completionPercentageEl.textContent = `${percentage}%`;
+        }
+        
+        // Show completion celebration if workout is fully completed
+        if (percentage === 100 && completed === total) {
+            showWorkoutCompletionCelebration(workoutId);
+        }
+    }
+=======
 
     function animateProgressBars() {
         const progressBars = document.querySelectorAll('.progress-bar-fill');
@@ -893,6 +1015,19 @@
             input.addEventListener('focus', function() {
                 clearValidationErrors(this.closest('.exercise-card-modern'));
             });
+            
+            // Add real-time progress tracking
+            input.addEventListener('input', function() {
+                const exerciseCard = this.closest('.exercise-card-modern');
+                const workoutContainer = exerciseCard.closest('.workout-session-container');
+                const workoutId = workoutContainer.dataset.workoutId;
+                
+                // Update progress display after a short delay to avoid excessive updates
+                clearTimeout(this.progressUpdateTimer);
+                this.progressUpdateTimer = setTimeout(() => {
+                    updateProgressDisplay(workoutId);
+                }, 500);
+            });
         });
     }
     
@@ -964,8 +1099,12 @@
                 // Update exercise status badge to completed
                 updateExerciseStatusBadge(exerciseCard, true);
                 
-                // Update progress indicators
-                updateProgressDisplay(workoutId);
+                // Update progress indicators with backend data
+                if (data.completion_status) {
+                    updateProgressWithBackendData(workoutId, data.completion_status);
+                } else {
+                    updateProgressDisplay(workoutId);
+                }
                 
                 // Show success notification
                 showSuccessNotification(exerciseCard, 'Exercise saved and marked as complete!');
@@ -1232,6 +1371,144 @@
             setTimeout(() => notification.remove(), 300);
         }, 3000);
     }
+    
+    // PUBLIC_INTERFACE
+    /**
+     * Show celebration when workout is 100% completed.
+     */
+    function showWorkoutCompletionCelebration(workoutId) {
+        const workoutContainer = document.querySelector(`.workout-${workoutId}`);
+        if (!workoutContainer) return;
+        
+        // Avoid showing multiple celebrations
+        if (workoutContainer.dataset.celebrationShown === 'true') return;
+        workoutContainer.dataset.celebrationShown = 'true';
+        
+        // Create celebration overlay
+        const celebration = document.createElement('div');
+        celebration.className = 'workout-completion-celebration';
+        celebration.innerHTML = `
+            <div class="celebration-content">
+                <div class="celebration-icon">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h3 class="celebration-title">Workout Complete!</h3>
+                <p class="celebration-message">Amazing job! You've completed all exercises.</p>
+                <div class="celebration-confetti">
+                    <div class="confetti-piece"></div>
+                    <div class="confetti-piece"></div>
+                    <div class="confetti-piece"></div>
+                    <div class="confetti-piece"></div>
+                    <div class="confetti-piece"></div>
+                </div>
+            </div>
+        `;
+        
+        celebration.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.5s ease-out;
+        `;
+        
+        // Add celebration styles
+        const celebrationStyles = `
+            .celebration-content {
+                background: linear-gradient(135deg, #10b981, #059669);
+                color: white;
+                padding: 2rem;
+                border-radius: 1rem;
+                text-align: center;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                position: relative;
+                overflow: hidden;
+            }
+            .celebration-icon {
+                font-size: 4rem;
+                margin-bottom: 1rem;
+                animation: bounce 1s infinite;
+            }
+            .celebration-title {
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+                font-weight: bold;
+            }
+            .celebration-message {
+                font-size: 1.2rem;
+                opacity: 0.9;
+            }
+            .celebration-confetti {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+            }
+            .confetti-piece {
+                position: absolute;
+                width: 10px;
+                height: 10px;
+                background: #ffd700;
+                animation: confettiFall 3s linear infinite;
+            }
+            .confetti-piece:nth-child(1) { left: 10%; animation-delay: 0s; background: #ff6b6b; }
+            .confetti-piece:nth-child(2) { left: 30%; animation-delay: 0.5s; background: #4ecdc4; }
+            .confetti-piece:nth-child(3) { left: 50%; animation-delay: 1s; background: #45b7d1; }
+            .confetti-piece:nth-child(4) { left: 70%; animation-delay: 1.5s; background: #96ceb4; }
+            .confetti-piece:nth-child(5) { left: 90%; animation-delay: 2s; background: #feca57; }
+            @keyframes confettiFall {
+                0% { transform: translateY(-100vh) rotate(0deg); }
+                100% { transform: translateY(100vh) rotate(360deg); }
+            }
+            @keyframes bounce {
+                0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+                40% { transform: translateY(-30px); }
+                60% { transform: translateY(-15px); }
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+        `;
+        
+        // Add styles to document
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = celebrationStyles;
+        document.head.appendChild(styleSheet);
+        
+        document.body.appendChild(celebration);
+        
+        // Remove celebration after delay
+        setTimeout(() => {
+            celebration.style.opacity = '0';
+            setTimeout(() => {
+                celebration.remove();
+                styleSheet.remove();
+                // Reset celebration flag after some time
+                setTimeout(() => {
+                    workoutContainer.dataset.celebrationShown = 'false';
+                }, 30000); // 30 seconds
+            }, 500);
+        }, 4000);
+        
+        // Allow clicking to dismiss
+        celebration.addEventListener('click', () => {
+            celebration.style.opacity = '0';
+            setTimeout(() => {
+                celebration.remove();
+                styleSheet.remove();
+                workoutContainer.dataset.celebrationShown = 'false';
+            }, 300);
+        });
+    }
 
     // Intersection Observer for animations
     const observerOptions = {
@@ -1251,6 +1528,95 @@
     document.querySelectorAll('.exercise-card-modern').forEach(card => {
         observer.observe(card);
     });
+    
+    // Add CSS for progress animations
+    const progressAnimationStyles = `
+        .progress-updated {
+            animation: progressPulse 1s ease-out;
+        }
+        
+        @keyframes progressPulse {
+            0% { 
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+        
+        .exercise-validation-error {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #ef4444;
+            color: white;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 8px;
+            animation: slideInUp 0.3s ease-out;
+        }
+        
+        .exercise-success-notification {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideInDown 0.3s ease-out;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .save-exercise-btn.saving {
+            background: #fbbf24 !important;
+            color: #92400e !important;
+        }
+        
+        .save-exercise-btn.success {
+            background: #10b981 !important;
+            color: white !important;
+        }
+        
+        .save-exercise-btn.error {
+            background: #ef4444 !important;
+            color: white !important;
+        }
+    `;
+    
+    // Add progress animation styles to document
+    const progressStyleSheet = document.createElement('style');
+    progressStyleSheet.textContent = progressAnimationStyles;
+    document.head.appendChild(progressStyleSheet);
 </script>
 
 <script type="text/javascript" src="/static/js/workout.js"></script>

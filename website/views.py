@@ -8,6 +8,44 @@ views = Blueprint('views', __name__)
 
 
 # PUBLIC_INTERFACE
+def get_workout_completion_status(workout_id, user_id):
+    """
+    Calculate the completion status of a workout based on filled exercise data.
+    
+    Args:
+        workout_id (int): ID of the workout
+        user_id (int): ID of the user
+        
+    Returns:
+        dict: Completion status with counts and percentage
+    """
+    try:
+        workout = Workout.query.filter_by(id=workout_id, user_id=user_id).first()
+        if not workout:
+            return {"completed": 0, "total": 0, "percentage": 0}
+        
+        total_exercises = len(workout.exercises)
+        completed_exercises = 0
+        
+        for exercise in workout.exercises:
+            # An exercise is considered completed if it has both weight and reps
+            if (exercise.weight is not None and exercise.weight > 0 and 
+                exercise.reps is not None and exercise.reps.strip() != ''):
+                completed_exercises += 1
+        
+        percentage = round((completed_exercises / total_exercises * 100) if total_exercises > 0 else 0)
+        
+        return {
+            "completed": completed_exercises,
+            "total": total_exercises,
+            "percentage": percentage
+        }
+    except Exception as e:
+        print(f"Error calculating completion status: {str(e)}")
+        return {"completed": 0, "total": 0, "percentage": 0}
+
+
+# PUBLIC_INTERFACE
 def _create_top_set_log(exercise, workout_id, user_id):
     """
     Create a workout session log entry when a top set is completed (has both weight and reps).
@@ -152,7 +190,9 @@ def handle_complete_exercise_save(data):
             "success": True, 
             "message": "Exercise saved and marked as complete",
             "exercise_id": exercise_id,
-            "exercise_completed": True
+            "exercise_completed": True,
+            "workout_id": workout_id,
+            "completion_status": get_workout_completion_status(workout_id, current_user.id)
         }), 200
         
     except Exception as e:
