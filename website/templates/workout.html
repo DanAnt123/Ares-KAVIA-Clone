@@ -802,9 +802,6 @@
      * Update progress indicators using backend completion status data.
      * This is more accurate than client-side calculation.
      */
-
-    function animateProgressBars() {
-=======
     function updateProgressWithBackendData(workoutId, completionStatus) {
         const { completed, total, percentage } = completionStatus;
         
@@ -852,9 +849,6 @@
             showWorkoutCompletionCelebration(workoutId);
         }
     }
-
-    function animateProgressBars() {
-=======
 
     function animateProgressBars() {
         const progressBars = document.querySelectorAll('.progress-bar-fill');
@@ -1269,112 +1263,6 @@
             notification.style.transform = 'translateY(-20px)';
             setTimeout(() => notification.remove(), 300);
         }, 4000);
-    }
-    
-    // PUBLIC_INTERFACE
-    /**
-     * Update exercise completion status badge based on input values.
-     */
-    function updateExerciseStatus(inputElement) {
-        
-        const exerciseCard = inputElement.closest('.exercise-card-modern');
-        if (!exerciseCard) return;
-        
-        const statusBadge = exerciseCard.querySelector('.status-badge');
-        
-        if (!statusBadge) return;
-        
-        // Don't update status badge immediately - completion status is determined 
-        // by logged workout sessions, not just input values
-        // The user needs to complete and log their workout session to mark exercises as completed
-        // Status will be updated on page refresh after successful session logging
-        console.log('Exercise data updated - complete workout session to mark as completed');
-    }
-    
-    // PUBLIC_INTERFACE
-    /**
-     * Show temporary error message near input field.
-     */
-    function showTemporaryError(inputElement, message) {
-        
-        const container = inputElement.closest('.metric-group');
-        if (!container) return;
-        
-        // Remove existing error messages
-        const existingError = container.querySelector('.temp-error-message');
-        if (existingError) {
-            existingError.remove();
-        }
-        
-        // Create error element
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'temp-error-message';
-        errorDiv.innerHTML = `<i class="fa-solid fa-exclamation-triangle"></i> ${message}`;
-        errorDiv.style.cssText = `
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            padding: var(--space-2) var(--space-3);
-            background: var(--error-bg);
-            color: var(--text-on-primary);
-            border-radius: var(--radius-md);
-            font-size: var(--fs-sm);
-            margin-top: var(--space-2);
-            animation: slideInUp 0.3s ease-out;
-        `;
-        
-        container.appendChild(errorDiv);
-        
-        // Remove after delay
-        setTimeout(() => {
-            errorDiv.style.opacity = '0';
-            errorDiv.style.transform = 'translateY(-10px)';
-            setTimeout(() => errorDiv.remove(), 300);
-        }, 4000);
-    }
-
-    // PUBLIC_INTERFACE
-    /**
-     * Show special notification when a top set is logged.
-     */
-    function showTopSetNotification(inputElement) {
-        const exerciseCard = inputElement.closest('.exercise-card-modern');
-        if (!exerciseCard) return;
-        
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = 'top-set-notification';
-        notification.innerHTML = `
-            <i class="fa-solid fa-trophy"></i>
-            <span>Top Set Logged!</span>
-        `;
-        notification.style.cssText = `
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            position: absolute;
-            top: -40px;
-            right: 10px;
-            z-index: 1000;
-            animation: slideInDown 0.3s ease-out;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        `;
-        
-        exerciseCard.style.position = 'relative';
-        exerciseCard.appendChild(notification);
-        
-        // Remove after delay
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            notification.style.transform = 'translateY(-10px)';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
     }
     
     // PUBLIC_INTERFACE
