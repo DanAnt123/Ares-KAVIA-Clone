@@ -1,0 +1,1125 @@
+/* Modern Input Forms Styling for Workout Page */
+/* Enhanced visual design with card-style containers, shadows, and modern aesthetics */
+
+:root {
+  /* Input-specific design tokens */
+  --input-card-bg: linear-gradient(135deg, var(--surface) 0%, var(--surface-elevated) 100%);
+  --input-card-border: var(--tertiary);
+  --input-card-border-hover: var(--primary-light);
+  --input-card-border-focus: var(--primary);
+  --input-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --input-card-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --input-card-shadow-focus: 0 12px 30px rgba(16, 185, 129, 0.2);
+  
+  --input-field-bg: var(--dark-elevated);
+  --input-field-bg-focus: var(--surface);
+  --input-field-border: var(--tertiary);
+  --input-field-border-focus: var(--primary-light);
+  --input-field-accent: var(--primary);
+  
+  --input-radius: var(--radius-xl);
+  --input-radius-inner: var(--radius-lg);
+  --input-spacing: var(--space-6);
+  --input-spacing-inner: var(--space-4);
+  
+  /* Enhanced color palette for inputs */
+  --input-success: #10b981;
+  --input-warning: #f59e0b;
+  --input-error: #ef4444;
+  --input-info: #3b82f6;
+  
+  /* Subtle animations */
+  --input-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --input-transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Modern Exercise Cards with Enhanced Input Styling */
+.exercise-card-modern {
+  background: var(--input-card-bg);
+  border: 2px solid var(--input-card-border);
+  border-radius: var(--input-radius);
+  padding: var(--input-spacing);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--input-card-shadow);
+  transition: var(--input-transition);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.exercise-card-modern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  transform: scaleX(0);
+  transition: var(--input-transition);
+  border-radius: var(--radius-full);
+}
+
+.exercise-card-modern:hover::before,
+.exercise-card-modern:focus-within::before {
+  transform: scaleX(1);
+}
+
+.exercise-card-modern:hover {
+  border-color: var(--input-card-border-hover);
+  box-shadow: var(--input-card-shadow-hover);
+  transform: translateY(-4px);
+}
+
+.exercise-card-modern:focus-within {
+  border-color: var(--input-card-border-focus);
+  box-shadow: var(--input-card-shadow-focus);
+  transform: translateY(-2px);
+}
+
+/* Enhanced Exercise Card Header */
+.exercise-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 2px solid var(--tertiary);
+  position: relative;
+}
+
+.exercise-card-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-light), var(--accent));
+  transform: scaleX(0);
+  transition: var(--input-transition);
+  border-radius: var(--radius-full);
+}
+
+.exercise-card-modern:hover .exercise-card-header::after,
+.exercise-card-modern:focus-within .exercise-card-header::after {
+  transform: scaleX(1);
+}
+
+.exercise-number-badge {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border: 2px solid var(--primary-light);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  transition: var(--input-transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.exercise-number-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.exercise-card-modern:hover .exercise-number-badge::before {
+  left: 100%;
+}
+
+.exercise-number-badge:hover {
+  transform: scale(1.05) rotate(5deg);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.exercise-position {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-black);
+  color: var(--text-on-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.exercise-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.exercise-name {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+}
+
+.exercise-status-indicator {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: var(--input-transition);
+  border: 1px solid;
+}
+
+.status-badge.completed {
+  background: linear-gradient(135deg, var(--input-success), #059669);
+  color: white;
+  border-color: var(--input-success);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.status-badge.pending {
+  background: var(--surface-elevated);
+  color: var(--text-tertiary);
+  border-color: var(--tertiary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge.active {
+  background: linear-gradient(135deg, var(--input-info), #1e40af);
+  color: white;
+  border-color: var(--input-info);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+/* Enhanced Exercise Card Body */
+.exercise-card-body {
+  padding: var(--space-2) 0;
+}
+
+.exercise-metrics-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Modern Metric Groups */
+.metric-group {
+  background: var(--dark-elevated);
+  border: 1px solid var(--tertiary);
+  border-radius: var(--input-radius-inner);
+  padding: var(--input-spacing-inner);
+  transition: var(--input-transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-group::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--primary-light), transparent);
+  transform: scaleX(0);
+  transition: var(--input-transition);
+  border-radius: var(--radius-full);
+}
+
+.metric-group:hover::before,
+.metric-group:focus-within::before {
+  transform: scaleX(1);
+}
+
+.metric-group:hover {
+  border-color: var(--primary-light);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+  transform: translateY(-2px);
+}
+
+.metric-group:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-subtle), 0 4px 12px rgba(16, 185, 129, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Enhanced Metric Labels */
+.metric-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--space-3);
+  position: relative;
+}
+
+.metric-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--primary-light), transparent);
+  margin-left: var(--space-3);
+  opacity: 0.6;
+}
+
+.metric-label i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--primary-subtle);
+  border: 1px solid var(--primary-light);
+  border-radius: var(--radius-full);
+  color: var(--primary-light);
+  font-size: var(--fs-xs);
+  transition: var(--input-transition-fast);
+}
+
+.metric-group:hover .metric-label i,
+.metric-group:focus-within .metric-label i {
+  background: var(--primary);
+  color: var(--text-on-primary);
+  transform: scale(1.1);
+}
+
+/* Weight Metric Specific Styling */
+.weight-metric .metric-label i {
+  background: linear-gradient(135deg, var(--input-success), #059669);
+  border-color: var(--input-success);
+  color: white;
+}
+
+.weight-metric .metric-label::after {
+  background: linear-gradient(90deg, var(--input-success), transparent);
+}
+
+/* Reps Metric Specific Styling */
+.reps-metric .metric-label i {
+  background: linear-gradient(135deg, var(--input-warning), #d97706);
+  border-color: var(--input-warning);
+  color: white;
+}
+
+.reps-metric .metric-label::after {
+  background: linear-gradient(90deg, var(--input-warning), transparent);
+}
+
+/* Details Metric Specific Styling */
+.details-metric .metric-label i {
+  background: linear-gradient(135deg, var(--input-info), #1e40af);
+  border-color: var(--input-info);
+  color: white;
+}
+
+.details-metric .metric-label::after {
+  background: linear-gradient(90deg, var(--input-info), transparent);
+}
+
+/* Modern Input Groups */
+.input-group-modern {
+  display: flex;
+  align-items: center;
+  background: var(--input-field-bg);
+  border: 2px solid var(--input-field-border);
+  border-radius: var(--input-radius-inner);
+  overflow: hidden;
+  transition: var(--input-transition);
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.input-group-modern::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-light), var(--accent));
+  transform: scaleX(0);
+  transition: var(--input-transition);
+  border-radius: var(--radius-full);
+}
+
+.input-group-modern:focus-within::before {
+  transform: scaleX(1);
+}
+
+.input-group-modern:hover {
+  border-color: var(--quaternary);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.input-group-modern:focus-within {
+  background: var(--input-field-bg-focus);
+  border-color: var(--input-field-border-focus);
+  box-shadow: 0 0 0 3px var(--primary-subtle), 0 4px 12px rgba(16, 185, 129, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Enhanced Input Fields */
+.metric-input-field {
+  flex: 1;
+  padding: var(--space-4) var(--space-5);
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  outline: none;
+  transition: var(--input-transition-fast);
+  line-height: 1.2;
+}
+
+.metric-input-field::placeholder {
+  color: var(--text-tertiary);
+  font-weight: var(--fw-medium);
+  font-style: italic;
+  transition: var(--input-transition-fast);
+}
+
+.metric-input-field:focus::placeholder {
+  opacity: 0.7;
+  transform: translateY(-2px);
+}
+
+.metric-input-field:not(:placeholder-shown) {
+  font-weight: var(--fw-bold);
+  color: var(--primary-light);
+}
+
+/* Input Units and Accents */
+.input-unit {
+  padding: var(--space-4) var(--space-5);
+  background: linear-gradient(135deg, var(--surface), var(--surface-elevated));
+  color: var(--text-secondary);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-bold);
+  border-left: 2px solid var(--tertiary);
+  transition: var(--input-transition-fast);
+  letter-spacing: 0.05em;
+}
+
+.input-group-modern:focus-within .input-unit {
+  background: linear-gradient(135deg, var(--primary-subtle), var(--primary-light));
+  color: var(--primary);
+  border-left-color: var(--primary-light);
+}
+
+/* Enhanced Previous Session Badges */
+.previous-session-badge {
+  position: absolute;
+  top: -12px;
+  right: 12px;
+  background: linear-gradient(135deg, var(--input-info), #1e40af);
+  color: white;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: var(--input-transition);
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.previous-session-badge:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.previous-session-badge.weight-badge {
+  background: linear-gradient(135deg, var(--input-success), #059669);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.previous-session-badge.weight-badge:hover {
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.previous-session-badge.reps-badge {
+  background: linear-gradient(135deg, var(--input-warning), #d97706);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.previous-session-badge.reps-badge:hover {
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+}
+
+.previous-session-badge i {
+  font-size: var(--fs-xs);
+  opacity: 0.9;
+}
+
+.previous-session-badge .badge-text {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Quick Fill Buttons */
+.quick-fill-last-session {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, var(--input-success), #059669);
+  color: white;
+  border: none;
+  border-radius: var(--radius-base);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  opacity: 0;
+  transition: var(--input-transition);
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.metric-input:hover .quick-fill-last-session,
+.input-group-modern:hover .quick-fill-last-session {
+  opacity: 0.8;
+}
+
+.quick-fill-last-session:hover {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.quick-fill-last-session:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* Input Focus Lines and Animations */
+.input-focus-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-light), var(--accent));
+  border-radius: var(--radius-full);
+  transform: scaleX(0);
+  transition: var(--input-transition);
+}
+
+.input-group-modern:focus-within .input-focus-line {
+  transform: scaleX(1);
+}
+
+/* Enhanced Exercise Card Footer */
+.exercise-card-footer {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 2px solid var(--tertiary);
+  background: linear-gradient(135deg, var(--dark-elevated), var(--surface));
+  border-radius: var(--input-radius-inner);
+  padding: var(--input-spacing-inner);
+  position: relative;
+  overflow: hidden;
+}
+
+.exercise-card-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-light), var(--accent));
+  transform: scaleX(0);
+  transition: var(--input-transition);
+}
+
+.exercise-card-modern:hover .exercise-card-footer::before,
+.exercise-card-modern:focus-within .exercise-card-footer::before {
+  transform: scaleX(1);
+}
+
+.exercise-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.exercise-action-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background: var(--surface);
+  border: 2px solid var(--tertiary);
+  border-radius: var(--input-radius-inner);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+  transition: var(--input-transition);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 100px;
+  justify-content: center;
+}
+
+.exercise-action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.6s ease;
+}
+
+.exercise-action-btn:hover::before {
+  left: 100%;
+}
+
+.exercise-action-btn:hover,
+.exercise-action-btn:focus {
+  background: var(--primary-subtle);
+  border-color: var(--primary-light);
+  color: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+/* Quick Log Button */
+.quick-log-btn {
+  background: linear-gradient(135deg, var(--input-info), #1e40af);
+  border-color: var(--input-info);
+  color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.quick-log-btn:hover,
+.quick-log-btn:focus {
+  background: linear-gradient(135deg, #1e40af, var(--input-info));
+  border-color: #1e40af;
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Save Exercise Button */
+.save-exercise-btn {
+  background: linear-gradient(135deg, var(--input-success), #059669);
+  border-color: var(--input-success);
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.save-exercise-btn:hover,
+.save-exercise-btn:focus {
+  background: linear-gradient(135deg, #059669, var(--input-success));
+  border-color: #059669;
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.save-exercise-btn.saving {
+  background: linear-gradient(135deg, var(--input-warning), #d97706);
+  border-color: var(--input-warning);
+  color: white;
+  cursor: wait;
+  animation: savingPulse 1.5s ease-in-out infinite;
+}
+
+.save-exercise-btn.success {
+  background: linear-gradient(135deg, var(--input-success), #059669);
+  border-color: var(--input-success);
+  color: white;
+  animation: successFlash 0.6s ease-out;
+}
+
+.save-exercise-btn.error {
+  background: linear-gradient(135deg, var(--input-error), #dc2626);
+  border-color: var(--input-error);
+  color: white;
+  animation: errorShake 0.6s ease-out;
+}
+
+@keyframes savingPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.02); }
+}
+
+@keyframes successFlash {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* Notes Button */
+.notes-btn {
+  background: linear-gradient(135deg, var(--surface-elevated), var(--surface));
+  border-color: var(--quaternary);
+  color: var(--text-secondary);
+}
+
+.notes-btn:hover,
+.notes-btn:focus {
+  background: linear-gradient(135deg, var(--accent-subtle), var(--accent));
+  border-color: var(--accent);
+  color: var(--dark);
+}
+
+/* Input Validation and Error States */
+.metric-input-field.error {
+  color: var(--input-error);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.input-group-modern.error {
+  border-color: var(--input-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.input-group-modern.error .input-unit {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--input-error);
+  border-left-color: var(--input-error);
+}
+
+.metric-input-field.success {
+  color: var(--input-success);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.input-group-modern.success {
+  border-color: var(--input-success);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.input-group-modern.success .input-unit {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--input-success);
+  border-left-color: var(--input-success);
+}
+
+/* Disabled State Styling */
+.metric-input-field:disabled,
+.metric-input-field[readonly] {
+  background-color: var(--surface) !important;
+  color: var(--text-tertiary) !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+
+.input-group-modern:has(.metric-input-field:disabled) {
+  border-color: var(--tertiary) !important;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Enabled State Animation */
+.metric-input-field.field-enabled {
+  background-color: var(--input-field-bg-focus) !important;
+  color: var(--text-primary) !important;
+  cursor: text !important;
+  opacity: 1 !important;
+  animation: fieldEnable 0.4s ease-out !important;
+}
+
+.input-group-modern:has(.metric-input-field.field-enabled) {
+  border-color: var(--primary-light) !important;
+  box-shadow: 0 0 0 3px var(--primary-subtle) !important;
+  animation: inputGroupEnable 0.4s ease-out !important;
+}
+
+@keyframes fieldEnable {
+  from {
+    opacity: 0.6;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes inputGroupEnable {
+  from {
+    border-color: var(--tertiary);
+    box-shadow: none;
+  }
+  to {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px var(--primary-subtle);
+  }
+}
+
+/* Exercise Card Enabled State */
+.exercise-card-modern.exercise-enabled {
+  border-color: var(--primary) !important;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2) !important;
+  animation: cardEnable 0.5s ease-out !important;
+}
+
+@keyframes cardEnable {
+  from {
+    border-color: var(--tertiary);
+    box-shadow: var(--input-card-shadow);
+  }
+  to {
+    border-color: var(--primary);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+  }
+}
+
+/* Notification Styles */
+.exercise-validation-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: linear-gradient(135deg, var(--input-error), #dc2626);
+  color: white;
+  border: 1px solid var(--input-error);
+  border-radius: var(--input-radius-inner);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  margin-bottom: var(--space-3);
+  animation: slideInUp 0.4s ease-out;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.exercise-success-notification {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: linear-gradient(135deg, var(--input-success), #059669);
+  color: white;
+  border: 1px solid var(--input-success);
+  border-radius: var(--input-radius-inner);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  animation: slideInDown 0.4s ease-out;
+  transition: var(--input-transition);
+}
+
+.exercise-quicklog-notification {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, var(--input-info), #1e40af);
+  color: white;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--input-radius-inner);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  z-index: 100;
+  animation: slideInLeft 0.4s ease-out;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Badge Click Feedback */
+.badge-click-notification {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-base);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+  z-index: 1000;
+  animation: fadeInOut 2s ease-out forwards;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  20%, 80% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .exercise-card-modern {
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+  
+  .exercise-number-badge {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .exercise-position {
+    font-size: var(--fs-base);
+  }
+  
+  .exercise-name {
+    font-size: var(--fs-lg);
+  }
+  
+  .metric-input-field {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--fs-base);
+  }
+  
+  .input-unit {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--fs-sm);
+  }
+  
+  .exercise-actions {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .exercise-action-btn {
+    min-width: auto;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .previous-session-badge {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-bottom: var(--space-2);
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .exercise-card-modern {
+    padding: var(--space-3);
+  }
+  
+  .exercise-card-header {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-3);
+  }
+  
+  .exercise-number-badge {
+    align-self: center;
+  }
+  
+  .exercise-metrics-container {
+    gap: var(--space-4);
+  }
+  
+  .metric-group {
+    padding: var(--space-3);
+  }
+  
+  .metric-label {
+    font-size: var(--fs-xs);
+    gap: var(--space-2);
+  }
+  
+  .metric-label i {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .exercise-success-notification,
+  .exercise-quicklog-notification {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    margin-bottom: var(--space-2);
+    align-self: flex-start;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .exercise-card-modern,
+  .metric-group,
+  .input-group-modern {
+    border-width: 3px;
+  }
+  
+  .exercise-number-badge {
+    border-width: 3px;
+  }
+  
+  .status-badge {
+    border-width: 2px;
+  }
+  
+  .previous-session-badge {
+    border-width: 2px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .exercise-card-modern,
+  .metric-group,
+  .input-group-modern,
+  .exercise-action-btn,
+  .exercise-number-badge,
+  .previous-session-badge,
+  .quick-fill-last-session {
+    transition: none;
+    animation: none;
+  }
+  
+  .exercise-card-modern:hover,
+  .metric-group:hover,
+  .input-group-modern:focus-within {
+    transform: none;
+  }
+  
+  .exercise-card-modern::before,
+  .metric-group::before,
+  .input-group-modern::before,
+  .exercise-action-btn::before {
+    transition: none;
+  }
+  
+  .status-badge.active {
+    animation: none;
+  }
+  
+  .save-exercise-btn.saving {
+    animation: none;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .exercise-card-modern {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 2px solid var(--tertiary);
+  }
+  
+  .previous-session-badge,
+  .exercise-success-notification,
+  .exercise-quicklog-notification,
+  .exercise-validation-error {
+    display: none !important;
+  }
+  
+  .input-group-modern {
+    border: 2px solid var(--tertiary) !important;
+    box-shadow: none !important;
+  }
+  
+  .exercise-action-btn {
+    display: none;
+  }
+}
+
+/* Focus Management for Accessibility */
+.exercise-card-modern:focus-within {
+  outline: 3px solid var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.metric-input-field:focus-visible,
+.exercise-action-btn:focus-visible {
+  outline: 3px solid var(--focus-outline);
+  outline-offset: 2px;
+}
+
+/* Dark Mode Enhancements */
+@media (prefers-color-scheme: dark) {
+  .exercise-card-modern {
+    background: linear-gradient(135deg, var(--dark-elevated) 0%, var(--surface) 100%);
+  }
+  
+  .metric-group {
+    background: var(--dark);
+  }
+  
+  .input-group-modern {
+    background: var(--dark);
+  }
+}
