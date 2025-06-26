@@ -10,6 +10,7 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/workout-modern.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/previous-session-hints.css') }}">
 {% endblock %}
 
 {% block active %}
@@ -310,17 +311,7 @@
                                         <div class="exercise-info">
                                             <h4 class="exercise-name">{{ exercise.name }}</h4>
                                             <div class="exercise-status-indicator">
-                                                {% set has_logged_top_set = false %}
-                                                {% for session in user.workout_sessions if not has_logged_top_set %}
-                                                    {% if session.workout_id == workout.id %}
-                                                        {% for log in session.exercise_logs if not has_logged_top_set %}
-                                                            {% if log.exercise_name == exercise.name and log.weight is defined and log.weight > 0 %}
-                                                                {% set has_logged_top_set = true %}
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    {% endif %}
-                                                {% endfor %}
-                                                {% if has_logged_top_set %}
+                                                {% if exercise.weight is not none and exercise.weight > 0 and exercise.reps is not none and exercise.reps.strip() != '' %}
                                                     <span class="status-badge completed">
                                                         <i class="fa-solid fa-check-circle"></i>
                                                         Completed
@@ -344,6 +335,12 @@
                                                 <label class="metric-label">
                                                     <i class="fa-solid fa-weight-hanging"></i>
                                                     Weight
+                                                    {% set last_session = last_session_data.get(workout.id, {}).get(exercise.name, {}) %}
+                                                    {% if last_session.get('weight') %}
+                                                        <span class="previous-value-hint" title="Last session: {{ last_session.weight }}kg">
+                                                            (Last: {{ last_session.weight }}kg)
+                                                        </span>
+                                                    {% endif %}
                                                 </label>
                                                 
                                                 <div class="metric-input weight-input-interactive">
@@ -353,7 +350,7 @@
                                                             class="metric-input-field weight-field interactive-input" 
                                                             type="number" 
                                                             step="0.01" 
-                                                            placeholder="Enter weight" 
+                                                            placeholder="{% if last_session.get('weight') %}Last: {{ last_session.weight }}kg{% else %}Enter weight{% endif %}" 
                                                             name="weight" 
                                                             value="{% if exercise.weight is not none %}{{ (exercise.weight | int) if (exercise.weight | float | is_integer) else exercise.weight }}{% endif %}"
                                                             min="0"
@@ -362,7 +359,16 @@
                                                             data-exercise-id="{{ exercise.id }}"
                                                             data-workout-id="{{ workout.id }}"
                                                             data-field-type="weight"
+                                                            data-last-weight="{{ last_session.get('weight', '') }}"
                                                         >
+                                                        {% if last_session.get('weight') %}
+                                                            <button type="button" class="quick-fill-last-session" 
+                                                                    title="Fill with last session: {{ last_session.weight }}kg"
+                                                                    data-target="weight-{{ workout.id }}-{{ loop.index0 }}"
+                                                                    data-value="{{ last_session.weight }}">
+                                                                Last
+                                                            </button>
+                                                        {% endif %}
                                                         <span class="input-unit">kg</span>
                                                         <div class="input-focus-line"></div>
                                                     </div>
@@ -378,6 +384,12 @@
                                                 <label class="metric-label">
                                                     <i class="fa-solid fa-repeat"></i>
                                                     Reps
+                                                    {% set last_session = last_session_data.get(workout.id, {}).get(exercise.name, {}) %}
+                                                    {% if last_session.get('reps') %}
+                                                        <span class="previous-value-hint" title="Last session: {{ last_session.reps }} reps">
+                                                            (Last: {{ last_session.reps }})
+                                                        </span>
+                                                    {% endif %}
                                                 </label>
                                                 
                                                 <div class="metric-input reps-input-interactive">
@@ -386,7 +398,7 @@
                                                             id="reps-{{ workout.id }}-{{ loop.index0 }}" 
                                                             class="metric-input-field reps-field interactive-input" 
                                                             type="text" 
-                                                            placeholder="e.g., 8-12 or 10" 
+                                                            placeholder="{% if last_session.get('reps') %}Last: {{ last_session.reps }}{% else %}e.g., 8-12 or 10{% endif %}" 
                                                             name="reps" 
                                                             value="{{ exercise.reps or '' }}" 
                                                             maxlength="20"
@@ -394,7 +406,16 @@
                                                             data-exercise-id="{{ exercise.id }}"
                                                             data-workout-id="{{ workout.id }}"
                                                             data-field-type="reps"
+                                                            data-last-reps="{{ last_session.get('reps', '') }}"
                                                         >
+                                                        {% if last_session.get('reps') %}
+                                                            <button type="button" class="quick-fill-last-session" 
+                                                                    title="Fill with last session: {{ last_session.reps }} reps"
+                                                                    data-target="reps-{{ workout.id }}-{{ loop.index0 }}"
+                                                                    data-value="{{ last_session.reps }}">
+                                                                Last
+                                                            </button>
+                                                        {% endif %}
                                                         <div class="input-focus-line"></div>
                                                     </div>
                                                     <div class="save-indicator" style="display: none;">
@@ -488,17 +509,7 @@
                                             <span class="stat-value" id="completed-exercises-{{ workout.id }}">
                                                 {% set completed_exercise_names = [] %}
                                                 {% for exercise in workout.exercises %}
-                                                    {% set exercise_completed = false %}
-                                                    {% for session in user.workout_sessions if not exercise_completed %}
-                                                        {% if session.workout_id == workout.id %}
-                                                            {% for log in session.exercise_logs if not exercise_completed %}
-                                                                {% if log.exercise_name == exercise.name and log.weight is defined and log.weight > 0 %}
-                                                                    {% set exercise_completed = true %}
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                    {% if exercise_completed %}
+                                                    {% if exercise.weight is not none and exercise.weight > 0 and exercise.reps is not none and exercise.reps.strip() != '' %}
                                                         {% set _ = completed_exercise_names.append(exercise.name) %}
                                                     {% endif %}
                                                 {% endfor %}
@@ -527,17 +538,7 @@
                                             <span class="stat-value" id="completion-percentage-{{ workout.id }}">
                                                 {% set completed_exercise_list = [] %}
                                                 {% for exercise in workout.exercises %}
-                                                    {% set exercise_completed = false %}
-                                                    {% for session in user.workout_sessions if not exercise_completed %}
-                                                        {% if session.workout_id == workout.id %}
-                                                            {% for log in session.exercise_logs if not exercise_completed %}
-                                                                {% if log.exercise_name == exercise.name and log.weight is defined and log.weight > 0 %}
-                                                                    {% set exercise_completed = true %}
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                    {% if exercise_completed %}
+                                                    {% if exercise.weight is not none and exercise.weight > 0 and exercise.reps is not none and exercise.reps.strip() != '' %}
                                                         {% set _ = completed_exercise_list.append(exercise.name) %}
                                                     {% endif %}
                                                 {% endfor %}
@@ -554,17 +555,7 @@
                                     <div class="progress-bar-track">
                                         {% set completed_exercise_progress = [] %}
                                         {% for exercise in workout.exercises %}
-                                            {% set exercise_completed = false %}
-                                            {% for session in user.workout_sessions if not exercise_completed %}
-                                                {% if session.workout_id == workout.id %}
-                                                    {% for log in session.exercise_logs if not exercise_completed %}
-                                                        {% if log.exercise_name == exercise.name and log.weight is defined and log.weight > 0 %}
-                                                            {% set exercise_completed = true %}
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                {% endif %}
-                                            {% endfor %}
-                                            {% if exercise_completed %}
+                                            {% if exercise.weight is not none and exercise.weight > 0 and exercise.reps is not none and exercise.reps.strip() != '' %}
                                                 {% set _ = completed_exercise_progress.append(exercise.name) %}
                                             {% endif %}
                                         {% endfor %}
@@ -668,6 +659,9 @@
         
         // Initialize interactive input fields
         initializeInteractiveInputs();
+        
+        // Initialize quick fill buttons
+        initializeQuickFillButtons();
     });
 
     function showSelectedWorkout(workoutId) {
@@ -723,7 +717,33 @@
     }
 
     function updateProgressDisplay(workoutId) {
-        // Calculate progress based on current exercise completion status
+        // Calculate progress based on Exercise table data (same as template logic)
+        // This ensures consistency between template rendering and JS updates
+        
+        // Make an AJAX call to get current completion status from backend
+        fetch(`/workout?ajax=1&workout_id=${workoutId}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.completion_status) {
+                updateProgressWithBackendData(workoutId, data.completion_status);
+            } else {
+                // Fallback to client-side calculation
+                updateProgressDisplayFallback(workoutId);
+            }
+        })
+        .catch(error => {
+            console.warn('Progress update failed, using fallback:', error);
+            updateProgressDisplayFallback(workoutId);
+        });
+    }
+    
+    function updateProgressDisplayFallback(workoutId) {
+        // Fallback progress calculation that matches template logic
         const workoutContainer = document.querySelector(`.workout-${workoutId}`);
         if (!workoutContainer) return;
         
@@ -742,18 +762,44 @@
             
             if (hasWeight && hasReps) {
                 completedCount++;
+                // Update exercise status badge
+                updateExerciseStatusBadge(card, true);
+            } else {
+                // Update exercise status badge
+                updateExerciseStatusBadge(card, false);
             }
         });
         
         // Calculate percentage
         const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
         
+        // Update progress displays
+        updateProgressElementsWithData(workoutId, {
+            completed: completedCount,
+            total: totalCount,
+            percentage: percentage
+        });
+        
+        // Show completion celebration if workout is fully completed
+        if (percentage === 100 && completedCount === totalCount) {
+            showWorkoutCompletionCelebration(workoutId);
+        }
+    }
+    
+    function updateProgressElementsWithData(workoutId, data) {
+        const { completed, total, percentage } = data;
+        
         // Update mini progress bar
         const miniProgressBar = document.getElementById(`mini-progress-${workoutId}`);
         const miniProgressText = document.getElementById(`mini-progress-text-${workoutId}`);
         
         if (miniProgressBar) {
+            miniProgressBar.style.transition = 'width 0.5s ease-out';
             miniProgressBar.style.width = `${percentage}%`;
+            miniProgressBar.classList.add('progress-updated');
+            setTimeout(() => {
+                miniProgressBar.classList.remove('progress-updated');
+            }, 1000);
         }
         if (miniProgressText) {
             miniProgressText.textContent = `${percentage}%`;
@@ -762,38 +808,24 @@
         // Update main progress bar
         const mainProgressBar = document.getElementById(`progress-fill-${workoutId}`);
         if (mainProgressBar) {
+            mainProgressBar.style.transition = 'width 0.5s ease-out';
             mainProgressBar.style.width = `${percentage}%`;
+            mainProgressBar.classList.add('progress-updated');
+            setTimeout(() => {
+                mainProgressBar.classList.remove('progress-updated');
+            }, 1000);
         }
         
         // Update completed exercises count
         const completedExercisesEl = document.getElementById(`completed-exercises-${workoutId}`);
         if (completedExercisesEl) {
-            completedExercisesEl.textContent = completedCount;
+            completedExercisesEl.textContent = completed;
         }
         
         // Update completion percentage
         const completionPercentageEl = document.getElementById(`completion-percentage-${workoutId}`);
         if (completionPercentageEl) {
             completionPercentageEl.textContent = `${percentage}%`;
-        }
-        
-        // Add visual feedback with animation
-        const progressElements = [miniProgressBar, mainProgressBar];
-        progressElements.forEach(element => {
-            if (element) {
-                element.style.transition = 'width 0.5s ease-out';
-                
-                // Add a pulse effect when progress increases
-                element.classList.add('progress-updated');
-                setTimeout(() => {
-                    element.classList.remove('progress-updated');
-                }, 1000);
-            }
-        });
-        
-        // Show completion celebration if workout is fully completed
-        if (percentage === 100) {
-            showWorkoutCompletionCelebration(workoutId);
         }
     }
     
@@ -1024,8 +1056,53 @@
                 // Update progress display after a short delay to avoid excessive updates
                 clearTimeout(this.progressUpdateTimer);
                 this.progressUpdateTimer = setTimeout(() => {
-                    updateProgressDisplay(workoutId);
+                    updateProgressDisplayFallback(workoutId);
                 }, 500);
+            });
+        });
+    }
+    
+    // PUBLIC_INTERFACE
+    /**
+     * Initialize quick fill buttons for previous session data.
+     */
+    function initializeQuickFillButtons() {
+        document.querySelectorAll('.quick-fill-last-session').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const targetId = this.dataset.target;
+                const value = this.dataset.value;
+                const targetInput = document.getElementById(targetId);
+                
+                if (targetInput && value) {
+                    // Fill the input with previous session value
+                    targetInput.value = value;
+                    targetInput.focus();
+                    
+                    // Trigger input event to update any listeners
+                    targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    
+                    // Show visual feedback
+                    this.style.background = '#059669';
+                    this.textContent = '✓';
+                    
+                    // Reset button after delay
+                    setTimeout(() => {
+                        this.style.background = '#10b981';
+                        this.textContent = 'Last';
+                    }, 1500);
+                    
+                    // Update progress after filling
+                    const exerciseCard = targetInput.closest('.exercise-card-modern');
+                    const workoutContainer = exerciseCard.closest('.workout-session-container');
+                    const workoutId = workoutContainer.dataset.workoutId;
+                    
+                    setTimeout(() => {
+                        updateProgressDisplayFallback(workoutId);
+                    }, 100);
+                }
             });
         });
     }

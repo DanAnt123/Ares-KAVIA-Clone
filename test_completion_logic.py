@@ -26,8 +26,10 @@ def test_completion_logic():
         # Create all tables
         db.create_all()
         
-        # Create test user
-        test_user = User(email='test@example.com', password='password')
+        # Create test user with unique email
+        import time
+        unique_email = f'test{int(time.time())}@example.com'
+        test_user = User(email=unique_email, password='password')
         db.session.add(test_user)
         db.session.commit()
         
