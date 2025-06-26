@@ -274,16 +274,14 @@
                                     {% set completed_exercises = [] %}
                                     {% for exercise in workout.exercises %}
                                         {% set exercise_completed = false %}
-                                        {% for session in user.workout_sessions %}
+                                        {% for session in user.workout_sessions if not exercise_completed %}
                                             {% if session.workout_id == workout.id %}
-                                                {% for log in session.exercise_logs %}
+                                                {% for log in session.exercise_logs if not exercise_completed %}
                                                     {% if log.exercise_name == exercise.name and log.weight is defined and log.weight > 0 %}
                                                         {% set exercise_completed = true %}
-                                                        {% break %}
                                                     {% endif %}
                                                 {% endfor %}
                                             {% endif %}
-                                            {% if exercise_completed %}{% break %}{% endif %}
                                         {% endfor %}
                                         {% if exercise_completed %}
                                             {% set _ = completed_exercises.append(exercise.name) %}
@@ -313,16 +311,14 @@
                                             <h4 class="exercise-name">{{ exercise.name }}</h4>
                                             <div class="exercise-status-indicator">
                                                 {% set has_logged_top_set = false %}
-                                                {% for session in user.workout_sessions %}
+                                                {% for session in user.workout_sessions if not has_logged_top_set %}
                                                     {% if session.workout_id == workout.id %}
-                                                        {% for log in session.exercise_logs %}
+                                                        {% for log in session.exercise_logs if not has_logged_top_set %}
                                                             {% if log.exercise_name == exercise.name and log.weight is defined and log.weight > 0 %}
                                                                 {% set has_logged_top_set = true %}
-                                                                {% break %}
                                                             {% endif %}
                                                         {% endfor %}
                                                     {% endif %}
-                                                    {% if has_logged_top_set %}{% break %}{% endif %}
                                                 {% endfor %}
                                                 {% if has_logged_top_set %}
                                                     <span class="status-badge completed">
@@ -486,16 +482,14 @@
                                                 {% set completed_exercise_names = [] %}
                                                 {% for exercise in workout.exercises %}
                                                     {% set exercise_completed = false %}
-                                                    {% for session in user.workout_sessions %}
+                                                    {% for session in user.workout_sessions if not exercise_completed %}
                                                         {% if session.workout_id == workout.id %}
-                                                            {% for log in session.exercise_logs %}
+                                                            {% for log in session.exercise_logs if not exercise_completed %}
                                                                 {% if log.exercise_name == exercise.name and log.weight is defined and log.weight > 0 %}
                                                                     {% set exercise_completed = true %}
-                                                                    {% break %}
                                                                 {% endif %}
                                                             {% endfor %}
                                                         {% endif %}
-                                                        {% if exercise_completed %}{% break %}{% endif %}
                                                     {% endfor %}
                                                     {% if exercise_completed %}
                                                         {% set _ = completed_exercise_names.append(exercise.name) %}
@@ -527,16 +521,14 @@
                                                 {% set completed_exercise_list = [] %}
                                                 {% for exercise in workout.exercises %}
                                                     {% set exercise_completed = false %}
-                                                    {% for session in user.workout_sessions %}
+                                                    {% for session in user.workout_sessions if not exercise_completed %}
                                                         {% if session.workout_id == workout.id %}
-                                                            {% for log in session.exercise_logs %}
+                                                            {% for log in session.exercise_logs if not exercise_completed %}
                                                                 {% if log.exercise_name == exercise.name and log.weight is defined and log.weight > 0 %}
                                                                     {% set exercise_completed = true %}
-                                                                    {% break %}
                                                                 {% endif %}
                                                             {% endfor %}
                                                         {% endif %}
-                                                        {% if exercise_completed %}{% break %}{% endif %}
                                                     {% endfor %}
                                                     {% if exercise_completed %}
                                                         {% set _ = completed_exercise_list.append(exercise.name) %}
@@ -556,16 +548,14 @@
                                         {% set completed_exercise_progress = [] %}
                                         {% for exercise in workout.exercises %}
                                             {% set exercise_completed = false %}
-                                            {% for session in user.workout_sessions %}
+                                            {% for session in user.workout_sessions if not exercise_completed %}
                                                 {% if session.workout_id == workout.id %}
-                                                    {% for log in session.exercise_logs %}
+                                                    {% for log in session.exercise_logs if not exercise_completed %}
                                                         {% if log.exercise_name == exercise.name and log.weight is defined and log.weight > 0 %}
                                                             {% set exercise_completed = true %}
-                                                            {% break %}
                                                         {% endif %}
                                                     {% endfor %}
                                                 {% endif %}
-                                                {% if exercise_completed %}{% break %}{% endif %}
                                             {% endfor %}
                                             {% if exercise_completed %}
                                                 {% set _ = completed_exercise_progress.append(exercise.name) %}
