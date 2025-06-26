@@ -1,0 +1,226 @@
+/* Previous Session Notes Styling */
+.previous-session-note {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.previous-session-note:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.note-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    color: #64748b;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.note-header i {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.note-title {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.note-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.note-metric {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.note-metric i {
+    font-size: 0.7rem;
+    opacity: 0.9;
+}
+
+.weight-note {
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.reps-note {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+.details-note {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .previous-session-note {
+        padding: 6px 10px;
+        margin-bottom: 10px;
+    }
+    
+    .note-header {
+        font-size: 0.75rem;
+        gap: 4px;
+        margin-bottom: 4px;
+    }
+    
+    .note-content {
+        gap: 6px;
+    }
+    
+    .note-metric {
+        font-size: 0.7rem;
+        padding: 3px 6px;
+        gap: 3px;
+    }
+    
+    .note-metric i {
+        font-size: 0.65rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .previous-session-note {
+        padding: 5px 8px;
+        margin-bottom: 8px;
+    }
+    
+    .note-header {
+        font-size: 0.7rem;
+    }
+    
+    .note-content {
+        gap: 4px;
+    }
+    
+    .note-metric {
+        font-size: 0.65rem;
+        padding: 2px 5px;
+    }
+}
+
+/* Animation on page load */
+.previous-session-note {
+    animation: noteSlideIn 0.4s ease-out;
+}
+
+@keyframes noteSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced visibility when exercise is enabled */
+.exercise-card-modern.exercise-enabled .previous-session-note {
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border-color: #10b981;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+}
+
+.exercise-card-modern.exercise-enabled .note-header {
+    color: #059669;
+}
+
+/* Dark mode support (if needed) */
+@media (prefers-color-scheme: dark) {
+    .previous-session-note {
+        background: linear-gradient(135deg, #374151, #4b5563);
+        border-color: #6b7280;
+        color: #f9fafb;
+    }
+    
+    .note-header {
+        color: #d1d5db;
+    }
+    
+    .exercise-card-modern.exercise-enabled .previous-session-note {
+        background: linear-gradient(135deg, #064e3b, #065f46);
+        border-color: #10b981;
+    }
+    
+    .exercise-card-modern.exercise-enabled .note-header {
+        color: #34d399;
+    }
+}
+
+/* Accessibility improvements */
+.previous-session-note:focus-within {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .previous-session-note {
+        background: white !important;
+        border: 1px solid #000;
+        box-shadow: none;
+        break-inside: avoid;
+    }
+    
+    .note-metric {
+        background: #f3f4f6 !important;
+        color: #000 !important;
+        border: 1px solid #000;
+        text-shadow: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .previous-session-note {
+        background: white;
+        border: 2px solid #000;
+        box-shadow: none;
+    }
+    
+    .note-header {
+        color: #000;
+        font-weight: 700;
+    }
+    
+    .note-metric {
+        background: #000 !important;
+        color: white !important;
+        border: 1px solid #000;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .previous-session-note {
+        animation: none;
+        transition: none;
+    }
+    
+    .previous-session-note:hover {
+        transform: none;
+    }
+}
