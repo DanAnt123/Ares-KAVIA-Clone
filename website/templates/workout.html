@@ -802,6 +802,9 @@
      * Update progress indicators using backend completion status data.
      * This is more accurate than client-side calculation.
      */
+
+    function animateProgressBars() {
+=======
     function updateProgressWithBackendData(workoutId, completionStatus) {
         const { completed, total, percentage } = completionStatus;
         
@@ -849,6 +852,8 @@
             showWorkoutCompletionCelebration(workoutId);
         }
     }
+
+    function animateProgressBars() {
 =======
 
     function animateProgressBars() {
