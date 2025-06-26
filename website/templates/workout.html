@@ -430,63 +430,7 @@
                         </div>
                     </section>
 
-                    <!-- Enhanced Workout Controls -->
-                    <section class="workout-controls-modern">
-                        <div class="controls-card">
-                            <div class="controls-card-background">
-                                <div class="controls-gradient"></div>
-                            </div>
-                            
-                            <div class="controls-content">
-                                <div class="primary-controls">
-                                    <button type="button" class="control-btn primary-control edit-control edit-{{ workout.id }}" data-workout-id="{{ workout.id }}">
-                                        <div class="btn-icon">
-                                            <i class="fa-solid fa-edit"></i>
-                                        </div>
-                                        <div class="btn-content">
-                                            <span class="btn-title">Edit Workout</span>
-                                            <span class="btn-subtitle">Modify exercises</span>
-                                        </div>
-                                    </button>
-                                    
-                                    <button type="submit" form="workout-form-{{ workout.id }}" class="control-btn primary-control save-control save-{{ workout.id }}" hidden data-workout-id="{{ workout.id }}">
-                                        <div class="btn-icon">
-                                            <i class="fa-solid fa-save"></i>
-                                        </div>
-                                        <div class="btn-content">
-                                            <span class="btn-title">Save Changes</span>
-                                            <span class="btn-subtitle">Update workout</span>
-                                        </div>
-                                    </button>
-                                </div>
-                                
-                                <div class="secondary-controls">
-                                    <form method="POST" class="inline-form">
-                                        <button type="submit" class="control-btn secondary-control cancel-control cancel-{{ workout.id }}" name="workout" value="{{ workout.id }}" hidden data-workout-id="{{ workout.id }}">
-                                            <div class="btn-icon">
-                                                <i class="fa-solid fa-times"></i>
-                                            </div>
-                                            <div class="btn-content">
-                                                <span class="btn-title">Cancel</span>
-                                                <span class="btn-subtitle">Discard changes</span>
-                                            </div>
-                                        </button>
-                                        <input type="hidden" name="request_type" value="cancel">
-                                    </form>
-                                    
-                                    <button type="button" class="control-btn tertiary-control timer-control" data-workout-id="{{ workout.id }}">
-                                        <div class="btn-icon">
-                                            <i class="fa-solid fa-stopwatch"></i>
-                                        </div>
-                                        <div class="btn-content">
-                                            <span class="btn-title">Workout Timer</span>
-                                            <span class="btn-subtitle">Track your session</span>
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+=======
 
                     <!-- Enhanced Progress Summary -->
                     <section class="workout-progress-summary">
@@ -629,10 +573,7 @@
             });
         }
 
-        // Initialize enhanced edit functionality
-        {% for workout in user.workouts %}
-            initializeEnhancedWorkoutControls({{ workout.id }});
-        {% endfor %}
+=======
 
         // Initialize timer functionality
         initializeWorkoutTimer();
@@ -696,182 +637,7 @@
         }
     }
 
-    function initializeEnhancedWorkoutControls(workoutId) {
-        const editBtn = document.querySelector(`.edit-${workoutId}`);
-        const saveBtn = document.querySelector(`.save-${workoutId}`);
-        const cancelBtn = document.querySelector(`.cancel-${workoutId}`);
-        const workoutContainer = document.querySelector(`.workout-${workoutId}`);
-
-        if (!editBtn || !saveBtn || !cancelBtn || !workoutContainer) return;
-
-        // Enhanced edit button functionality
-        editBtn.addEventListener('click', function() {
-            enableEnhancedEditMode(workoutId);
-        });
-
-        // Enhanced save functionality with validation
-        const form = workoutContainer.querySelector('.workout-form');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                if (validateWorkoutForm(workoutId)) {
-                    updateProgressDisplay(workoutId);
-                    showSuccessAnimation(workoutId);
-                } else {
-                    e.preventDefault();
-                    showValidationErrors(workoutId);
-                }
-            });
-        }
-
-        // Enhanced cancel functionality
-        cancelBtn.addEventListener('click', function() {
-            disableEnhancedEditMode(workoutId);
-        });
-    }
-
-    function enableEnhancedEditMode(workoutId) {
-        const workoutContainer = document.querySelector(`.workout-${workoutId}`);
-        if (!workoutContainer) return;
-
-        // Toggle control buttons with animation
-        const editBtn = workoutContainer.querySelector(`.edit-${workoutId}`);
-        const saveBtn = workoutContainer.querySelector(`.save-${workoutId}`);
-        const cancelBtn = workoutContainer.querySelector(`.cancel-${workoutId}`);
-
-        if (editBtn) {
-            editBtn.style.transform = 'scale(0.8)';
-            editBtn.style.opacity = '0';
-            setTimeout(() => editBtn.hidden = true, 200);
-        }
-        
-        if (saveBtn) {
-            saveBtn.hidden = false;
-            setTimeout(() => {
-                saveBtn.style.transform = 'scale(1)';
-                saveBtn.style.opacity = '1';
-            }, 100);
-        }
-        
-        if (cancelBtn) {
-            cancelBtn.hidden = false;
-            setTimeout(() => {
-                cancelBtn.style.transform = 'scale(1)';
-                cancelBtn.style.opacity = '1';
-            }, 150);
-        }
-
-        // Animate metric transitions
-        const displayElements = workoutContainer.querySelectorAll('.metric-display');
-        const inputElements = workoutContainer.querySelectorAll('.metric-input');
-
-        displayElements.forEach((el, index) => {
-            setTimeout(() => {
-                el.style.transform = 'translateY(-10px)';
-                el.style.opacity = '0';
-                setTimeout(() => el.hidden = true, 200);
-            }, index * 50);
-        });
-
-        inputElements.forEach((el, index) => {
-            setTimeout(() => {
-                el.hidden = false;
-                el.style.transform = 'translateY(10px)';
-                el.style.opacity = '0';
-                setTimeout(() => {
-                    el.style.transition = 'all 0.3s ease';
-                    el.style.transform = 'translateY(0)';
-                    el.style.opacity = '1';
-                }, 50);
-            }, 300 + (index * 50));
-        });
-
-        // Add edit mode styling
-        workoutContainer.classList.add('edit-mode-active');
-
-        // Focus first input
-        setTimeout(() => {
-            const firstInput = workoutContainer.querySelector('.metric-input-field');
-            if (firstInput) firstInput.focus();
-        }, 500);
-    }
-
-    function disableEnhancedEditMode(workoutId) {
-        const workoutContainer = document.querySelector(`.workout-${workoutId}`);
-        if (!workoutContainer) return;
-
-        // Toggle control buttons
-        const editBtn = workoutContainer.querySelector(`.edit-${workoutId}`);
-        const saveBtn = workoutContainer.querySelector(`.save-${workoutId}`);
-        const cancelBtn = workoutContainer.querySelector(`.cancel-${workoutId}`);
-
-        if (saveBtn) {
-            saveBtn.style.transform = 'scale(0.8)';
-            saveBtn.style.opacity = '0';
-            setTimeout(() => saveBtn.hidden = true, 200);
-        }
-        
-        if (cancelBtn) {
-            cancelBtn.style.transform = 'scale(0.8)';
-            cancelBtn.style.opacity = '0';
-            setTimeout(() => cancelBtn.hidden = true, 200);
-        }
-        
-        if (editBtn) {
-            editBtn.hidden = false;
-            setTimeout(() => {
-                editBtn.style.transform = 'scale(1)';
-                editBtn.style.opacity = '1';
-            }, 100);
-        }
-
-        // Animate metric transitions back
-        const displayElements = workoutContainer.querySelectorAll('.metric-display');
-        const inputElements = workoutContainer.querySelectorAll('.metric-input');
-
-        inputElements.forEach((el, index) => {
-            setTimeout(() => {
-                el.style.transform = 'translateY(10px)';
-                el.style.opacity = '0';
-                setTimeout(() => el.hidden = true, 200);
-            }, index * 50);
-        });
-
-        displayElements.forEach((el, index) => {
-            setTimeout(() => {
-                el.hidden = false;
-                el.style.transform = 'translateY(-10px)';
-                el.style.opacity = '0';
-                setTimeout(() => {
-                    el.style.transition = 'all 0.3s ease';
-                    el.style.transform = 'translateY(0)';
-                    el.style.opacity = '1';
-                }, 50);
-            }, 300 + (index * 50));
-        });
-
-        // Remove edit mode styling
-        workoutContainer.classList.remove('edit-mode-active');
-    }
-
-    function validateWorkoutForm(workoutId) {
-        const workoutContainer = document.querySelector(`.workout-${workoutId}`);
-        const inputs = workoutContainer.querySelectorAll('.metric-input-field');
-        let isValid = true;
-
-        inputs.forEach(input => {
-            if (input.type === 'number' && input.value) {
-                const value = parseFloat(input.value);
-                if (isNaN(value) || value < 0 || value > 999.99) {
-                    isValid = false;
-                    input.classList.add('error');
-                } else {
-                    input.classList.remove('error');
-                }
-            }
-        });
-
-        return isValid;
-    }
+=======
 
     function updateProgressDisplay(workoutId) {
         const workoutContainer = document.querySelector(`.workout-${workoutId}`);
@@ -1023,42 +789,7 @@
         });
     }
 
-    function showSuccessAnimation(workoutId) {
-        // Create success notification
-        const notification = document.createElement('div');
-        notification.className = 'success-notification';
-        notification.innerHTML = `
-            <div class="notification-icon">
-                <i class="fa-solid fa-check-circle"></i>
-            </div>
-            <div class="notification-text">Workout saved successfully!</div>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.classList.add('show');
-        }, 100);
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
-        }, 3000);
-    }
-
-    function showValidationErrors(workoutId) {
-        const errorInputs = document.querySelectorAll('.metric-input-field.error');
-        errorInputs.forEach((input, index) => {
-            setTimeout(() => {
-                input.style.animation = 'shake 0.5s ease-in-out';
-                setTimeout(() => {
-                    input.style.animation = '';
-                }, 500);
-            }, index * 100);
-        });
-    }
+=======
 
     // Intersection Observer for animations
     const observerOptions = {
