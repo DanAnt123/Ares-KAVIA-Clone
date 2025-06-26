@@ -8,6 +8,10 @@
     {% endif %}
 {% endblock %}
 
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/workout-modern.css') }}">
+{% endblock %}
+
 {% block active %}
 <li class="nav-item" role="none">
     <a class="nav-link" href="/" role="menuitem">
