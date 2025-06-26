@@ -229,6 +229,15 @@ function saveCompleteExerciseWithProgressUpdate(exerciseId, workoutId, exerciseD
             // Update exercise status badge to completed
             updateExerciseStatusBadge(exerciseCard, true);
             
+            // Update the original data attributes to reflect saved state
+            const weightInput = exerciseCard.querySelector('.weight-field');
+            const repsInput = exerciseCard.querySelector('.reps-field');
+            const detailsInput = exerciseCard.querySelector('.details-field');
+            
+            if (weightInput) weightInput.dataset.originalWeight = exerciseData.weight;
+            if (repsInput) repsInput.dataset.originalReps = exerciseData.reps;
+            if (detailsInput) detailsInput.dataset.originalDetails = exerciseData.details;
+            
             // ONLY NOW UPDATE PROGRESS - after successful save
             if (data.completion_status) {
                 updateProgressWithBackendData(workoutId, data.completion_status);
