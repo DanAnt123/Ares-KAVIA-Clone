@@ -271,14 +271,26 @@
                             <div class="progress-overview">
                                 <span class="progress-text">Progress:</span>
                                 <div class="mini-progress-bar">
+                                    {% set completed_count = 0 %}
+                                    {% for exercise in workout.exercises %}
+                                        {% for session in user.workout_sessions %}
+                                            {% if session.workout_id == workout.id %}
+                                                {% for log in session.exercise_logs %}
+                                                    {% if log.exercise_name == exercise.name and log.weight is not none and log.weight > 0 %}
+                                                        {% set completed_count = completed_count + 1 %}
+                                                        {% break %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                    {% set total = workout.exercises|length %}
                                     <div class="progress-fill" id="mini-progress-{{ workout.id }}" 
-                                         style="width: {% set completed = workout.exercises | selectattr('weight') | selectattr('weight', 'greaterthan', 0) | list | length %}{% set total = workout.exercises|length %}{{ ((completed / total * 100) | round(0) | int) if total > 0 else 0 }}%">
+                                         style="width: {{ ((completed_count / total * 100) | round(0) | int) if total > 0 else 0 }}%">
                                     </div>
                                 </div>
                                 <span class="progress-percentage" id="mini-progress-text-{{ workout.id }}">
-                                    {% set completed = workout.exercises | selectattr('weight') | selectattr('weight', 'greaterthan', 0) | list | length %}
-                                    {% set total = workout.exercises|length %}
-                                    {{ ((completed / total * 100) | round(0) | int) if total > 0 else 0 }}%
+                                    {{ ((completed_count / total * 100) | round(0) | int) if total > 0 else 0 }}%
                                 </span>
                             </div>
                         </div>
@@ -294,7 +306,17 @@
                                         <div class="exercise-info">
                                             <h4 class="exercise-name">{{ exercise.name }}</h4>
                                             <div class="exercise-status-indicator">
-                                                {% if exercise.weight is not none and exercise.weight > 0 %}
+                                                {% set has_logged_top_set = false %}
+                                                {% for session in user.workout_sessions %}
+                                                    {% if session.workout_id == workout.id %}
+                                                        {% for log in session.exercise_logs %}
+                                                            {% if log.exercise_name == exercise.name and log.weight is not none and log.weight > 0 %}
+                                                                {% set has_logged_top_set = true %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% if has_logged_top_set %}
                                                     <span class="status-badge completed">
                                                         <i class="fa-solid fa-check-circle"></i>
                                                         Completed
@@ -453,7 +475,20 @@
                                         </div>
                                         <div class="stat-info">
                                             <span class="stat-value" id="completed-exercises-{{ workout.id }}">
-                                                {{ workout.exercises | selectattr('weight') | selectattr('weight', 'greaterthan', 0) | list | length }}
+                                                {% set completed_exercises = 0 %}
+                                                {% for exercise in workout.exercises %}
+                                                    {% for session in user.workout_sessions %}
+                                                        {% if session.workout_id == workout.id %}
+                                                            {% for log in session.exercise_logs %}
+                                                                {% if log.exercise_name == exercise.name and log.weight is not none and log.weight > 0 %}
+                                                                    {% set completed_exercises = completed_exercises + 1 %}
+                                                                    {% break %}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                                {{ completed_exercises }}
                                             </span>
                                             <span class="stat-label">Completed</span>
                                         </div>
@@ -475,7 +510,19 @@
                                         </div>
                                         <div class="stat-info">
                                             <span class="stat-value" id="completion-percentage-{{ workout.id }}">
-                                                {% set completed_count = workout.exercises | selectattr('weight') | selectattr('weight', 'greaterthan', 0) | list | length %}
+                                                {% set completed_count = 0 %}
+                                                {% for exercise in workout.exercises %}
+                                                    {% for session in user.workout_sessions %}
+                                                        {% if session.workout_id == workout.id %}
+                                                            {% for log in session.exercise_logs %}
+                                                                {% if log.exercise_name == exercise.name and log.weight is not none and log.weight > 0 %}
+                                                                    {% set completed_count = completed_count + 1 %}
+                                                                    {% break %}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
                                                 {% set total_count = workout.exercises|length %}
                                                 {{ ((completed_count / total_count * 100) | round(0) | int) if total_count > 0 else 0 }}%
                                             </span>
@@ -486,8 +533,22 @@
                                 
                                 <div class="progress-bar-container">
                                     <div class="progress-bar-track">
+                                        {% set completed_count = 0 %}
+                                        {% for exercise in workout.exercises %}
+                                            {% for session in user.workout_sessions %}
+                                                {% if session.workout_id == workout.id %}
+                                                    {% for log in session.exercise_logs %}
+                                                        {% if log.exercise_name == exercise.name and log.weight is not none and log.weight > 0 %}
+                                                            {% set completed_count = completed_count + 1 %}
+                                                            {% break %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endfor %}
+                                        {% set total_count = workout.exercises|length %}
                                         <div class="progress-bar-fill" id="progress-fill-{{ workout.id }}" 
-                                             style="width: {% set completed_count = workout.exercises | selectattr('weight') | selectattr('weight', 'greaterthan', 0) | list | length %}{% set total_count = workout.exercises|length %}{{ ((completed_count / total_count * 100) | round(0) | int) if total_count > 0 else 0 }}%">
+                                             style="width: {{ ((completed_count / total_count * 100) | round(0) | int) if total_count > 0 else 0 }}%">
                                             <div class="progress-bar-glow"></div>
                                         </div>
                                     </div>
@@ -639,41 +700,10 @@
     }
 
     function updateProgressDisplay(workoutId) {
-        const workoutContainer = document.querySelector(`.workout-${workoutId}`);
-        const exercises = workoutContainer.querySelectorAll('.exercise-card-modern');
-        let completed = 0;
-        const total = exercises.length;
-
-        exercises.forEach(exercise => {
-            const weightInput = exercise.querySelector('.weight-field');
-            const repsInput = exercise.querySelector('.reps-field');
-            const hasWeight = weightInput && weightInput.value && parseFloat(weightInput.value) > 0;
-            const hasReps = repsInput && repsInput.value && repsInput.value.trim() !== '';
-            
-            if (hasWeight || hasReps) {
-                completed++;
-            }
-        });
-
-        const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-        // Update progress elements
-        const completedElement = document.getElementById(`completed-exercises-${workoutId}`);
-        const percentageElement = document.getElementById(`completion-percentage-${workoutId}`);
-        const progressFill = document.getElementById(`progress-fill-${workoutId}`);
-        const miniProgress = document.getElementById(`mini-progress-${workoutId}`);
-        const miniProgressText = document.getElementById(`mini-progress-text-${workoutId}`);
-
-        if (completedElement) completedElement.textContent = completed;
-        if (percentageElement) percentageElement.textContent = percentage + '%';
-        if (miniProgressText) miniProgressText.textContent = percentage + '%';
-        
-        if (progressFill) {
-            progressFill.style.width = percentage + '%';
-        }
-        if (miniProgress) {
-            miniProgress.style.width = percentage + '%';
-        }
+        // Progress display is now handled server-side based on logged sessions
+        // This function can be used for real-time updates after successful saves
+        // For now, we'll keep the existing UI state until page refresh
+        console.log(`Progress updated for workout ${workoutId} - refresh page to see completion status`);
     }
 
     function animateProgressBars() {
@@ -895,6 +925,11 @@
                 // Update exercise status badge
                 updateExerciseStatus(inputElement);
                 
+                // If a top set was logged, show special notification
+                if (data.top_set_logged) {
+                    showTopSetNotification(inputElement);
+                }
+                
             } else {
                 showSaveIndicator(inputElement, 'error');
                 console.error('Save failed:', data.errors || data.error);
@@ -976,22 +1011,14 @@
         if (!exerciseCard) return;
         
         const statusBadge = exerciseCard.querySelector('.status-badge');
-        const weightField = exerciseCard.querySelector('.weight-field');
-        const repsField = exerciseCard.querySelector('.reps-field');
         
         if (!statusBadge) return;
         
-        // Check if exercise has meaningful data
-        const hasWeight = weightField && weightField.value && parseFloat(weightField.value) > 0;
-        const hasReps = repsField && repsField.value && repsField.value.trim() !== '';
-        
-        if (hasWeight || hasReps) {
-            statusBadge.className = 'status-badge completed';
-            statusBadge.innerHTML = '<i class="fa-solid fa-check-circle"></i>Completed';
-        } else {
-            statusBadge.className = 'status-badge pending';
-            statusBadge.innerHTML = '<i class="fa-regular fa-circle"></i>Pending';
-        }
+        // Don't update status badge immediately - completion status is determined 
+        // by logged workout sessions, not just input values
+        // The user needs to complete and log their workout session to mark exercises as completed
+        // Status will be updated on page refresh after successful session logging
+        console.log('Exercise data updated - complete workout session to mark as completed');
     }
     
     // PUBLIC_INTERFACE
@@ -1034,6 +1061,50 @@
             errorDiv.style.transform = 'translateY(-10px)';
             setTimeout(() => errorDiv.remove(), 300);
         }, 4000);
+    }
+
+    // PUBLIC_INTERFACE
+    /**
+     * Show special notification when a top set is logged.
+     */
+    function showTopSetNotification(inputElement) {
+        const exerciseCard = inputElement.closest('.exercise-card-modern');
+        if (!exerciseCard) return;
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = 'top-set-notification';
+        notification.innerHTML = `
+            <i class="fa-solid fa-trophy"></i>
+            <span>Top Set Logged!</span>
+        `;
+        notification.style.cssText = `
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            position: absolute;
+            top: -40px;
+            right: 10px;
+            z-index: 1000;
+            animation: slideInDown 0.3s ease-out;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        `;
+        
+        exerciseCard.style.position = 'relative';
+        exerciseCard.appendChild(notification);
+        
+        // Remove after delay
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(-10px)';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
 
     // Intersection Observer for animations

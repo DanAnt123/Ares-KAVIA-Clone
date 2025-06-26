@@ -8,6 +8,63 @@ views = Blueprint('views', __name__)
 
 
 # PUBLIC_INTERFACE
+def _create_top_set_log(exercise, workout_id, user_id):
+    """
+    Create a workout session log entry when a top set is completed (has both weight and reps).
+    
+    Args:
+        exercise (Exercise): The exercise that was completed
+        workout_id (int): ID of the workout
+        user_id (int): ID of the user
+    """
+    try:
+        # Check if there's already a recent session for this workout and exercise
+        from datetime import datetime, timedelta
+        recent_threshold = datetime.utcnow() - timedelta(hours=2)  # Within last 2 hours
+        
+        existing_session = db.session.query(WorkoutSession).join(ExerciseLog).filter(
+            WorkoutSession.user_id == user_id,
+            WorkoutSession.workout_id == workout_id,
+            WorkoutSession.timestamp >= recent_threshold,
+            ExerciseLog.exercise_name == exercise.name
+        ).first()
+        
+        if existing_session:
+            # Update existing log
+            existing_log = db.session.query(ExerciseLog).filter(
+                ExerciseLog.session_id == existing_session.id,
+                ExerciseLog.exercise_name == exercise.name
+            ).first()
+            
+            if existing_log:
+                existing_log.weight = exercise.weight
+                existing_log.reps = int(exercise.reps) if exercise.reps and exercise.reps.isdigit() else None
+                existing_log.details = exercise.details
+                db.session.commit()
+                return
+        
+        # Create new session
+        session = WorkoutSession(user_id=user_id, workout_id=workout_id)
+        db.session.add(session)
+        db.session.commit()
+        
+        # Create exercise log
+        log = ExerciseLog(
+            session_id=session.id,
+            exercise_name=exercise.name,
+            weight=exercise.weight,
+            reps=int(exercise.reps) if exercise.reps and exercise.reps.isdigit() else None,
+            details=exercise.details,
+            include_details=exercise.include_details
+        )
+        db.session.add(log)
+        db.session.commit()
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating top set log: {str(e)}")
+
+
 def handle_single_field_update(data):
     """
     Handle single field updates for interactive workout inputs.
@@ -81,6 +138,11 @@ def handle_single_field_update(data):
                     "error": "Reps value too long (max 20 characters)"
                 }), 400
             exercise.reps = reps_val if reps_val else None
+            
+            # Check if this completes a top set (has both weight and reps)
+            if reps_val and exercise.weight is not None and exercise.weight > 0:
+                # Create a workout session entry for this completed top set
+                _create_top_set_log(exercise, workout_id, current_user.id)
         
         elif field_type == "details":
             details_val = str(value).strip() if value is not None else ""
@@ -94,12 +156,24 @@ def handle_single_field_update(data):
         # Save to database
         db.session.commit()
         
+        # Check if this constitutes a "top set" (has weight and reps) to create a workout session
+        top_set_logged = False
+        if field_type == "weight" and value is not None and float(value) > 0:
+            # Check if this exercise also has reps to constitute a complete top set
+            if exercise.reps and exercise.reps.strip():
+                # Create a workout session entry for this completed exercise
+                _create_top_set_log(exercise, workout_id, current_user.id)
+                top_set_logged = True
+        elif field_type == "reps" and value and exercise.weight is not None and exercise.weight > 0:
+            top_set_logged = True
+        
         return jsonify({
             "success": True, 
             "message": f"{field_type.capitalize()} updated successfully",
             "exercise_id": exercise_id,
             "field_type": field_type,
-            "value": value
+            "value": value,
+            "top_set_logged": top_set_logged
         }), 200
         
     except Exception as e:
