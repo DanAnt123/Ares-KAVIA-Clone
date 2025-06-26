@@ -18,6 +18,66 @@
     opacity: 1;
 }
 
+/* Previous Session Badge Styling */
+.previous-session-badge {
+    position: absolute;
+    top: -8px;
+    right: 8px;
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    transition: all 0.3s ease;
+    opacity: 0.85;
+}
+
+.previous-session-badge:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.previous-session-badge i {
+    font-size: 0.65rem;
+    opacity: 0.9;
+}
+
+.previous-session-badge .badge-text {
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* Different colors for weight and reps badges */
+.previous-session-badge.weight-badge {
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.previous-session-badge.weight-badge:hover {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.previous-session-badge.reps-badge {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.previous-session-badge.reps-badge:hover {
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+/* Ensure input container has relative positioning for badge positioning */
+.input-group-modern {
+    position: relative;
+}
+
 .metric-input-field[placeholder*="Last:"] {
     border-color: #d1d5db;
     background-color: #f9fafb;
@@ -145,6 +205,59 @@
     to { opacity: 1; }
 }
 
+/* Badge entrance animation */
+.previous-session-badge {
+    animation: badgeSlideIn 0.5s ease-out;
+}
+
+@keyframes badgeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.8);
+    }
+    to {
+        opacity: 0.85;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Pulse animation for badges when input is focused */
+.metric-input-field:focus + .input-group-modern .previous-session-badge,
+.metric-input-field:focus ~ .previous-session-badge {
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% {
+        opacity: 0.85;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+}
+
+/* Badge visibility on mobile - make them more prominent */
+@media (max-width: 768px) {
+    .previous-session-badge {
+        position: relative;
+        top: -4px;
+        right: 0;
+        margin-bottom: 4px;
+        font-size: 0.65rem;
+        padding: 3px 6px;
+        border-radius: 8px;
+        display: inline-flex;
+        opacity: 0.9;
+    }
+    
+    .previous-session-badge:hover {
+        transform: none;
+        opacity: 1;
+    }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .previous-value-hint {
@@ -169,4 +282,109 @@
     .celebration-message {
         font-size: 1rem;
     }
+}
+
+/* Enhanced visibility when exercise is enabled */
+.exercise-card-modern.exercise-enabled .previous-session-badge {
+    opacity: 1;
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.5);
+}
+
+.exercise-card-modern.exercise-enabled .previous-session-badge.weight-badge {
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5);
+}
+
+.exercise-card-modern.exercise-enabled .previous-session-badge.reps-badge {
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.5);
+}
+
+/* Tooltip style for badges */
+.previous-session-badge::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.6rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.previous-session-badge:hover::after {
+    opacity: 1;
+}
+
+/* Badge positioning adjustments for different screen sizes */
+@media (min-width: 769px) {
+    .previous-session-badge {
+        top: -12px;
+        right: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .previous-session-badge {
+        font-size: 0.6rem;
+        padding: 2px 5px;
+        gap: 2px;
+    }
+    
+    .previous-session-badge i {
+        font-size: 0.55rem;
+    }
+    
+    .previous-session-badge .badge-text {
+        font-size: 0.6rem;
+    }
+}
+
+/* Badge click notification animation */
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+    20% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    80% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+}
+
+/* Badge click feedback */
+.previous-session-badge:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+}
+
+/* Enhanced visibility states */
+.previous-session-badge.weight-badge {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.previous-session-badge.reps-badge {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Improved contrast for better readability */
+.previous-session-badge .badge-text {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    font-weight: 700;
 }

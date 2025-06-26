@@ -328,22 +328,23 @@
                                                 <label class="metric-label">
                                                     <i class="fa-solid fa-weight-hanging"></i>
                                                     Weight
-                                                    {% set last_session = last_session_data.get(workout.id, {}).get(exercise.name, {}) %}
-                                                    {% if last_session.get('weight') %}
-                                                        <span class="previous-value-hint" title="Last session: {{ last_session.weight }}kg">
-                                                            (Last: {{ last_session.weight }}kg)
-                                                        </span>
-                                                    {% endif %}
                                                 </label>
                                                 
                                                 <div class="metric-input weight-input-interactive">
                                                     <div class="input-group-modern">
+                                                        {% set last_session = last_session_data.get(workout.id, {}).get(exercise.name, {}) %}
+                                                        {% if last_session.get('weight') %}
+                                                            <div class="previous-session-badge weight-badge">
+                                                                <i class="fa-solid fa-history"></i>
+                                                                <span class="badge-text">Last: {{ last_session.weight }}kg</span>
+                                                            </div>
+                                                        {% endif %}
                                                         <input 
                                                             id="weight-{{ workout.id }}-{{ loop.index0 }}" 
                                                             class="metric-input-field weight-field interactive-input" 
                                                             type="number" 
                                                             step="0.01" 
-                                                            placeholder="{% if last_session.get('weight') %}Last: {{ last_session.weight }}kg{% else %}Enter weight{% endif %}" 
+                                                            placeholder="{% if last_session.get('weight') %}{{ last_session.weight }}{% else %}Enter weight{% endif %}" 
                                                             name="weight" 
                                                             value=""
                                                             min="0"
@@ -381,21 +382,22 @@
                                                 <label class="metric-label">
                                                     <i class="fa-solid fa-repeat"></i>
                                                     Reps
-                                                    {% set last_session = last_session_data.get(workout.id, {}).get(exercise.name, {}) %}
-                                                    {% if last_session.get('reps') %}
-                                                        <span class="previous-value-hint" title="Last session: {{ last_session.reps }} reps">
-                                                            (Last: {{ last_session.reps }})
-                                                        </span>
-                                                    {% endif %}
                                                 </label>
                                                 
                                                 <div class="metric-input reps-input-interactive">
                                                     <div class="input-group-modern">
+                                                        {% set last_session = last_session_data.get(workout.id, {}).get(exercise.name, {}) %}
+                                                        {% if last_session.get('reps') %}
+                                                            <div class="previous-session-badge reps-badge">
+                                                                <i class="fa-solid fa-history"></i>
+                                                                <span class="badge-text">Last: {{ last_session.reps }} reps</span>
+                                                            </div>
+                                                        {% endif %}
                                                         <input 
                                                             id="reps-{{ workout.id }}-{{ loop.index0 }}" 
                                                             class="metric-input-field reps-field interactive-input" 
                                                             type="text" 
-                                                            placeholder="{% if last_session.get('reps') %}Last: {{ last_session.reps }}{% else %}e.g., 8-12 or 10{% endif %}" 
+                                                            placeholder="{% if last_session.get('reps') %}{{ last_session.reps }}{% else %}e.g., 8-12 or 10{% endif %}" 
                                                             name="reps" 
                                                             value="" 
                                                             maxlength="20"
@@ -1137,6 +1139,97 @@
                 }
             });
         });
+        
+        // Initialize badge click functionality
+        initializePreviousSessionBadges();
+    }
+    
+    // PUBLIC_INTERFACE
+    /**
+     * Initialize previous session badges to be clickable for quick fill.
+     */
+    function initializePreviousSessionBadges() {
+        document.querySelectorAll('.previous-session-badge').forEach(badge => {
+            badge.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Find the corresponding input field
+                const inputGroup = this.closest('.input-group-modern');
+                const inputField = inputGroup.querySelector('.metric-input-field');
+                const quickFillBtn = inputGroup.querySelector('.quick-fill-last-session');
+                
+                if (inputField && !inputField.disabled && !inputField.readOnly) {
+                    // If there's a quick fill button, use its value
+                    if (quickFillBtn) {
+                        const value = quickFillBtn.dataset.value;
+                        if (value) {
+                            inputField.value = value;
+                            inputField.focus();
+                            
+                            // Trigger input event
+                            inputField.dispatchEvent(new Event('input', { bubbles: true }));
+                            
+                            // Show badge feedback
+                            this.style.transform = 'scale(1.1)';
+                            this.style.opacity = '1';
+                            
+                            setTimeout(() => {
+                                this.style.transform = '';
+                                this.style.opacity = '';
+                            }, 300);
+                            
+                            // Update progress
+                            const exerciseCard = inputField.closest('.exercise-card-modern');
+                            const workoutContainer = exerciseCard.closest('.workout-session-container');
+                            const workoutId = workoutContainer.dataset.workoutId;
+                            
+                            setTimeout(() => {
+                                updateProgressDisplayFallback(workoutId);
+                            }, 100);
+                        }
+                    }
+                } else {
+                    // If input is disabled, show notification that user needs to enable it first
+                    showBadgeClickNotification(badge, 'Click "Quick Log" to enable editing first');
+                }
+            });
+            
+            // Add hover effect to indicate clickability
+            badge.style.cursor = 'pointer';
+            badge.title = 'Click to fill input with previous session value';
+        });
+    }
+    
+    // PUBLIC_INTERFACE
+    /**
+     * Show notification when badge is clicked.
+     */
+    function showBadgeClickNotification(badge, message) {
+        const notification = document.createElement('div');
+        notification.className = 'badge-click-notification';
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            z-index: 1000;
+            animation: fadeInOut 2s ease-out forwards;
+        `;
+        
+        badge.style.position = 'relative';
+        badge.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 2000);
     }
     
     // PUBLIC_INTERFACE
