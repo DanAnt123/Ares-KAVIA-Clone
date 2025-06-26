@@ -354,12 +354,15 @@
                                                             data-field-type="weight"
                                                             data-last-weight="{{ last_session.get('weight', '') }}"
                                                             data-original-weight="{% if exercise.weight is not none %}{{ (exercise.weight | int) if (exercise.weight | float | is_integer) else exercise.weight }}{% endif %}"
+                                                            disabled
+                                                            readonly
                                                         >
                                                         {% if last_session.get('weight') %}
                                                             <button type="button" class="quick-fill-last-session" 
                                                                     title="Fill with last session: {{ last_session.weight }}kg"
                                                                     data-target="weight-{{ workout.id }}-{{ loop.index0 }}"
-                                                                    data-value="{{ last_session.weight }}">
+                                                                    data-value="{{ last_session.weight }}"
+                                                                    disabled>
                                                                 Last
                                                             </button>
                                                         {% endif %}
@@ -402,12 +405,15 @@
                                                             data-field-type="reps"
                                                             data-last-reps="{{ last_session.get('reps', '') }}"
                                                             data-original-reps="{{ exercise.reps or '' }}"
+                                                            disabled
+                                                            readonly
                                                         >
                                                         {% if last_session.get('reps') %}
                                                             <button type="button" class="quick-fill-last-session" 
                                                                     title="Fill with last session: {{ last_session.reps }} reps"
                                                                     data-target="reps-{{ workout.id }}-{{ loop.index0 }}"
-                                                                    data-value="{{ last_session.reps }}">
+                                                                    data-value="{{ last_session.reps }}"
+                                                                    disabled>
                                                                 Last
                                                             </button>
                                                         {% endif %}
@@ -443,6 +449,8 @@
                                                                 data-workout-id="{{ workout.id }}"
                                                                 data-field-type="details"
                                                                 data-original-details="{{ exercise.details or '' }}"
+                                                                disabled
+                                                                readonly
                                                             >
                                                             <div class="input-focus-line"></div>
                                                         </div>
@@ -939,13 +947,37 @@
     }
 
     function initializeQuickActions() {
-        // Quick log buttons - only fill inputs, no auto-save or notifications
+        // Quick log buttons - enable fields and fill with last session data
         document.querySelectorAll('.quick-log-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const exerciseIndex = this.dataset.exerciseIndex;
                 const exerciseCard = this.closest('.exercise-card-modern');
                 const weightInput = exerciseCard.querySelector('.weight-field');
                 const repsInput = exerciseCard.querySelector('.reps-field');
+                const detailsInput = exerciseCard.querySelector('.details-field');
+                
+                // Enable all input fields
+                if (weightInput) {
+                    weightInput.disabled = false;
+                    weightInput.readOnly = false;
+                    weightInput.classList.add('field-enabled');
+                }
+                if (repsInput) {
+                    repsInput.disabled = false;
+                    repsInput.readOnly = false;
+                    repsInput.classList.add('field-enabled');
+                }
+                if (detailsInput) {
+                    detailsInput.disabled = false;
+                    detailsInput.readOnly = false;
+                    detailsInput.classList.add('field-enabled');
+                }
+                
+                // Enable quick fill buttons
+                const quickFillButtons = exerciseCard.querySelectorAll('.quick-fill-last-session');
+                quickFillButtons.forEach(button => {
+                    button.disabled = false;
+                });
                 
                 // Fill weight with last session data if available
                 const lastWeight = weightInput.dataset.lastWeight;
@@ -959,6 +991,16 @@
                     repsInput.value = lastReps;
                 }
                 
+                // Add visual feedback to exercise card
+                exerciseCard.classList.add('exercise-enabled');
+                
+                // Update exercise status badge
+                const statusBadge = exerciseCard.querySelector('.status-badge');
+                if (statusBadge) {
+                    statusBadge.className = 'status-badge active';
+                    statusBadge.innerHTML = '<i class="fa-solid fa-edit"></i> Active';
+                }
+                
                 // Focus on weight input for user to continue
                 if (weightInput) {
                     weightInput.focus();
@@ -966,13 +1008,19 @@
                 
                 // Visual feedback for quick log button
                 this.style.background = '#059669';
-                this.innerHTML = '<i class="fa-solid fa-check"></i> Filled';
+                this.innerHTML = '<i class="fa-solid fa-check"></i> Enabled';
+                this.disabled = true;
                 
-                // Reset button after delay
+                // Show notification
+                showQuickLogNotification(exerciseCard, 'Exercise enabled and filled with last session data!');
+                
+                // Update progress after enabling
+                const workoutContainer = exerciseCard.closest('.workout-session-container');
+                const workoutId = workoutContainer.dataset.workoutId;
+                
                 setTimeout(() => {
-                    this.style.background = '';
-                    this.innerHTML = '<i class="fa-solid fa-plus-circle"></i> Quick Log';
-                }, 2000);
+                    updateProgressDisplayFallback(workoutId);
+                }, 100);
             });
         });
 
@@ -1328,6 +1376,26 @@
     
     // PUBLIC_INTERFACE
     /**
+     * Show notification when quick log is activated.
+     */
+    function showQuickLogNotification(exerciseCard, message) {
+        const notification = document.createElement('div');
+        notification.className = 'exercise-quicklog-notification';
+        notification.innerHTML = `<i class="fa-solid fa-info-circle"></i> ${message}`;
+        
+        exerciseCard.style.position = 'relative';
+        exerciseCard.appendChild(notification);
+        
+        // Remove after delay
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(-20px)';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+    
+    // PUBLIC_INTERFACE
+    /**
      * Show celebration when workout is 100% completed.
      */
     function showWorkoutCompletionCelebration(workoutId) {
@@ -1564,6 +1632,113 @@
         .save-exercise-btn.error {
             background: #ef4444 !important;
             color: white !important;
+        }
+        
+        /* Disabled field styles */
+        .metric-input-field:disabled,
+        .metric-input-field[readonly] {
+            background-color: #f3f4f6 !important;
+            color: #6b7280 !important;
+            cursor: not-allowed !important;
+            opacity: 0.6 !important;
+            border-color: #d1d5db !important;
+        }
+        
+        /* Enabled field styles */
+        .metric-input-field.field-enabled {
+            background-color: #ffffff !important;
+            color: #1f2937 !important;
+            cursor: text !important;
+            opacity: 1 !important;
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+            animation: fieldEnable 0.3s ease-out !important;
+        }
+        
+        @keyframes fieldEnable {
+            from {
+                opacity: 0.6;
+                transform: scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Exercise card enabled state */
+        .exercise-card-modern.exercise-enabled {
+            border-color: #10b981 !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
+            animation: cardEnable 0.4s ease-out !important;
+        }
+        
+        @keyframes cardEnable {
+            from {
+                border-color: #e5e7eb;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            }
+            to {
+                border-color: #10b981;
+                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            }
+        }
+        
+        /* Quick log notification */
+        .exercise-quicklog-notification {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideInLeft 0.3s ease-out;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Status badge active state */
+        .status-badge.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+            color: white !important;
+            animation: badgeActivate 0.3s ease-out !important;
+        }
+        
+        @keyframes badgeActivate {
+            from {
+                background: #e5e7eb;
+                color: #6b7280;
+            }
+            to {
+                background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+                color: white;
+            }
+        }
+        
+        /* Quick log button disabled state */
+        .quick-log-btn:disabled {
+            background: #059669 !important;
+            cursor: not-allowed !important;
+            opacity: 0.8 !important;
+        }
+        
+        /* Disabled quick fill buttons */
+        .quick-fill-last-session:disabled {
+            display: none !important;
         }
     `;
     
