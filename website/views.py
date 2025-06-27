@@ -534,12 +534,83 @@ def workout():
     return render_template("workout.html", user=current_user, last_session_data=last_session_data)
 
 
+def _get_top_set_for_exercise(exercise_logs):
+    """
+    Find the top set for an exercise based on weight (heaviest), then reps if weight is tied.
+    
+    Args:
+        exercise_logs (list): List of ExerciseLog objects for the same exercise
+        
+    Returns:
+        ExerciseLog: The exercise log representing the top set
+    """
+    if not exercise_logs:
+        return None
+    
+    # Sort by weight (descending), then by reps (descending)
+    def sort_key(log):
+        weight = log.weight if log.weight is not None else 0
+        reps = log.reps if log.reps is not None else 0
+        return (-weight, -reps)
+    
+    return sorted(exercise_logs, key=sort_key)[0]
+
+
+def _group_sessions_with_top_sets(sessions):
+    """
+    Group exercise logs by session and find top set for each exercise in each session.
+    
+    Args:
+        sessions (list): List of WorkoutSession objects
+        
+    Returns:
+        list: List of session dictionaries with top sets grouped by exercise
+    """
+    grouped_sessions = []
+    
+    for session in sessions:
+        # Group exercise logs by exercise name
+        exercises_dict = {}
+        for log in session.exercise_logs:
+            if log.exercise_name not in exercises_dict:
+                exercises_dict[log.exercise_name] = []
+            exercises_dict[log.exercise_name].append(log)
+        
+        # Find top set for each exercise
+        exercises_with_top_sets = []
+        for exercise_name, logs in exercises_dict.items():
+            top_set = _get_top_set_for_exercise(logs)
+            if top_set:
+                exercises_with_top_sets.append({
+                    'exercise_name': exercise_name,
+                    'top_set': top_set,
+                    'total_sets': len(logs)
+                })
+        
+        # Calculate session statistics
+        total_weight = sum(
+            log.weight for log in session.exercise_logs 
+            if log.weight is not None
+        )
+        
+        grouped_sessions.append({
+            'session': session,
+            'exercises': exercises_with_top_sets,
+            'total_exercises': len(exercises_dict),
+            'total_weight': total_weight,
+            'total_sets': len(session.exercise_logs)
+        })
+    
+    return grouped_sessions
+
+
 # PUBLIC_INTERFACE
 @views.route("/history")
 @login_required
 def history():
     """
-    Renders the 'View your Progress' page showing all past workout sessions and their details for the logged-in user.
+    Renders the 'View your Progress' page showing workout sessions grouped by date as cards.
+    Each card shows exercises with their top set (heaviest weight or most reps if tied).
     Supports enhanced filtering, sorting, and AJAX requests for real-time updates.
     """
     # Check if this is an AJAX request for data only
@@ -568,14 +639,17 @@ def history():
         sessions = [s for s in sessions if s.workout_id == workout_filter]
         selected_workout = workout_filter
 
+    # Group sessions with top sets for each exercise
+    grouped_sessions = _group_sessions_with_top_sets(sessions)
+
     # Calculate additional statistics for enhanced UI
-    total_exercises = sum(len(session.exercise_logs) for session in sessions)
+    total_exercises = sum(session_data['total_exercises'] for session_data in grouped_sessions)
     unique_workout_count = len(set(session.workout_id for session in sessions if session.workout_id))
 
     return render_template(
         "history.html",
         user=current_user,
-        sessions=sessions,
+        grouped_sessions=grouped_sessions,
         workouts=all_workouts,
         selected_workout=selected_workout,
         total_exercises=total_exercises,

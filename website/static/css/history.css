@@ -359,9 +359,317 @@
 }
 
 /* ===============================
-   SESSION CARDS
+   WORKOUT SESSION CARDS
    =============================== */
 
+.workout-session-card {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-elevated) 100%);
+  border: 1px solid var(--tertiary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  animation: sessionCardEnter 0.4s ease-out forwards;
+}
+
+.workout-session-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  transform: scaleX(0);
+  transition: transform var(--transition-base);
+}
+
+.workout-session-card:hover,
+.workout-session-card:focus-within {
+  border-color: var(--primary-light);
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-4px);
+}
+
+.workout-session-card:hover::before,
+.workout-session-card:focus-within::before {
+  transform: scaleX(1);
+}
+
+/* Session Card Header */
+.session-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--tertiary);
+}
+
+.session-info {
+  flex: 1;
+}
+
+.session-workout-name {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+  line-height: 1.3;
+}
+
+.session-meta {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.session-date,
+.session-time {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--text-tertiary);
+  font-weight: var(--fw-medium);
+}
+
+.session-date i,
+.session-time i {
+  color: var(--primary-light);
+  font-size: var(--fs-xs);
+}
+
+.session-badge {
+  display: flex;
+  align-items: center;
+}
+
+.session-id {
+  padding: var(--space-1) var(--space-3);
+  background: var(--dark-elevated);
+  border: 1px solid var(--tertiary);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  font-weight: var(--fw-medium);
+}
+
+/* Session Stats */
+.session-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  padding: var(--space-4);
+  background: var(--dark-elevated);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--tertiary);
+}
+
+.session-stats .stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: transparent;
+  border: none;
+  padding: var(--space-2);
+}
+
+.session-stats .stat-value {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: var(--primary-light);
+  line-height: 1;
+  margin-bottom: var(--space-1);
+}
+
+.session-stats .stat-label {
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Exercises Section */
+.exercises-section {
+  margin-top: var(--space-4);
+}
+
+.exercises-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--tertiary);
+}
+
+.exercises-title i {
+  color: var(--accent);
+  font-size: var(--fs-base);
+}
+
+.exercises-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+/* Exercise Cards */
+.exercise-card {
+  background: var(--dark-elevated);
+  border: 1px solid var(--tertiary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.exercise-card:hover {
+  border-color: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.exercise-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.exercise-name {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.sets-badge {
+  padding: var(--space-1) var(--space-2);
+  background: var(--surface);
+  border: 1px solid var(--tertiary);
+  border-radius: var(--radius-base);
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  font-weight: var(--fw-medium);
+}
+
+/* Top Set Stats */
+.exercise-top-set {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.top-set-stats {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.stat-highlight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-base);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.weight-stat {
+  background: var(--primary-subtle);
+  border-color: var(--primary-light);
+  color: var(--primary-light);
+}
+
+.weight-stat i {
+  color: var(--primary);
+}
+
+.reps-stat {
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.reps-stat i {
+  color: var(--accent);
+}
+
+.set-stat {
+  background: var(--surface);
+  border-color: var(--tertiary);
+  color: var(--text-secondary);
+}
+
+.set-stat i {
+  color: var(--text-tertiary);
+}
+
+.stat-highlight:hover {
+  transform: scale(1.05);
+}
+
+.stat-number {
+  font-weight: var(--fw-bold);
+}
+
+/* Exercise Notes */
+.exercise-notes {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--accent);
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+}
+
+.exercise-notes i {
+  color: var(--accent);
+  font-size: var(--fs-sm);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.note-text {
+  color: var(--text-secondary);
+}
+
+.no-exercises {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  color: var(--text-tertiary);
+  font-style: italic;
+  text-align: center;
+  background: var(--dark-elevated);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--tertiary);
+}
+
+.no-exercises i {
+  color: var(--accent);
+  font-size: var(--fs-lg);
+}
+
+/* Legacy session card support for backward compatibility */
 .session-card {
   background: linear-gradient(135deg, var(--surface) 0%, var(--surface-elevated) 100%);
   border: 1px solid var(--tertiary);
@@ -950,6 +1258,50 @@
     grid-template-columns: 1fr;
   }
   
+  /* Workout Session Card Mobile Styles */
+  .workout-session-card {
+    padding: var(--space-4);
+  }
+  
+  .session-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+  
+  .session-badge {
+    align-self: stretch;
+    justify-content: center;
+  }
+  
+  .session-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+    padding: var(--space-3);
+  }
+  
+  .exercises-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  
+  .exercise-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+  
+  .top-set-stats {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .stat-highlight {
+    justify-content: center;
+    text-align: center;
+  }
+  
+  /* Legacy session card mobile styles */
   .session-card {
     padding: var(--space-4);
   }
@@ -1020,10 +1372,47 @@
     text-align: left;
   }
   
+  /* Workout Session Card Small Mobile Styles */
+  .workout-session-card {
+    padding: var(--space-3);
+  }
+  
   .session-workout-name {
     font-size: var(--fs-lg);
   }
   
+  .session-stats {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+    padding: var(--space-2);
+  }
+  
+  .session-stats .stat-item {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    padding: var(--space-2);
+  }
+  
+  .exercises-title {
+    font-size: var(--fs-base);
+  }
+  
+  .exercise-name {
+    font-size: var(--fs-sm);
+  }
+  
+  .stat-highlight {
+    font-size: var(--fs-xs);
+    padding: var(--space-1) var(--space-2);
+  }
+  
+  .exercise-notes {
+    padding: var(--space-2);
+    font-size: var(--fs-xs);
+  }
+  
+  /* Legacy session card small mobile styles */
   .session-action-btn {
     width: 32px;
     height: 32px;
@@ -1039,6 +1428,73 @@
    LIST VIEW SPECIFIC STYLES
    =============================== */
 
+.sessions-container.view-list .workout-session-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-4);
+  align-items: start;
+  padding: var(--space-4) var(--space-5);
+}
+
+.sessions-container.view-list .session-card-header {
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+  grid-column: 1 / -1;
+}
+
+.sessions-container.view-list .session-stats {
+  grid-column: 1;
+  margin-bottom: var(--space-3);
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.sessions-container.view-list .session-stats .stat-item {
+  flex-direction: row;
+  gap: var(--space-2);
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.sessions-container.view-list .session-stats .stat-value {
+  font-size: var(--fs-base);
+  margin-bottom: 0;
+}
+
+.sessions-container.view-list .session-stats .stat-label {
+  font-size: var(--fs-xs);
+}
+
+.sessions-container.view-list .exercises-section {
+  grid-column: 1 / -1;
+  margin-top: var(--space-3);
+}
+
+.sessions-container.view-list .exercises-grid {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-3);
+}
+
+.sessions-container.view-list .exercise-card {
+  padding: var(--space-3);
+}
+
+.sessions-container.view-list .exercise-name {
+  font-size: var(--fs-sm);
+}
+
+.sessions-container.view-list .top-set-stats {
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.sessions-container.view-list .stat-highlight {
+  font-size: var(--fs-xs);
+  padding: var(--space-1) var(--space-2);
+}
+
+/* Legacy session card list view support */
 .sessions-container.view-list .session-card {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -1069,15 +1525,6 @@
   flex-direction: row;
   gap: var(--space-2);
   flex: none;
-}
-
-.sessions-container.view-list .stat-value {
-  font-size: var(--fs-base);
-  margin-bottom: 0;
-}
-
-.sessions-container.view-list .stat-label {
-  font-size: var(--fs-xs);
 }
 
 .sessions-container.view-list .session-details {

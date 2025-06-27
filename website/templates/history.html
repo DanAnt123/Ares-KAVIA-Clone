@@ -42,7 +42,7 @@
                 </div>
                 <div class="workout-stats-summary">
                     <div class="stat-card">
-                        <span class="stat-number" id="total-sessions">{{ sessions|length }}</span>
+                        <span class="stat-number" id="total-sessions">{{ grouped_sessions|length }}</span>
                         <span class="stat-label">Total Sessions</span>
                     </div>
                     <div class="stat-card">
@@ -154,7 +154,7 @@
 
         <!-- History Content -->
         <div id="history-content" class="history-content">
-            {% if not sessions or sessions|length == 0 %}
+            {% if not grouped_sessions or grouped_sessions|length == 0 %}
                 <div class="empty-state" id="empty-state">
                     <div class="empty-state-content">
                         <div class="empty-state-icon">
@@ -174,7 +174,7 @@
                 <!-- Session Results Summary -->
                 <div class="results-summary">
                     <div class="results-info">
-                        <span class="results-count" id="results-count">{{ sessions|length }} sessions found</span>
+                        <span class="results-count" id="results-count">{{ grouped_sessions|length }} sessions found</span>
                         <span class="results-divider">•</span>
                         <span class="results-filter" id="active-filters">No filters applied</span>
                     </div>
@@ -188,11 +188,20 @@
 
                 <!-- Sessions Container -->
                 <div id="sessions-container" class="sessions-container view-grid">
-                    {% for session in sessions %}
-                        <div class="session-card" data-session-id="{{ session.id }}" data-workout-id="{{ session.workout_id }}" data-timestamp="{{ session.timestamp.isoformat() }}" data-workout-name="{{ session.workout.name if session.workout else 'Workout' }}">
-                            <div class="session-header">
+                    {% for session_data in grouped_sessions %}
+                        {% set session = session_data.session %}
+                        <div class="workout-session-card" 
+                             data-session-id="{{ session.id }}" 
+                             data-workout-id="{{ session.workout_id }}" 
+                             data-timestamp="{{ session.timestamp.isoformat() }}" 
+                             data-workout-name="{{ session.workout.name if session.workout else 'Workout' }}">
+                            
+                            <!-- Session Header -->
+                            <div class="session-card-header">
                                 <div class="session-info">
-                                    <h3 class="session-workout-name">{{ session.workout.name if session.workout else 'Workout' }}</h3>
+                                    <h3 class="session-workout-name">
+                                        {{ session.workout.name if session.workout else 'Workout' }}
+                                    </h3>
                                     <div class="session-meta">
                                         <span class="session-date">
                                             <i class="fa fa-calendar"></i>
@@ -204,70 +213,92 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="session-actions">
-                                    <button class="session-action-btn expand-btn" data-session-id="{{ session.id }}" title="View Details">
-                                        <i class="fa fa-chevron-down"></i>
-                                    </button>
-                                    <span class="session-id-badge">#{{ session.id }}</span>
+                                <div class="session-badge">
+                                    <span class="session-id">#{{ session.id }}</span>
                                 </div>
                             </div>
 
-                            <div class="session-summary">
-                                <div class="summary-stats">
-                                    <div class="stat-item">
-                                        <span class="stat-value">{{ session.exercise_logs|length }}</span>
-                                        <span class="stat-label">Exercises</span>
-                                    </div>
-                                    {% if session.exercise_logs %}
-                                        {% set total_weight = session.exercise_logs | selectattr('weight') | map(attribute='weight') | sum %}
-                                        {% if total_weight > 0 %}
-                                            <div class="stat-item">
-                                                <span class="stat-value">{{ total_weight|int }}kg</span>
-                                                <span class="stat-label">Total Weight</span>
-                                            </div>
-                                        {% endif %}
-                                    {% endif %}
+                            <!-- Session Summary Stats -->
+                            <div class="session-stats">
+                                <div class="stat-item">
+                                    <span class="stat-value">{{ session_data.total_exercises }}</span>
+                                    <span class="stat-label">Exercises</span>
                                 </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">{{ session_data.total_sets }}</span>
+                                    <span class="stat-label">Total Sets</span>
+                                </div>
+                                {% if session_data.total_weight > 0 %}
+                                <div class="stat-item">
+                                    <span class="stat-value">{{ session_data.total_weight|int }}kg</span>
+                                    <span class="stat-label">Total Weight</span>
+                                </div>
+                                {% endif %}
                             </div>
 
-                            <div class="session-details" id="session-details-{{ session.id }}" style="display: none;">
-                                {% if session.exercise_logs|length > 0 %}
-                                    <div class="exercises-list">
-                                        {% for log in session.exercise_logs %}
-                                            <div class="exercise-log-item" data-exercise-name="{{ log.exercise_name }}">
-                                                <div class="exercise-info">
-                                                    <span class="exercise-name">{{ log.exercise_name }}</span>
-                                                    <div class="exercise-details">
-                                                        {% if log.set_number is not none %}
-                                                            <span class="detail-badge">Set {{ log.set_number }}</span>
-                                                        {% endif %}
-                                                        {% if log.reps is not none %}
-                                                            <span class="detail-badge">{{ log.reps }} reps</span>
-                                                        {% endif %}
-                                                        {% if log.weight is not none %}
-                                                            <span class="weight-badge">
-                                                                {% if log.weight | float | int == log.weight | float %}
-                                                                    {{ log.weight|int }} kg
-                                                                {% else %}
-                                                                    {{ log.weight }} kg
-                                                                {% endif %}
-                                                            </span>
-                                                        {% endif %}
-                                                    </div>
+                            <!-- Exercises with Top Sets -->
+                            <div class="exercises-section">
+                                <h4 class="exercises-title">
+                                    <i class="fa fa-trophy"></i>
+                                    Top Sets
+                                </h4>
+                                {% if session_data.exercises|length > 0 %}
+                                    <div class="exercises-grid">
+                                        {% for exercise in session_data.exercises %}
+                                            <div class="exercise-card" data-exercise-name="{{ exercise.exercise_name }}">
+                                                <div class="exercise-header">
+                                                    <span class="exercise-name">{{ exercise.exercise_name }}</span>
+                                                    {% if exercise.total_sets > 1 %}
+                                                        <span class="sets-badge">{{ exercise.total_sets }} sets</span>
+                                                    {% endif %}
                                                 </div>
-                                                {% if log.include_details and log.details %}
-                                                    <div class="exercise-notes">
-                                                        <i class="fa fa-sticky-note-o"></i>
-                                                        {{ log.details }}
+                                                
+                                                <div class="exercise-top-set">
+                                                    {% set top_set = exercise.top_set %}
+                                                    <div class="top-set-stats">
+                                                        {% if top_set.weight is not none and top_set.weight > 0 %}
+                                                            <div class="stat-highlight weight-stat">
+                                                                <i class="fa fa-dumbbell"></i>
+                                                                <span class="stat-number">
+                                                                    {% if top_set.weight | float | int == top_set.weight | float %}
+                                                                        {{ top_set.weight|int }}
+                                                                    {% else %}
+                                                                        {{ top_set.weight }}
+                                                                    {% endif %}
+                                                                    kg
+                                                                </span>
+                                                            </div>
+                                                        {% endif %}
+                                                        
+                                                        {% if top_set.reps is not none and top_set.reps > 0 %}
+                                                            <div class="stat-highlight reps-stat">
+                                                                <i class="fa fa-repeat"></i>
+                                                                <span class="stat-number">{{ top_set.reps }} reps</span>
+                                                            </div>
+                                                        {% endif %}
+                                                        
+                                                        {% if top_set.set_number is not none %}
+                                                            <div class="stat-highlight set-stat">
+                                                                <i class="fa fa-list-ol"></i>
+                                                                <span class="stat-number">Set {{ top_set.set_number }}</span>
+                                                            </div>
+                                                        {% endif %}
                                                     </div>
-                                                {% endif %}
+                                                    
+                                                    {% if top_set.include_details and top_set.details %}
+                                                        <div class="exercise-notes">
+                                                            <i class="fa fa-sticky-note-o"></i>
+                                                            <span class="note-text">{{ top_set.details }}</span>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
                                             </div>
                                         {% endfor %}
                                     </div>
                                 {% else %}
                                     <div class="no-exercises">
                                         <i class="fa fa-info-circle"></i>
-                                        No exercises logged for this session.
+                                        <span>No exercises logged for this session</span>
                                     </div>
                                 {% endif %}
                             </div>
@@ -290,22 +321,6 @@
                     </div>
                 </div>
             {% endif %}
-        </div>
-    </div>
-</div>
-
-<!-- Session Detail Modal (for mobile/enhanced view) -->
-<div id="session-modal" class="session-modal" style="display: none;">
-    <div class="modal-overlay"></div>
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="modal-title">Session Details</h3>
-            <button class="modal-close-btn">
-                <i class="fa fa-times"></i>
-            </button>
-        </div>
-        <div class="modal-body" id="modal-session-content">
-            <!-- Dynamic content will be inserted here -->
         </div>
     </div>
 </div>
