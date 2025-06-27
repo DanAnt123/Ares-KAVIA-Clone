@@ -22,11 +22,11 @@
   --input-spacing: var(--space-6);
   --input-spacing-inner: var(--space-4);
   
-  /* Enhanced color palette for inputs */
-  --input-success: #10b981;
-  --input-warning: #f59e0b;
-  --input-error: #ef4444;
-  --input-info: #3b82f6;
+  /* Enhanced color palette for inputs using theme variables */
+  --input-success: var(--success-bg);
+  --input-warning: var(--accent);
+  --input-error: var(--error-bg);
+  --input-info: var(--primary-light);
   
   /* Subtle animations */
   --input-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -185,24 +185,24 @@
 }
 
 .status-badge.completed {
-  background: linear-gradient(135deg, var(--input-success), #059669);
-  color: white;
-  border-color: var(--input-success);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  background: var(--input-success);
+  color: var(--text-on-primary);
+  border-color: var(--success-border);
+  box-shadow: 0 2px 8px var(--success-border);
 }
 
 .status-badge.pending {
   background: var(--surface-elevated);
   color: var(--text-tertiary);
   border-color: var(--tertiary);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .status-badge.active {
-  background: linear-gradient(135deg, var(--input-info), #1e40af);
-  color: white;
-  border-color: var(--input-info);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  background: var(--input-info);
+  color: var(--text-on-primary);
+  border-color: var(--primary-light);
+  box-shadow: 0 2px 8px var(--primary-subtle);
   animation: statusPulse 2s ease-in-out infinite;
 }
 
@@ -309,9 +309,9 @@
 
 /* Weight Metric Specific Styling */
 .weight-metric .metric-label i {
-  background: linear-gradient(135deg, var(--input-success), #059669);
-  border-color: var(--input-success);
-  color: white;
+  background: var(--input-success);
+  border-color: var(--success-border);
+  color: var(--text-on-primary);
 }
 
 .weight-metric .metric-label::after {
@@ -320,9 +320,9 @@
 
 /* Reps Metric Specific Styling */
 .reps-metric .metric-label i {
-  background: linear-gradient(135deg, var(--input-warning), #d97706);
-  border-color: var(--input-warning);
-  color: white;
+  background: var(--input-warning);
+  border-color: var(--accent);
+  color: var(--dark);
 }
 
 .reps-metric .metric-label::after {
@@ -331,9 +331,9 @@
 
 /* Details Metric Specific Styling */
 .details-metric .metric-label i {
-  background: linear-gradient(135deg, var(--input-info), #1e40af);
-  border-color: var(--input-info);
-  color: white;
+  background: var(--input-info);
+  border-color: var(--primary-light);
+  color: var(--text-on-primary);
 }
 
 .details-metric .metric-label::after {
@@ -620,55 +620,55 @@
 
 /* Quick Log Button */
 .quick-log-btn {
-  background: linear-gradient(135deg, var(--input-info), #1e40af);
-  border-color: var(--input-info);
-  color: white;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  background: var(--input-info);
+  border-color: var(--primary-light);
+  color: var(--text-on-primary);
+  box-shadow: 0 2px 8px var(--primary-subtle);
 }
 
 .quick-log-btn:hover,
 .quick-log-btn:focus {
-  background: linear-gradient(135deg, #1e40af, var(--input-info));
-  border-color: #1e40af;
-  color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  background: var(--primary-light);
+  border-color: var(--primary-light);
+  color: var(--text-on-primary);
+  box-shadow: 0 4px 12px var(--primary-subtle);
 }
 
 /* Save Exercise Button */
 .save-exercise-btn {
-  background: linear-gradient(135deg, var(--input-success), #059669);
-  border-color: var(--input-success);
-  color: white;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  background: var(--input-success);
+  border-color: var(--success-border);
+  color: var(--text-on-primary);
+  box-shadow: 0 2px 8px var(--success-border);
 }
 
 .save-exercise-btn:hover,
 .save-exercise-btn:focus {
-  background: linear-gradient(135deg, #059669, var(--input-success));
-  border-color: #059669;
-  color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  background: var(--success-border);
+  border-color: var(--success-border);
+  color: var(--text-on-primary);
+  box-shadow: 0 4px 12px var(--success-border);
 }
 
 .save-exercise-btn.saving {
-  background: linear-gradient(135deg, var(--input-warning), #d97706);
-  border-color: var(--input-warning);
-  color: white;
+  background: var(--input-warning);
+  border-color: var(--accent);
+  color: var(--dark);
   cursor: wait;
   animation: savingPulse 1.5s ease-in-out infinite;
 }
 
 .save-exercise-btn.success {
-  background: linear-gradient(135deg, var(--input-success), #059669);
-  border-color: var(--input-success);
-  color: white;
+  background: var(--input-success);
+  border-color: var(--success-border);
+  color: var(--text-on-primary);
   animation: successFlash 0.6s ease-out;
 }
 
 .save-exercise-btn.error {
-  background: linear-gradient(135deg, var(--input-error), #dc2626);
-  border-color: var(--input-error);
-  color: white;
+  background: var(--input-error);
+  border-color: var(--error-border);
+  color: var(--text-on-primary);
   animation: errorShake 0.6s ease-out;
 }
 
@@ -690,14 +690,14 @@
 
 /* Notes Button */
 .notes-btn {
-  background: linear-gradient(135deg, var(--surface-elevated), var(--surface));
+  background: var(--surface-elevated);
   border-color: var(--quaternary);
   color: var(--text-secondary);
 }
 
 .notes-btn:hover,
 .notes-btn:focus {
-  background: linear-gradient(135deg, var(--accent-subtle), var(--accent));
+  background: var(--accent-subtle);
   border-color: var(--accent);
   color: var(--dark);
 }
@@ -705,32 +705,32 @@
 /* Input Validation and Error States */
 .metric-input-field.error {
   color: var(--input-error);
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--error-bg) / 10%;
 }
 
 .input-group-modern.error {
   border-color: var(--input-error);
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+  box-shadow: 0 0 0 3px var(--error-bg) / 20%;
 }
 
 .input-group-modern.error .input-unit {
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--error-bg) / 10%;
   color: var(--input-error);
   border-left-color: var(--input-error);
 }
 
 .metric-input-field.success {
   color: var(--input-success);
-  background: rgba(16, 185, 129, 0.1);
+  background: var(--success-bg) / 10%;
 }
 
 .input-group-modern.success {
   border-color: var(--input-success);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 0 3px var(--success-bg) / 20%;
 }
 
 .input-group-modern.success .input-unit {
-  background: rgba(16, 185, 129, 0.1);
+  background: var(--success-bg) / 10%;
   color: var(--input-success);
   border-left-color: var(--input-success);
 }
@@ -811,15 +811,15 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  background: linear-gradient(135deg, var(--input-error), #dc2626);
-  color: white;
-  border: 1px solid var(--input-error);
+  background: var(--input-error);
+  color: var(--text-on-primary);
+  border: 1px solid var(--error-border);
   border-radius: var(--input-radius-inner);
   font-size: var(--fs-sm);
   font-weight: var(--fw-semibold);
   margin-bottom: var(--space-3);
   animation: slideInUp 0.4s ease-out;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 4px 12px var(--error-border);
 }
 
 .exercise-success-notification {
@@ -830,14 +830,14 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-4);
-  background: linear-gradient(135deg, var(--input-success), #059669);
-  color: white;
-  border: 1px solid var(--input-success);
+  background: var(--input-success);
+  color: var(--text-on-primary);
+  border: 1px solid var(--success-border);
   border-radius: var(--input-radius-inner);
   font-size: var(--fs-sm);
   font-weight: var(--fw-bold);
   z-index: 100;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 12px var(--success-border);
   animation: slideInDown 0.4s ease-out;
   transition: var(--input-transition);
 }
@@ -846,15 +846,15 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  background: linear-gradient(135deg, var(--input-info), #1e40af);
-  color: white;
+  background: var(--input-info);
+  color: var(--text-on-primary);
   padding: var(--space-2) var(--space-4);
   border-radius: var(--input-radius-inner);
   font-size: var(--fs-sm);
   font-weight: var(--fw-bold);
   z-index: 100;
   animation: slideInLeft 0.4s ease-out;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px var(--primary-subtle);
 }
 
 @keyframes slideInUp {

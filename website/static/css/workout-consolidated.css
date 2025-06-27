@@ -39,6 +39,13 @@
   --input-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --input-transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --input-card-shadow: var(--shadow-md);
+  
+  /* Exercise card state colors using theme variables */
+  --exercise-enabled-border: var(--primary);
+  --exercise-enabled-shadow: var(--primary-subtle);
+  --exercise-success-bg: var(--success-bg);
+  --exercise-error-bg: var(--error-bg);
+  --exercise-warning-bg: var(--accent);
 }
 
 /* ===== EMPTY STATE STYLING ===== */
@@ -1026,7 +1033,7 @@
   position: absolute;
   top: -8px;
   right: 8px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  background: var(--primary);
   color: var(--text-on-primary);
   padding: 4px 8px;
   border-radius: 12px;
@@ -1036,17 +1043,17 @@
   align-items: center;
   gap: 4px;
   z-index: 10;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px var(--primary-subtle);
+  transition: all var(--transition-base);
   opacity: 0.85;
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--primary-light);
 }
 
 .previous-session-badge:hover {
   opacity: 1;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 12px var(--primary-subtle);
 }
 
 .previous-session-badge i {
@@ -1061,21 +1068,23 @@
 }
 
 .previous-session-badge.weight-badge {
-  background: linear-gradient(135deg, #10b981, #059669);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  background: var(--success-bg);
+  color: var(--text-on-primary);
+  box-shadow: 0 2px 8px var(--success-border);
 }
 
 .previous-session-badge.weight-badge:hover {
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 4px 12px var(--success-border);
 }
 
 .previous-session-badge.reps-badge {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  background: var(--accent);
+  color: var(--dark);
+  box-shadow: 0 2px 8px var(--accent-subtle);
 }
 
 .previous-session-badge.reps-badge:hover {
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 4px 12px var(--accent-subtle);
 }
 
 .quick-fill-last-session {
@@ -1083,10 +1092,10 @@
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  background: #10b981;
-  color: white;
+  background: var(--success-bg);
+  color: var(--text-on-primary);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-base);
   padding: 2px 6px;
   font-size: 0.7rem;
   cursor: pointer;
@@ -1107,32 +1116,32 @@
 /* Enhanced styling for inputs with previous session data */
 .metric-input-field[data-last-weight]:not(:focus),
 .metric-input-field[data-last-reps]:not(:focus) {
-  border-left: 3px solid #10b981;
-  background: linear-gradient(90deg, rgba(16, 185, 129, 0.05) 0%, transparent 10%);
+  border-left: 3px solid var(--success-bg);
+  background: linear-gradient(90deg, var(--success-bg) 5% 0%, transparent 10%);
 }
 
 .metric-input-field[data-last-weight]:focus,
 .metric-input-field[data-last-reps]:focus {
-  border-left: 3px solid #059669;
+  border-left: 3px solid var(--success-border);
 }
 
 /* ===== DISABLED AND ENABLED FIELD STATES ===== */
 .metric-input-field:disabled,
 .metric-input-field[readonly] {
-  background-color: #f3f4f6 !important;
-  color: #6b7280 !important;
+  background-color: var(--surface) !important;
+  color: var(--text-tertiary) !important;
   cursor: not-allowed !important;
   opacity: 0.6 !important;
-  border-color: #d1d5db !important;
+  border-color: var(--tertiary) !important;
 }
 
 .metric-input-field.field-enabled {
-  background-color: #ffffff !important;
-  color: #1f2937 !important;
+  background-color: var(--surface-elevated) !important;
+  color: var(--text-primary) !important;
   cursor: text !important;
   opacity: 1 !important;
-  border-color: #10b981 !important;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+  border-color: var(--exercise-enabled-border) !important;
+  box-shadow: 0 0 0 3px var(--exercise-enabled-shadow) !important;
   animation: fieldEnable 0.3s ease-out !important;
 }
 
@@ -1148,8 +1157,8 @@
 }
 
 .input-group-modern:has(.metric-input-field.field-enabled) {
-  border-color: var(--primary-light) !important;
-  box-shadow: 0 0 0 3px var(--primary-subtle) !important;
+  border-color: var(--exercise-enabled-border) !important;
+  box-shadow: 0 0 0 3px var(--exercise-enabled-shadow) !important;
   animation: inputGroupEnable 0.4s ease-out !important;
 }
 
@@ -1159,14 +1168,14 @@
     box-shadow: none;
   }
   to {
-    border-color: var(--primary-light);
-    box-shadow: 0 0 0 3px var(--primary-subtle);
+    border-color: var(--exercise-enabled-border);
+    box-shadow: 0 0 0 3px var(--exercise-enabled-shadow);
   }
 }
 
 .exercise-card-modern.exercise-enabled {
-  border-color: var(--primary) !important;
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2) !important;
+  border-color: var(--exercise-enabled-border) !important;
+  box-shadow: 0 8px 25px var(--exercise-enabled-shadow) !important;
   animation: cardEnable 0.5s ease-out !important;
 }
 
@@ -1176,8 +1185,8 @@
     box-shadow: var(--input-card-shadow);
   }
   to {
-    border-color: var(--primary);
-    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+    border-color: var(--exercise-enabled-border);
+    box-shadow: 0 8px 25px var(--exercise-enabled-shadow);
   }
 }
 
@@ -1272,11 +1281,11 @@
 }
 
 .actions-card {
-  background: linear-gradient(135deg, #ffffff, #f9fafb);
-  border: 1px solid #e5e7eb;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, var(--surface), var(--surface-elevated));
+  border: 1px solid var(--tertiary);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-lg);
 }
 
 .actions-header {
@@ -1292,10 +1301,10 @@
   justify-content: center;
   width: 3rem;
   height: 3rem;
-  background: linear-gradient(135deg, #10b981, #059669);
-  border-radius: 50%;
-  color: white;
-  font-size: 1.5rem;
+  background: var(--success-bg);
+  border-radius: var(--radius-full);
+  color: var(--text-on-primary);
+  font-size: var(--fs-2xl);
 }
 
 .actions-title-section {
@@ -1303,37 +1312,37 @@
 }
 
 .actions-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 0.25rem 0;
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-1) 0;
 }
 
 .actions-subtitle {
-  font-size: 1rem;
-  color: #6b7280;
+  font-size: var(--fs-base);
+  color: var(--text-secondary);
   margin: 0;
 }
 
 .workout-summary-info {
-  border-top: 1px solid #e5e7eb;
-  padding-top: 1rem;
+  border-top: 1px solid var(--tertiary);
+  padding-top: var(--space-4);
 }
 
 .summary-stats {
   display: flex;
-  gap: 2rem;
+  gap: var(--space-8);
   justify-content: center;
 }
 
 .summary-stat {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: #f3f4f6;
-  border-radius: 0.5rem;
-  border: 1px solid #d1d5db;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-elevated);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--tertiary);
 }
 
 .summary-stat .stat-icon {
@@ -1342,30 +1351,30 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  border-radius: 50%;
-  color: white;
-  font-size: 0.875rem;
+  background: var(--primary);
+  border-radius: var(--radius-full);
+  color: var(--text-on-primary);
+  font-size: var(--fs-sm);
 }
 
 .summary-stat .stat-info {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .summary-stat .stat-value {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1f2937;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
   line-height: 1;
 }
 
 .summary-stat .stat-label {
-  font-size: 0.75rem;
-  color: #6b7280;
-  font-weight: 500;
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  font-weight: var(--fw-medium);
   text-transform: uppercase;
   letter-spacing: 0.025em;
   line-height: 1;

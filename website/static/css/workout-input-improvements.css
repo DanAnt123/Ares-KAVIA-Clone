@@ -206,21 +206,21 @@
 /* Improved disabled field styles */
 .metric-input-field:disabled,
 .metric-input-field[readonly] {
-  background-color: #f3f4f6 !important;
-  color: #6b7280 !important;
+  background-color: var(--surface) !important;
+  color: var(--text-tertiary) !important;
   cursor: not-allowed !important;
   opacity: 0.6 !important;
-  border-color: #d1d5db !important;
+  border-color: var(--tertiary) !important;
 }
 
 /* Enhanced enabled field styles */
 .metric-input-field.field-enabled {
-  background-color: #ffffff !important;
-  color: #1f2937 !important;
+  background-color: var(--surface-elevated) !important;
+  color: var(--text-primary) !important;
   cursor: text !important;
   opacity: 1 !important;
-  border-color: #10b981 !important;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+  border-color: var(--success-bg) !important;
+  box-shadow: 0 0 0 3px var(--success-bg) / 10% !important;
   animation: fieldEnable 0.3s ease-out !important;
 }
 
@@ -237,8 +237,8 @@
 
 /* Input group enabled state animation */
 .input-group-modern:has(.metric-input-field.field-enabled) {
-  border-color: var(--primary-light) !important;
-  box-shadow: 0 0 0 3px var(--primary-subtle) !important;
+  border-color: var(--success-bg) !important;
+  box-shadow: 0 0 0 3px var(--success-bg) / 10% !important;
   animation: inputGroupEnable 0.4s ease-out !important;
 }
 
@@ -248,26 +248,26 @@
     box-shadow: none;
   }
   to {
-    border-color: var(--primary-light);
-    box-shadow: 0 0 0 3px var(--primary-subtle);
+    border-color: var(--success-bg);
+    box-shadow: 0 0 0 3px var(--success-bg) / 10%;
   }
 }
 
 /* Exercise card enabled state */
 .exercise-card-modern.exercise-enabled {
-  border-color: var(--primary) !important;
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2) !important;
+  border-color: var(--success-bg) !important;
+  box-shadow: 0 8px 25px var(--success-bg) / 20% !important;
   animation: cardEnable 0.5s ease-out !important;
 }
 
 @keyframes cardEnable {
   from {
     border-color: var(--tertiary);
-    box-shadow: var(--input-card-shadow);
+    box-shadow: var(--shadow-md);
   }
   to {
-    border-color: var(--primary);
-    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+    border-color: var(--success-bg);
+    box-shadow: 0 8px 25px var(--success-bg) / 20%;
   }
 }
 
