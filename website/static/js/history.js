@@ -436,12 +436,17 @@ class WorkoutHistoryManager {
 
             // Apply exercise filter
             if (this.activeFiltersObj.exercise) {
-                const searchExercise = this.activeFiltersObj.exercise.trim().toUpperCase();
+                // Normalize filter and DOM exercise names: trimmed and lowercased
+                const searchExercise = this.activeFiltersObj.exercise.trim().toLowerCase();
                 filtered = filtered.filter(session => {
                     const exercises = Array.from(session.element.querySelectorAll('.exercise-card, .exercise-log-item'));
                     return exercises.some(exercise => {
-                        const exerciseName = exercise.dataset.exerciseName || exercise.querySelector('.exercise-name')?.textContent;
-                        return exerciseName && exerciseName.trim().toUpperCase() === searchExercise;
+                        // Ensure data-exercise-name is used, fallback to .exercise-name's text
+                        let exerciseName = (exercise.dataset.exerciseName !== undefined)
+                            ? exercise.dataset.exerciseName
+                            : (exercise.querySelector('.exercise-name')?.textContent || '');
+                        exerciseName = exerciseName.trim().toLowerCase();
+                        return exerciseName === searchExercise;
                     });
                 });
             }

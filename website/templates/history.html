@@ -85,7 +85,7 @@
                             <select id="exercise-filter" class="workout-select">
                                 <option value="">All Exercises</option>
                                 {% for exercise in unique_exercises %}
-                                    <option value="{{ exercise.name }}">
+                                    <option value="{{ exercise.name | trim }}">
                                         {{ exercise.display_name }} ({{ exercise.count }})
                                     </option>
                                 {% endfor %}
