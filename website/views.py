@@ -646,11 +646,12 @@ def history():
     total_exercises = sum(session_data['total_exercises'] for session_data in grouped_sessions)
     unique_workout_count = len(set(session.workout_id for session in sessions if session.workout_id))
 
-    # Get unique exercise names across all sessions
+    # Get unique exercise names across all sessions (normalized case)
     unique_exercises = set()
     for session in sessions:
         for log in session.exercise_logs:
-            unique_exercises.add(log.exercise_name)
+            if log.exercise_name:
+                unique_exercises.add(log.exercise_name.strip().upper())
     unique_exercises = sorted(list(unique_exercises))
 
     return render_template(

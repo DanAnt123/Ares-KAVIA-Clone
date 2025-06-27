@@ -124,10 +124,23 @@ class WorkoutHistoryManager {
         // Filter controls
         if (this.workoutFilter) {
             this.workoutFilter.addEventListener('change', () => this.handleWorkoutFilter());
+            // Initialize from URL if present
+            const urlParams = new URLSearchParams(window.location.search);
+            const workoutId = urlParams.get('workout_id');
+            if (workoutId && this.workoutFilter.querySelector(`option[value="${workoutId}"]`)) {
+                this.workoutFilter.value = workoutId;
+                this.activeFiltersObj.workout = workoutId;
+            }
         }
         
         if (this.exerciseFilter) {
             this.exerciseFilter.addEventListener('change', () => this.handleExerciseFilter());
+            // Preserve exercise filter across page reloads
+            const lastExercise = sessionStorage.getItem('lastExerciseFilter');
+            if (lastExercise && this.exerciseFilter.querySelector(`option[value="${lastExercise}"]`)) {
+                this.exerciseFilter.value = lastExercise;
+                this.activeFiltersObj.exercise = lastExercise;
+            }
         }
         
         if (this.dateFilter) {
@@ -314,18 +327,38 @@ class WorkoutHistoryManager {
     // PUBLIC_INTERFACE
     handleWorkoutFilter() {
         /**
-         * Handle workout filter changes
+         * Handle workout filter changes and update UI state
          */
-        this.activeFiltersObj.workout = this.workoutFilter.value;
+        const selectedWorkout = this.workoutFilter.value;
+        this.activeFiltersObj.workout = selectedWorkout;
+        
+        // Update URL without reloading
+        const url = new URL(window.location.href);
+        if (selectedWorkout) {
+            url.searchParams.set('workout_id', selectedWorkout);
+        } else {
+            url.searchParams.delete('workout_id');
+        }
+        window.history.pushState({}, '', url);
+        
         this.applyFilters();
     }
 
     // PUBLIC_INTERFACE
     handleExerciseFilter() {
         /**
-         * Handle exercise filter changes
+         * Handle exercise filter changes and persist selection
          */
-        this.activeFiltersObj.exercise = this.exerciseFilter.value;
+        const selectedExercise = this.exerciseFilter.value;
+        this.activeFiltersObj.exercise = selectedExercise;
+        
+        // Persist selection
+        if (selectedExercise) {
+            sessionStorage.setItem('lastExerciseFilter', selectedExercise);
+        } else {
+            sessionStorage.removeItem('lastExerciseFilter');
+        }
+        
         this.applyFilters();
     }
 
@@ -403,12 +436,12 @@ class WorkoutHistoryManager {
 
             // Apply exercise filter
             if (this.activeFiltersObj.exercise) {
+                const searchExercise = this.activeFiltersObj.exercise.trim().toUpperCase();
                 filtered = filtered.filter(session => {
-                    const exercises = session.element.querySelectorAll('.exercise-card');
-                    return Array.from(exercises).some(exercise => {
+                    const exercises = Array.from(session.element.querySelectorAll('.exercise-card'));
+                    return exercises.some(exercise => {
                         const exerciseName = exercise.dataset.exerciseName;
-                        return exerciseName && exerciseName.trim().toUpperCase() === 
-                            this.activeFiltersObj.exercise.trim().toUpperCase();
+                        return exerciseName && exerciseName.trim().toUpperCase() === searchExercise;
                     });
                 });
             }
@@ -488,10 +521,21 @@ class WorkoutHistoryManager {
             case 'exercise-name':
                 return sessions.sort((a, b) => {
                     const aExercises = Array.from(a.element.querySelectorAll('.exercise-card'))
-                        .map(e => e.dataset.exerciseName).sort();
+                        .map(e => e.dataset.exerciseName || '')
+                        .filter(name => name)
+                        .sort();
                     const bExercises = Array.from(b.element.querySelectorAll('.exercise-card'))
-                        .map(e => e.dataset.exerciseName).sort();
-                    return aExercises[0]?.localeCompare(bExercises[0] || '') || 0;
+                        .map(e => e.dataset.exerciseName || '')
+                        .filter(name => name)
+                        .sort();
+                    
+                    // Handle cases where one or both sessions have no exercises
+                    if (!aExercises.length && !bExercises.length) return 0;
+                    if (!aExercises.length) return 1;
+                    if (!bExercises.length) return -1;
+                    
+                    // Compare first exercise names
+                    return aExercises[0].localeCompare(bExercises[0]);
                 });
                 
             default:
