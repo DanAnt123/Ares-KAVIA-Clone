@@ -85,7 +85,8 @@
                             <select id="exercise-filter" class="workout-select">
                                 <option value="">All Exercises</option>
                                 {% for exercise in unique_exercises %}
-                                    <option value="{{ exercise.name | trim }}">
+                                    <!-- Normalize option value: lowercase and trimmed (must match JS and data attributes) -->
+                                    <option value="{{ exercise.name | trim | lower }}">
                                         {{ exercise.display_name }} ({{ exercise.count }})
                                     </option>
                                 {% endfor %}
@@ -264,7 +265,8 @@
                                 {% if session_data.exercises|length > 0 %}
                                     <div class="exercises-grid">
                                         {% for exercise in session_data.exercises %}
-                                            <div class="exercise-card" data-exercise-name="{{ exercise.exercise_name }}">
+                                            <!-- Normalize data-exercise-name attribute: lowercase and trimmed to match filter option -->
+                                            <div class="exercise-card" data-exercise-name="{{ exercise.exercise_name | trim | lower }}">
                                                 <div class="exercise-header">
                                                     <span class="exercise-name" data-exercise-name="{{ exercise.exercise_name }}">{{ exercise.exercise_name }}</span>
                                                     {% if exercise.total_sets > 1 %}
