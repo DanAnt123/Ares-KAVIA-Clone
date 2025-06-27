@@ -405,9 +405,11 @@ class WorkoutHistoryManager {
             if (this.activeFiltersObj.exercise) {
                 filtered = filtered.filter(session => {
                     const exercises = session.element.querySelectorAll('.exercise-card');
-                    return Array.from(exercises).some(exercise => 
-                        exercise.dataset.exerciseName === this.activeFiltersObj.exercise
-                    );
+                    return Array.from(exercises).some(exercise => {
+                        const exerciseName = exercise.dataset.exerciseName;
+                        return exerciseName && exerciseName.trim().toUpperCase() === 
+                            this.activeFiltersObj.exercise.trim().toUpperCase();
+                    });
                 });
             }
             
@@ -605,14 +607,19 @@ class WorkoutHistoryManager {
          */
         const activeFilters = [];
         
+        // Add workout filter if active
         if (this.activeFiltersObj.workout) {
             const workoutName = this.workoutFilter?.options[this.workoutFilter.selectedIndex]?.text;
             if (workoutName) {
                 activeFilters.push(`Workout: ${workoutName}`);
             }
+        }
 
-            if (this.activeFiltersObj.exercise) {
-                activeFilters.push(`Exercise: ${this.activeFiltersObj.exercise}`);
+        // Add exercise filter if active
+        if (this.activeFiltersObj.exercise) {
+            const exerciseName = this.exerciseFilter?.options[this.exerciseFilter.selectedIndex]?.text;
+            if (exerciseName) {
+                activeFilters.push(`Exercise: ${exerciseName}`);
             }
         }
         
@@ -657,6 +664,7 @@ class WorkoutHistoryManager {
         
         // Reset form controls
         if (this.workoutFilter) this.workoutFilter.value = '';
+        if (this.exerciseFilter) this.exerciseFilter.value = '';
         if (this.dateFilter) this.dateFilter.value = '';
         if (this.sortBy) this.sortBy.value = 'date-desc';
         if (this.searchInput) this.searchInput.value = '';
