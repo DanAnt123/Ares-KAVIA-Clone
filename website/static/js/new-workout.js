@@ -4,6 +4,27 @@ var checkboxes = document.getElementsByClassName("include_details");
 var hidden_inputs = document.getElementsByClassName("include_details_hidden");
 var exerciseCounter = document.getElementById("exercise-count");
 
+/* Validate workout name and description length on form submission */
+document.getElementById('workout').addEventListener('submit', function (e) {
+    var nameInput = document.getElementById('workout_name');
+    var descriptionInput = document.getElementById('workout_description');
+    var name = nameInput.value.trim();
+    var description = descriptionInput.value.trim();
+    if (name.length < 1 || name.length > 50) {
+        alert("Workout name must be 1-50 characters long.");
+        nameInput.focus();
+        e.preventDefault();
+        return false;
+    }
+    if (description.length > 50) {
+        alert("Description can be up to 50 characters long.");
+        descriptionInput.focus();
+        e.preventDefault();
+        return false;
+    }
+    return true;
+});
+
 /* Exercise counter management */
 function updateExerciseCounter() {
     var count = exercises.querySelectorAll('.exercise-item').length;

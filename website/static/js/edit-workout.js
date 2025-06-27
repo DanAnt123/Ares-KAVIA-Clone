@@ -19,6 +19,27 @@ select_workout.addEventListener("change", function() {
     if (selected) selected.hidden = false;
 });
 
+/* Attach submit event listener to all workout edit forms (for validation) */
+document.querySelectorAll('.workout-edit-form').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+        var name = form.querySelector('input[name="workout_name"]');
+        var description = form.querySelector('input[name="workout_description"]');
+        if (name && (name.value.length < 1 || name.value.length > 50)) {
+            alert("Workout name must be 1-50 characters long.");
+            name.focus();
+            e.preventDefault();
+            return false;
+        }
+        if (description && description.value.length > 50) {
+            alert("Description can be up to 50 characters long.");
+            description.focus();
+            e.preventDefault();
+            return false;
+        }
+        return true;
+    });
+});
+
 /* Listen for delete exercise buttons (applies to addable/removable exercises) */
 function enableDeleteButtons(context) {
     (context || document).querySelectorAll(".delete").forEach(function(element) {

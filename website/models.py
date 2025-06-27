@@ -25,8 +25,8 @@ class Category(db.Model):
 
 class Workout(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(12))
-    description = db.Column(db.String(18))
+    name = db.Column(db.String(50))
+    description = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     category_id = db.Column(db.Integer, db.ForeignKey("category.id"), nullable=True)
     exercises = db.relationship("Exercise")
