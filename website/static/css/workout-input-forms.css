@@ -458,12 +458,12 @@
 }
 
 .previous-session-badge.weight-badge {
-  background: linear-gradient(135deg, var(--input-success), #059669);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, var(--input-success), var(--success-border));
+  box-shadow: 0 4px 12px var(--success-border);
 }
 
 .previous-session-badge.weight-badge:hover {
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 20px var(--success-border);
 }
 
 .previous-session-badge.reps-badge {
@@ -492,7 +492,7 @@
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  background: linear-gradient(135deg, var(--input-success), #059669);
+  background: linear-gradient(135deg, var(--input-success), var(--success-border));
   color: white;
   border: none;
   border-radius: var(--radius-base);
@@ -503,7 +503,7 @@
   opacity: 0;
   transition: var(--input-transition);
   z-index: 10;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 2px 8px var(--success-border);
 }
 
 .metric-input:hover .quick-fill-last-session,

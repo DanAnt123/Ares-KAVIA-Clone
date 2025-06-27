@@ -59,8 +59,8 @@
 }
 
 .weight-note {
-    background: linear-gradient(135deg, #10b981, #059669);
-    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    background: linear-gradient(135deg, var(--success-bg), var(--success-border));
+    box-shadow: 0 2px 4px var(--success-border);
 }
 
 .reps-note {
@@ -139,34 +139,34 @@
 
 /* Enhanced visibility when exercise is enabled */
 .exercise-card-modern.exercise-enabled .previous-session-note {
-    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-    border-color: #10b981;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+    background: linear-gradient(135deg, var(--success-bg), var(--accent-subtle));
+    border-color: var(--success-border);
+    box-shadow: 0 2px 8px var(--success-border);
 }
 
 .exercise-card-modern.exercise-enabled .note-header {
-    color: #059669;
+    color: var(--success-border);
 }
 
 /* Dark mode support (if needed) */
 @media (prefers-color-scheme: dark) {
     .previous-session-note {
-        background: linear-gradient(135deg, #374151, #4b5563);
-        border-color: #6b7280;
-        color: #f9fafb;
+        background: linear-gradient(135deg, var(--surface), var(--surface-elevated));
+        border-color: var(--tertiary);
+        color: var(--text-primary);
     }
     
     .note-header {
-        color: #d1d5db;
+        color: var(--text-secondary);
     }
     
     .exercise-card-modern.exercise-enabled .previous-session-note {
-        background: linear-gradient(135deg, #064e3b, #065f46);
-        border-color: #10b981;
+        background: linear-gradient(135deg, var(--success-bg), var(--success-border));
+        border-color: var(--success-border);
     }
     
     .exercise-card-modern.exercise-enabled .note-header {
-        color: #34d399;
+        color: var(--success-border);
     }
 }
 
@@ -186,7 +186,7 @@
     }
     
     .note-metric {
-        background: #f3f4f6 !important;
+        background: var(--surface) !important;
         color: #000 !important;
         border: 1px solid #000;
         text-shadow: none;

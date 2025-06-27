@@ -6,9 +6,9 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+    background: linear-gradient(135deg, var(--surface), var(--surface-elevated));
     border-radius: 0.5rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--tertiary);
 }
 
 .exercise-count-text {
@@ -21,7 +21,7 @@
 }
 
 .exercise-count-text i {
-    color: #10b981;
+    color: var(--success-bg);
 }
 
 /* Workout actions summary styling */
@@ -51,9 +51,9 @@
     justify-content: center;
     width: 3rem;
     height: 3rem;
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: linear-gradient(135deg, var(--success-bg), var(--success-border));
     border-radius: 50%;
-    color: white;
+    color: var(--text-on-primary);
     font-size: 1.5rem;
 }
 
@@ -70,7 +70,7 @@
 
 .actions-subtitle {
     font-size: 1rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     margin: 0;
 }
 
@@ -90,9 +90,9 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    background: #f3f4f6;
+    background: var(--surface);
     border-radius: 0.5rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--tertiary);
 }
 
 .summary-stat .stat-icon {
@@ -123,7 +123,7 @@
 
 .summary-stat .stat-label {
     font-size: 0.75rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.025em;
@@ -182,9 +182,9 @@
 }
 
 .status-badge.completed {
-    background: #d1fae5;
-    color: #065f46;
-    border: 1px solid #10b981;
+    background: var(--success-bg);
+    color: var(--text-on-primary);
+    border: 1px solid var(--success-border);
 }
 
 .status-badge.active {
@@ -213,25 +213,25 @@
 
 /* Focus and accessibility improvements */
 .metric-input-field:focus {
-    outline: 2px solid #10b981;
+    outline: 2px solid var(--success-bg);
     outline-offset: 2px;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    box-shadow: 0 0 0 3px var(--success-border);
 }
 
 .exercise-action-btn:focus {
-    outline: 2px solid #10b981;
+    outline: 2px solid var(--success-bg);
     outline-offset: 2px;
 }
 
 /* Animation for exercise card enablement */
 @keyframes cardEnable {
     from {
-        border-color: #e5e7eb;
+        border-color: var(--tertiary);
         box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
     }
     to {
-        border-color: #10b981;
-        box-shadow: 0 8px 16px -4px rgba(16, 185, 129, 0.2);
+        border-color: var(--success-bg);
+        box-shadow: 0 8px 16px -4px var(--success-border);
     }
 }
 

@@ -202,12 +202,12 @@
 }
 
 .previous-session-badge.weight-badge {
-  background: linear-gradient(135deg, var(--success-bg), #059669);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, var(--success-bg), var(--success-border));
+  box-shadow: 0 4px 12px var(--success-border);
 }
 
 .previous-session-badge.weight-badge:hover {
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 16px var(--success-border);
 }
 
 .previous-session-badge.reps-badge {
@@ -238,7 +238,7 @@
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  background: linear-gradient(135deg, var(--success-bg), #059669);
+  background: linear-gradient(135deg, var(--success-bg), var(--success-border));
   color: var(--text-on-primary);
   border: none;
   border-radius: var(--radius-base);
@@ -249,7 +249,7 @@
   opacity: 0;
   transition: var(--input-modern-transition);
   z-index: 15;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 2px 8px var(--success-border);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -261,7 +261,7 @@
 .quick-fill-last-session:hover {
   opacity: 1;
   transform: translateY(-50%) scale(1.05);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 4px 12px var(--success-border);
 }
 
 .quick-fill-last-session:active {
