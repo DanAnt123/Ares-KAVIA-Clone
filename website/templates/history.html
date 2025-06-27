@@ -77,6 +77,24 @@
                     </div>
 
                     <div class="filter-group">
+                        <label for="exercise-filter" class="filter-label">
+                            <i class="fa fa-dumbbell"></i>
+                            Filter by Exercise
+                        </label>
+                        <div class="custom-select">
+                            <select id="exercise-filter" class="workout-select">
+                                <option value="">All Exercises</option>
+                                {% for exercise in unique_exercises %}
+                                    <option value="{{ exercise }}">
+                                        {{ exercise }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <i class="fa fa-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
                         <label for="date-filter" class="filter-label">
                             <i class="fa fa-calendar"></i>
                             Date Range
@@ -107,6 +125,7 @@
                                 <option value="date-asc">Oldest First</option>
                                 <option value="workout-name">Workout Name</option>
                                 <option value="exercise-count">Exercise Count</option>
+                                <option value="exercise-name">Exercise Name</option>
                             </select>
                             <i class="fa fa-chevron-down select-arrow"></i>
                         </div>

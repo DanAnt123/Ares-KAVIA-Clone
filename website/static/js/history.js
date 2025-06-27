@@ -18,6 +18,7 @@ class WorkoutHistoryManager {
         
         // Filter and sort controls
         this.workoutFilter = document.getElementById('workout-filter');
+        this.exerciseFilter = document.getElementById('exercise-filter');
         this.dateFilter = document.getElementById('date-filter');
         this.sortBy = document.getElementById('sort-by');
         this.searchInput = document.getElementById('search-input');
@@ -47,6 +48,7 @@ class WorkoutHistoryManager {
         this.currentView = 'grid';
         this.activeFiltersObj = {
             workout: '',
+            exercise: '',
             date: '',
             search: '',
             sort: 'date-desc'
@@ -122,6 +124,10 @@ class WorkoutHistoryManager {
         // Filter controls
         if (this.workoutFilter) {
             this.workoutFilter.addEventListener('change', () => this.handleWorkoutFilter());
+        }
+        
+        if (this.exerciseFilter) {
+            this.exerciseFilter.addEventListener('change', () => this.handleExerciseFilter());
         }
         
         if (this.dateFilter) {
@@ -315,6 +321,15 @@ class WorkoutHistoryManager {
     }
 
     // PUBLIC_INTERFACE
+    handleExerciseFilter() {
+        /**
+         * Handle exercise filter changes
+         */
+        this.activeFiltersObj.exercise = this.exerciseFilter.value;
+        this.applyFilters();
+    }
+
+    // PUBLIC_INTERFACE
     handleDateFilter() {
         /**
          * Handle date range filter changes
@@ -384,6 +399,16 @@ class WorkoutHistoryManager {
                 filtered = filtered.filter(session => 
                     session.workoutId === this.activeFiltersObj.workout
                 );
+            }
+
+            // Apply exercise filter
+            if (this.activeFiltersObj.exercise) {
+                filtered = filtered.filter(session => {
+                    const exercises = session.element.querySelectorAll('.exercise-card');
+                    return Array.from(exercises).some(exercise => 
+                        exercise.dataset.exerciseName === this.activeFiltersObj.exercise
+                    );
+                });
             }
             
             // Apply date filter
@@ -457,6 +482,15 @@ class WorkoutHistoryManager {
                 
             case 'exercise-count':
                 return sessions.sort((a, b) => b.exerciseCount - a.exerciseCount);
+                
+            case 'exercise-name':
+                return sessions.sort((a, b) => {
+                    const aExercises = Array.from(a.element.querySelectorAll('.exercise-card'))
+                        .map(e => e.dataset.exerciseName).sort();
+                    const bExercises = Array.from(b.element.querySelectorAll('.exercise-card'))
+                        .map(e => e.dataset.exerciseName).sort();
+                    return aExercises[0]?.localeCompare(bExercises[0] || '') || 0;
+                });
                 
             default:
                 return sessions;
@@ -576,6 +610,10 @@ class WorkoutHistoryManager {
             if (workoutName) {
                 activeFilters.push(`Workout: ${workoutName}`);
             }
+
+            if (this.activeFiltersObj.exercise) {
+                activeFilters.push(`Exercise: ${this.activeFiltersObj.exercise}`);
+            }
         }
         
         if (this.activeFiltersObj.date) {
@@ -611,6 +649,7 @@ class WorkoutHistoryManager {
          */
         this.activeFiltersObj = {
             workout: '',
+            exercise: '',
             date: '',
             search: '',
             sort: 'date-desc'
