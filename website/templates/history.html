@@ -210,7 +210,7 @@
                 <div id="sessions-container" class="sessions-container view-grid">
                     {% for session_data in grouped_sessions %}
                         {% set session = session_data.session %}
-                        <div class="workout-session-card" 
+                        <div class="workout-session-card session-card" 
                              data-session-id="{{ session.id }}" 
                              data-workout-id="{{ session.workout_id }}" 
                              data-timestamp="{{ session.timestamp.isoformat() }}" 
