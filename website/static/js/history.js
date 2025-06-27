@@ -103,8 +103,8 @@ class WorkoutHistoryManager {
          * Build searchable text content from session card for efficient searching
          */
         const workoutName = sessionCard.dataset.workoutName || '';
-        const exerciseNames = Array.from(sessionCard.querySelectorAll('.exercise-name'))
-            .map(el => el.textContent.trim())
+        const exerciseNames = Array.from(sessionCard.querySelectorAll('[data-exercise-name]'))
+            .map(el => el.dataset.exerciseName || el.textContent.trim())
             .join(' ');
         const exerciseDetails = Array.from(sessionCard.querySelectorAll('.exercise-details'))
             .map(el => el.textContent.trim())
@@ -438,9 +438,9 @@ class WorkoutHistoryManager {
             if (this.activeFiltersObj.exercise) {
                 const searchExercise = this.activeFiltersObj.exercise.trim().toUpperCase();
                 filtered = filtered.filter(session => {
-                    const exercises = Array.from(session.element.querySelectorAll('.exercise-card'));
+                    const exercises = Array.from(session.element.querySelectorAll('.exercise-card, .exercise-log-item'));
                     return exercises.some(exercise => {
-                        const exerciseName = exercise.dataset.exerciseName;
+                        const exerciseName = exercise.dataset.exerciseName || exercise.querySelector('.exercise-name')?.textContent;
                         return exerciseName && exerciseName.trim().toUpperCase() === searchExercise;
                     });
                 });

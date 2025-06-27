@@ -647,12 +647,25 @@ def history():
     unique_workout_count = len(set(session.workout_id for session in sessions if session.workout_id))
 
     # Get unique exercise names across all sessions (normalized case)
-    unique_exercises = set()
+    unique_exercises = {}
     for session in sessions:
         for log in session.exercise_logs:
             if log.exercise_name:
-                unique_exercises.add(log.exercise_name.strip().upper())
-    unique_exercises = sorted(list(unique_exercises))
+                exercise_name = log.exercise_name.strip().upper()
+                if exercise_name not in unique_exercises:
+                    unique_exercises[exercise_name] = {
+                        'name': exercise_name,
+                        'display_name': log.exercise_name.strip(),
+                        'count': 1
+                    }
+                else:
+                    unique_exercises[exercise_name]['count'] += 1
+    
+    # Convert to sorted list by display name
+    unique_exercises = sorted(
+        unique_exercises.values(),
+        key=lambda x: x['display_name']
+    )
 
     return render_template(
         "history.html",
