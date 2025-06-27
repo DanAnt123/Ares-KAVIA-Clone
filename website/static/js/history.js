@@ -1,6 +1,12 @@
 /**
  * Workout History Interactive Management System
  * Handles AJAX filtering, real-time content updates, client-side sorting, and search functionality
+ *
+ * FILTER LOGIC NOTE (2024-06 FIX):
+ * - All filter logic (workout, exercise, etc.) uses strict normalization (trim and lowercase).
+ * - For workout, both workoutId and workoutName are compared (normalized).
+ * - For exercise, matches if any .exercise-card or .exercise-log-item descendant has a normalized data-exercise-name or textContent equal to the filter.
+ * - Patch robust to DOM attribute and casing discrepancies, after issues caused by exercise value normalization update in prior commits.
  */
 
 // PUBLIC_INTERFACE
@@ -429,9 +435,14 @@ class WorkoutHistoryManager {
             
             // Apply workout filter
             if (this.activeFiltersObj.workout) {
-                filtered = filtered.filter(session => 
-                    session.workoutId === this.activeFiltersObj.workout
-                );
+                // Use normalized comparison for workoutId and string values.
+                const filterVal = String(this.activeFiltersObj.workout).trim().toLowerCase();
+                filtered = filtered.filter(session => {
+                    let workoutId = String(session.workoutId).trim().toLowerCase();
+                    // Additionally, allow comparison to workout name for robustness.
+                    let workoutName = (session.workoutName || "").trim().toLowerCase();
+                    return workoutId === filterVal || workoutName === filterVal;
+                });
             }
 
             // Apply exercise filter
@@ -439,12 +450,15 @@ class WorkoutHistoryManager {
                 // Normalize filter and DOM exercise names: trimmed and lowercased
                 const searchExercise = this.activeFiltersObj.exercise.trim().toLowerCase();
                 filtered = filtered.filter(session => {
-                    const exercises = Array.from(session.element.querySelectorAll('.exercise-card, .exercise-log-item'));
+                    // Try both .exercise-card and .exercise-log-item, robust to variations.
+                    const exercises = Array.from(session.element.querySelectorAll('.exercise-card,[data-exercise-name],.exercise-log-item'));
                     return exercises.some(exercise => {
-                        // Ensure data-exercise-name is used, fallback to .exercise-name's text
-                        let exerciseName = (exercise.dataset.exerciseName !== undefined)
+                        // Use data-exercise-name OR fall back to .exercise-name's text
+                        let exerciseName = 
+                            (typeof exercise.dataset.exerciseName !== "undefined" && exercise.dataset.exerciseName)
                             ? exercise.dataset.exerciseName
-                            : (exercise.querySelector('.exercise-name')?.textContent || '');
+                            : (exercise.querySelector?.('.exercise-name')?.textContent || exercise.textContent || '');
+                        if (typeof exerciseName !== "string") exerciseName = "";
                         exerciseName = exerciseName.trim().toLowerCase();
                         return exerciseName === searchExercise;
                     });
