@@ -1607,3 +1607,26 @@
     display: block !important;
   }
 }
+
+/* =====================================
+   BUTTON SIZING OVERRIDES FOR HISTORY
+   ===================================== */
+#reset-filters,
+#export-data {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 12px 20px;
+    font-size: 1.1em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+#reset-filters i,
+#export-data i,
+#reset-filters svg,
+#export-data svg {
+    font-size: 1.4em !important;
+    width: 1.4em !important;
+    height: 1.4em !important;
+    vertical-align: middle;
+}
