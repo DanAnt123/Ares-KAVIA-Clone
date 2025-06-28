@@ -313,58 +313,77 @@ def _create_workout_session(workout_id, exercises_data, user_id):
             session = WorkoutSession(user_id=user_id, workout_id=workout_id)
             db.session.add(session)
             db.session.flush()  # Get ID without committing
+            
+    except Exception as e:
+        db.session.rollback()
+        return False, f"Database error: {str(e)}", 500
     
+    # Initialize logs list outside try block
     logs = []
-    exercises_logged = 0
-    
-    for idx, exercise_data in enumerate(exercises_data):
-        # Extract and validate exercise name
-        exercise_name = exercise_data.get("exercise_name", "").strip() if exercise_data.get("exercise_name") else ""
-        if not exercise_name:
-            # Rollback session if exercise name is missing
-            db.session.delete(session)
-            db.session.commit()
-            return False, f"Missing exercise_name in entry {idx}", 400
+    try:
+        exercises_logged = 0
         
-        # Parse and validate numeric fields with error handling
-        set_number = exercise_data.get("set_number")
-        reps = exercise_data.get("reps")
-        weight = exercise_data.get("weight")
+        for idx, exercise_data in enumerate(exercises_data):
+            # Extract and validate exercise name
+            exercise_name = exercise_data.get("exercise_name", "").strip() if exercise_data.get("exercise_name") else ""
+            if not exercise_name:
+                # Rollback session if exercise name is missing
+                db.session.delete(session)
+                db.session.commit()
+                return False, f"Missing exercise_name in entry {idx}", 400
+            
+            # Parse and validate numeric fields with error handling
+            set_number = exercise_data.get("set_number")
+            reps = exercise_data.get("reps")
+            weight = exercise_data.get("weight")
+            
+            if set_number is not None:
+                try:
+                    set_number = int(set_number) if str(set_number).strip() else None
+                except (ValueError, TypeError):
+                    set_number = None
+                    
+            if reps is not None:
+                try:
+                    reps = int(reps) if str(reps).strip() else None
+                except (ValueError, TypeError):
+                    reps = None
+                    
+            if weight is not None:
+                try:
+                    weight = float(weight) if str(weight).strip() else None
+                except (ValueError, TypeError):
+                    weight = None
+            
+            # Create exercise log
+            log = ExerciseLog(
+                session_id=session.id,
+                exercise_name=exercise_name,
+                set_number=set_number,
+                reps=reps,
+                weight=weight,
+                details=exercise_data.get("details"),
+                include_details=exercise_data.get("include_details", False),
+            )
+            db.session.add(log)
+            logs.append(log)
+            exercises_logged += 1
         
-        if set_number is not None:
-            try:
-                set_number = int(set_number) if str(set_number).strip() else None
-            except (ValueError, TypeError):
-                set_number = None
-                
-        if reps is not None:
-            try:
-                reps = int(reps) if str(reps).strip() else None
-            except (ValueError, TypeError):
-                reps = None
-                
-        if weight is not None:
-            try:
-                weight = float(weight) if str(weight).strip() else None
-            except (ValueError, TypeError):
-                weight = None
+        # Commit all changes
+        db.session.commit()
         
-        # Create exercise log
-        log = ExerciseLog(
-            session_id=session.id,
-            exercise_name=exercise_name,
-            set_number=set_number,
-            reps=reps,
-            weight=weight,
-            details=exercise_data.get("details"),
-            include_details=exercise_data.get("include_details", False),
-        )
-        db.session.add(log)
-        logs.append(log)
-        exercises_logged += 1
-    
-    # Commit all changes
-    db.session.commit()
+        # Return success data
+        return True, {
+            "session_id": session.id,
+            "timestamp": session.timestamp.isoformat(),
+            "workout_id": session.workout_id,
+            "workout_name": workout.name,
+            "exercises_logged": exercises_logged,
+        }, 201
+        
+    except Exception as e:
+        db.session.rollback()
+        return False, f"Error creating exercise logs: {str(e)}", 500
     
     # Return success data
     return True, {
