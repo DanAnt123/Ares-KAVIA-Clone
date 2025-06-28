@@ -756,6 +756,31 @@
   color: var(--primary-light);
 }
 
+.quick-fill-last-session {
+  background: #181a20;
+  color: var(--workout-text-muted);
+  border: 1.5px solid #23242a;
+  border-radius: 6px;
+  box-shadow: none;
+  padding: 0.2rem 0.7rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin-left: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.quick-fill-last-session:hover,
+.quick-fill-last-session:focus {
+  background: #23242a;
+  color: var(--primary-light);
+  border-color: var(--primary-light);
+  outline: none;
+}
+
 /* ===== EXERCISES TRAINING SECTION ===== */
 .exercises-training-section {
   margin-bottom: var(--space-8);
@@ -921,214 +946,89 @@
 .metric-group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  align-items: flex-start;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
 }
 
 .metric-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--workout-text-secondary);
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-semibold);
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.metric-label i {
-  color: var(--primary-light);
-  font-size: var(--fs-xs);
-}
-
-/* ===== INPUT FIELD IMPROVEMENTS ===== */
-.metric-input {
-  position: relative;
+  gap: 0.5em;
 }
 
 .input-group-modern {
-  display: flex;
-  align-items: stretch;
-  background: var(--input-field-bg);
-  border: 2px solid var(--input-field-border);
-  border-radius: var(--input-radius-inner);
-  overflow: hidden;
-  transition: var(--input-transition);
+  background: var(--workout-surface-elevated);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.04);
+  padding: 1.1rem 1.2rem 0.6rem 1.2rem;
+  width: 100%;
+  border: none;
   position: relative;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-  min-height: 48px;
-}
-
-.input-group-modern:focus-within {
-  border-color: var(--primary-light);
-  box-shadow: 0 0 0 3px var(--primary-subtle);
-  transform: translateY(-1px);
+  gap: 0.5rem;
 }
 
 .metric-input-field {
   flex: 1;
-  padding: var(--space-4) var(--space-4);
-  background: transparent;
+  background: #181a1f; /* even more blended, matches card background */
   border: none;
-  color: var(--text-primary);
-  font-size: var(--fs-base);
-  font-weight: var(--fw-semibold);
+  border-bottom: 2.5px solid var(--workout-border);
+  color: var(--workout-text);
+  font-size: 1.25rem;
+  font-family: var(--workout-font);
+  font-weight: 600;
+  padding: 0.5rem 0.2rem 0.3rem 0.2rem;
   outline: none;
-  transition: var(--input-transition-fast);
-  line-height: 1.4;
-  min-height: 44px;
-  box-sizing: border-box;
-  width: 100%;
+  border-radius: 6px 6px 0 0;
+  min-width: 0;
+  box-shadow: none;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
 }
-
+.metric-input-field:focus {
+  border-bottom: 2.5px solid var(--primary-light);
+  background: #23242a; /* subtle, premium focus */
+}
 .metric-input-field::placeholder {
-  color: var(--text-tertiary);
-}
-
-.input-unit {
-  padding: var(--space-4) var(--space-4);
-  background: linear-gradient(135deg, var(--surface), var(--surface-elevated));
-  color: var(--text-secondary);
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-bold);
-  border-left: 2px solid var(--tertiary);
-  transition: var(--input-transition-fast);
-  letter-spacing: 0.05em;
-  display: flex;
-  align-items: center;
-  min-width: 40px;
-  justify-content: center;
-}
-
-.input-focus-line {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--primary-light), var(--accent));
-  border-radius: var(--radius-full);
-  transform: scaleX(0);
-  transition: transform var(--transition-base);
-}
-
-.input-group-modern:focus-within .input-focus-line {
-  transform: scaleX(1);
-}
-
-/* ===== SPECIFIC INPUT FIELD WIDTHS ===== */
-.weight-metric .input-group-modern {
-  max-width: 180px;
-}
-
-.reps-metric .input-group-modern {
-  max-width: 160px;
-}
-
-.details-metric .input-group-modern {
-  max-width: 250px;
-}
-
-/* ===== PREVIOUS SESSION HINTS ===== */
-.previous-session-badge {
-  position: absolute;
-  top: -8px;
-  right: 8px;
-  background: var(--primary);
-  color: var(--text-on-primary);
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  z-index: 10;
-  box-shadow: 0 2px 8px var(--primary-subtle);
-  transition: all var(--transition-base);
-  opacity: 0.85;
-  cursor: pointer;
-  border: 1px solid var(--primary-light);
-}
-
-.previous-session-badge:hover {
+  color: var(--workout-text-muted);
   opacity: 1;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--primary-subtle);
+  font-weight: 400;
+  font-size: 1.1rem;
 }
 
-.previous-session-badge i {
-  font-size: 0.65rem;
-  opacity: 0.9;
-}
-
-.previous-session-badge .badge-text {
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.previous-session-badge.weight-badge {
-  background: var(--success-bg);
-  color: var(--text-on-primary);
-  box-shadow: 0 2px 8px var(--success-border);
-}
-
-.previous-session-badge.weight-badge:hover {
-  box-shadow: 0 4px 12px var(--success-border);
-}
-
-.previous-session-badge.reps-badge {
-  background: var(--accent);
-  color: var(--dark);
-  box-shadow: 0 2px 8px var(--accent-subtle);
-}
-
-.previous-session-badge.reps-badge:hover {
-  box-shadow: 0 4px 12px var(--accent-subtle);
-}
-
-.quick-fill-last-session {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--success-bg);
-  color: var(--text-on-primary);
-  border: none;
-  border-radius: var(--radius-base);
-  padding: 2px 6px;
-  font-size: 0.7rem;
-  cursor: pointer;
-  opacity: 0;
-  transition: all var(--transition-fast);
-  z-index: 10;
-}
-
-.metric-input:hover .quick-fill-last-session {
-  opacity: 0.8;
-}
-
-.quick-fill-last-session:hover {
-  opacity: 1;
-  transform: translateY(-50%) scale(1.05);
-}
-
-/* Enhanced styling for inputs with previous session data */
-.metric-input-field[data-last-weight]:not(:focus),
-.metric-input-field[data-last-reps]:not(:focus) {
-  border-left: 3px solid var(--success-bg);
-  background: linear-gradient(90deg, var(--success-bg) 5% 0%, transparent 10%);
-}
-
-.metric-input-field[data-last-weight]:focus,
-.metric-input-field[data-last-reps]:focus {
-  border-left: 3px solid var(--success-border);
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .input-group-modern {
+    padding: 0.7rem 0.5rem 0.3rem 0.5rem;
+    gap: 0.2rem;
+  }
+  .metric-input-field {
+    font-size: 1.05rem;
+    padding: 0.4rem 0.1rem 0.2rem 0.1rem;
+  }
+  .input-unit {
+    font-size: 0.98rem;
+    margin-left: 0.2rem;
+  }
+  .quick-fill-last-session {
+    font-size: 0.98rem;
+    width: 1.7rem;
+    height: 1.7rem;
+    margin-left: 0.2rem;
+  }
 }
 
 /* ===== DISABLED AND ENABLED FIELD STATES ===== */
 .metric-input-field:disabled,
 .metric-input-field[readonly] {
-  background-color: var(--surface) !important;
+  background-color: #181a20 !important;
   color: var(--text-tertiary) !important;
   cursor: not-allowed !important;
   opacity: 0.6 !important;
@@ -1136,7 +1036,7 @@
 }
 
 .metric-input-field.field-enabled {
-  background-color: var(--surface-elevated) !important;
+  background-color: #181a20 !important;
   color: var(--text-primary) !important;
   cursor: text !important;
   opacity: 1 !important;
@@ -1903,4 +1803,22 @@
 .timer-btn:focus-visible {
   outline: 3px solid var(--focus-outline);
   outline-offset: 2px;
+}
+
+.input-unit {
+  background: transparent;
+  color: var(--workout-text-muted);
+  font-size: 1.08rem;
+  font-weight: 500;
+  padding: 0.18rem 0.5rem 0.18rem 0.3rem;
+  border-radius: 5px;
+  margin-left: 0.2rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s, background 0.15s;
+}
+.input-unit:hover,
+.input-unit:focus {
+  color: var(--primary-light);
+  background: rgba(36,38,44,0.18);
 }
