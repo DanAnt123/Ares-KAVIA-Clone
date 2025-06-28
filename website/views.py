@@ -89,6 +89,7 @@ def get_last_session_data_for_workout(workout_id, user_id):
 def _create_top_set_log(exercise, workout_id, user_id):
     """
     Create a workout session log entry when a top set is completed (has both weight and reps).
+    Uses a session-scoped lock to prevent duplicate entries.
     
     Args:
         exercise (Exercise): The exercise that was completed
@@ -96,35 +97,46 @@ def _create_top_set_log(exercise, workout_id, user_id):
         user_id (int): ID of the user
     """
     try:
-        # Check if there's already a recent session for this workout and exercise
         from datetime import datetime, timedelta
-        recent_threshold = datetime.utcnow() - timedelta(hours=2)  # Within last 2 hours
+        from sqlalchemy import and_, func
         
-        existing_session = db.session.query(WorkoutSession).join(ExerciseLog).filter(
-            WorkoutSession.user_id == user_id,
-            WorkoutSession.workout_id == workout_id,
-            WorkoutSession.timestamp >= recent_threshold,
-            ExerciseLog.exercise_name == exercise.name
-        ).first()
-        
-        if existing_session:
-            # Update existing log
-            existing_log = db.session.query(ExerciseLog).filter(
-                ExerciseLog.session_id == existing_session.id,
-                ExerciseLog.exercise_name == exercise.name
-            ).first()
+        # Start a transaction
+        with db.session.begin_nested():
+            # Use FOR UPDATE to lock the rows we're checking
+            recent_threshold = datetime.utcnow() - timedelta(minutes=30)  # Reduced window to 30 minutes
             
-            if existing_log:
-                existing_log.weight = exercise.weight
-                existing_log.reps = int(exercise.reps) if exercise.reps and exercise.reps.isdigit() else None
-                existing_log.details = exercise.details
-                db.session.commit()
-                return
-        
-        # Create new session
-        session = WorkoutSession(user_id=user_id, workout_id=workout_id)
-        db.session.add(session)
-        db.session.commit()
+            # Get most recent session with this exercise using a precise query
+            existing_session = (db.session.query(WorkoutSession)
+                .join(ExerciseLog)
+                .filter(and_(
+                    WorkoutSession.user_id == user_id,
+                    WorkoutSession.workout_id == workout_id,
+                    WorkoutSession.timestamp >= recent_threshold,
+                    ExerciseLog.exercise_name == exercise.name,
+                    ExerciseLog.weight == exercise.weight,  # Match exact weight
+                    func.coalesce(ExerciseLog.reps, -1) == (int(exercise.reps) if exercise.reps and exercise.reps.isdigit() else -1)
+                ))
+                .with_for_update()
+                .first())
+            
+            if existing_session:
+                # Update existing log with the same values - idempotent operation
+                existing_log = (db.session.query(ExerciseLog)
+                    .filter(and_(
+                        ExerciseLog.session_id == existing_session.id,
+                        ExerciseLog.exercise_name == exercise.name
+                    ))
+                    .with_for_update()
+                    .first())
+                
+                if existing_log:
+                    # No need to update if values are the same
+                    return
+            
+            # Create new session if no matching recent one exists
+            session = WorkoutSession(user_id=user_id, workout_id=workout_id)
+            db.session.add(session)
+            db.session.flush()  # Get ID without committing
         
         # Create exercise log
         log = ExerciseLog(
@@ -245,6 +257,7 @@ def handle_complete_exercise_save(data):
 def _create_workout_session(workout_id, exercises_data, user_id):
     """
     Unified function to create a workout session with exercise logs.
+    Includes deduplication logic to prevent duplicate session creation.
     
     Args:
         workout_id (int): ID of the workout being completed
@@ -256,18 +269,50 @@ def _create_workout_session(workout_id, exercises_data, user_id):
             - On success: (True, session_data_dict, 201)
             - On error: (False, error_message, error_code)
     """
-    # Validate workout exists and belongs to user
-    workout = Workout.query.filter_by(id=workout_id, user_id=user_id).first()
-    if not workout:
-        return False, "Workout not found or access denied", 404
+    from datetime import datetime, timedelta
+    from sqlalchemy import and_
     
-    if not exercises_data:
-        return False, "No exercises provided", 400
-    
-    # Create new session
-    session = WorkoutSession(user_id=user_id, workout_id=workout_id)
-    db.session.add(session)
-    db.session.commit()  # Get session ID
+    # Start transaction
+    try:
+        with db.session.begin_nested():
+            # Validate workout exists and belongs to user
+            workout = (Workout.query
+                      .filter_by(id=workout_id, user_id=user_id)
+                      .with_for_update()
+                      .first())
+            
+            if not workout:
+                return False, "Workout not found or access denied", 404
+            
+            if not exercises_data:
+                return False, "No exercises provided", 400
+            
+            # Check for recent duplicate session
+            recent_threshold = datetime.utcnow() - timedelta(minutes=5)
+            recent_session = (WorkoutSession.query
+                            .filter(and_(
+                                WorkoutSession.user_id == user_id,
+                                WorkoutSession.workout_id == workout_id,
+                                WorkoutSession.timestamp >= recent_threshold
+                            ))
+                            .with_for_update()
+                            .first())
+            
+            if recent_session:
+                # Return existing session to prevent duplicate
+                return True, {
+                    "session_id": recent_session.id,
+                    "timestamp": recent_session.timestamp.isoformat(),
+                    "workout_id": recent_session.workout_id,
+                    "workout_name": workout.name,
+                    "exercises_logged": len(recent_session.exercise_logs),
+                    "note": "Used existing recent session"
+                }, 200
+            
+            # Create new session if no recent duplicate
+            session = WorkoutSession(user_id=user_id, workout_id=workout_id)
+            db.session.add(session)
+            db.session.flush()  # Get ID without committing
     
     logs = []
     exercises_logged = 0
