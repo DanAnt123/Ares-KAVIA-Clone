@@ -12,13 +12,13 @@
 
 :root {
   /* Enhanced input-specific design tokens */
-  --input-modern-bg: var(--surface);
-  --input-modern-bg-focus: var(--surface-elevated);
+  --input-modern-bg: var(--dark-elevated);
+  --input-modern-bg-focus: var(--surface);
   --input-modern-border: var(--tertiary);
-  --input-modern-border-hover: var(--quaternary);
-  --input-modern-border-focus: var(--primary-light);
-  --input-modern-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --input-modern-shadow-focus: 0 4px 12px rgba(16, 185, 129, 0.15);
+  --input-modern-border-hover: var(--primary-light);
+  --input-modern-border-focus: var(--primary);
+  --input-modern-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --input-modern-shadow-focus: 0 8px 25px rgba(16, 185, 129, 0.2);
   --input-modern-radius: var(--radius-lg);
   --input-modern-spacing: var(--space-4);
   --input-modern-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -106,12 +106,12 @@
   background: transparent;
   border: none;
   color: var(--text-primary);
-  font-size: var(--fs-base);
-  font-weight: var(--fw-medium);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
   outline: none;
   transition: var(--input-modern-transition);
-  line-height: 1.5;
-  min-height: 44px;
+  line-height: 1.4;
+  min-height: 48px;
   display: flex;
   align-items: center;
 }
@@ -138,21 +138,21 @@
   align-items: center;
   justify-content: center;
   padding: var(--input-field-padding-y) var(--input-field-padding-x);
-  background: var(--dark-elevated);
+  background: var(--surface);
   color: var(--text-secondary);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-base);
   font-weight: var(--fw-bold);
   border-left: 2px solid var(--input-modern-border);
   transition: var(--input-modern-transition);
   letter-spacing: 0.05em;
-  min-width: 48px;
+  min-width: 52px;
   flex-shrink: 0;
 }
 
 .input-group-modern:focus-within .input-unit {
-  background: var(--primary-subtle);
-  color: var(--primary-light);
-  border-left-color: var(--input-modern-border-focus);
+  background: linear-gradient(135deg, var(--primary-subtle), var(--primary-light));
+  color: var(--text-on-primary);
+  border-left-color: var(--primary);
 }
 
 /* Input Focus Line Enhancement */
