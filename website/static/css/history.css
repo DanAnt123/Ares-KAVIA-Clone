@@ -1611,6 +1611,8 @@
 /* =====================================
    BUTTON SIZING OVERRIDES FOR HISTORY
    ===================================== */
+#reset-filters.btn,
+#reset-filters.btn-secondary,
 #reset-filters,
 #export-data {
     min-width: 180px !important;
