@@ -5,223 +5,216 @@
 {% block navbar %}{% endblock %}
 
 {% block head %}
-<link href="/static/css/modern-signin.css" rel="stylesheet" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="/static/css/auth-enhanced.css" rel="stylesheet" />
 {% endblock %}
 
 {% block body %}
-<div class="signin-page">
-    <!-- Background Elements -->
-    <div class="background-elements">
-        <div class="gradient-orb orb-1"></div>
-        <div class="gradient-orb orb-2"></div>
-        <div class="gradient-orb orb-3"></div>
-        <div class="mesh-gradient"></div>
+<div class="auth-container">
+    <!-- Background decoration -->
+    <div class="auth-decoration">
+        <div class="decoration-circle circle-1"></div>
+        <div class="decoration-circle circle-2"></div>
+        <div class="decoration-circle circle-3"></div>
     </div>
 
-    <!-- Main Container -->
-    <div class="signin-container">
-        <!-- Left Panel - Branding & Hero -->
-        <div class="hero-panel">
-            <div class="hero-content">
-                <!-- Logo Section -->
-                <div class="logo-section">
-                    <div class="logo-container">
-                        <img src="/static/images/logo-nobg.png" alt="Ares" class="logo-image">
-                        <div class="logo-glow"></div>
-                    </div>
-                    <h1 class="brand-title">Ares</h1>
-                    <p class="brand-tagline">Your fitness companion</p>
+    <!-- Info panel for larger screens -->
+    <div class="auth-info-panel">
+        <div class="info-content">
+            <!-- Brand Section -->
+            <div class="info-brand-section">
+                <div class="brand-logo-container">
+                    <img src="/static/images/logo-nobg.png" alt="Ares" class="info-brand-logo">
+                    <div class="brand-logo-glow"></div>
                 </div>
+                <h1 class="info-brand-title">Ares</h1>
+                <p class="info-brand-tagline">Your Ultimate Fitness Companion</p>
+            </div>
 
-                <!-- Hero Content -->
-                <div class="hero-text">
-                    <h2 class="hero-heading">
-                        <span class="gradient-text">Track Your Progress.</span>
-                        <span class="secondary-text">Achieve Your Goals.</span>
-                    </h2>
-                    <p class="hero-description">
-                        Join thousands of fitness enthusiasts who trust Ares to track their workouts, 
-                        monitor progress, and reach their fitness milestones.
-                    </p>
+            <!-- Hero Content -->
+            <div class="info-text">
+                <h2 class="info-title">
+                    <span class="gradient-text">Track Your Progress.</span>
+                    <span class="secondary-text">Achieve Your Goals.</span>
+                </h2>
+                <p class="info-description">
+                    Join thousands of fitness enthusiasts who trust Ares to track their workouts, 
+                    monitor progress, and reach their fitness milestones with our minimalist yet powerful platform.
+                </p>
+            </div>
+
+            <!-- Feature Highlights -->
+            <div class="info-features">
+                <div class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Detailed Progress Analytics</span>
                 </div>
-
-                <!-- Feature Points -->
-                <div class="feature-points">
-                    <div class="feature-point">
-                        <div class="feature-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <span class="feature-text">Progress Analytics</span>
-                    </div>
-                    <div class="feature-point">
-                        <div class="feature-icon">
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                        <span class="feature-text">Mobile Optimized</span>
-                    </div>
-                    <div class="feature-point">
-                        <div class="feature-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <span class="feature-text">Quick Setup</span>
-                    </div>
+                <div class="feature-item">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Mobile Optimized Experience</span>
                 </div>
+                <div class="feature-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Quick & Easy Setup</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Secure & Private</span>
+                </div>
+            </div>
 
-                <!-- Testimonial -->
-                <div class="testimonial-card">
-                    <div class="quote-mark">
-                        <i class="fas fa-quote-left"></i>
+            <!-- Testimonial -->
+            <div class="testimonial-card">
+                <div class="quote-mark">
+                    <i class="fas fa-quote-left"></i>
+                </div>
+                <blockquote class="testimonial-text">
+                    "Ares has completely transformed my workout routine. Simple, elegant, and exactly what I needed to stay consistent."
+                </blockquote>
+                <div class="testimonial-author">
+                    <div class="author-avatar">
+                        <i class="fas fa-user"></i>
                     </div>
-                    <blockquote class="testimonial-text">
-                        "Ares has completely transformed my workout routine. Simple, elegant, and exactly what I needed."
-                    </blockquote>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="author-info">
-                            <span class="author-name">Sarah Chen</span>
-                            <span class="author-role">Fitness Enthusiast</span>
-                        </div>
+                    <div class="author-info">
+                        <span class="author-name">Sarah Chen</span>
+                        <span class="author-role">Fitness Enthusiast</span>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Right Panel - Sign In Form -->
-        <div class="form-panel">
-            <div class="form-container">
-                <!-- Header -->
-                <div class="form-header">
-                    <h1 class="form-title">Welcome back</h1>
-                    <p class="form-subtitle">Sign in to continue your fitness journey</p>
-                </div>
-
-                <!-- Alert Messages -->
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        <div class="alerts-container">
-                            {% for category, message in messages %}
-                                <div class="alert alert-{{ 'error' if category == 'error' else 'success' }}" role="alert">
-                                    <div class="alert-icon">
-                                        {% if category == "error" %}
-                                            <i class="fas fa-exclamation-circle"></i>
-                                        {% else %}
-                                            <i class="fas fa-check-circle"></i>
-                                        {% endif %}
-                                    </div>
-                                    <div class="alert-content">
-                                        <p class="alert-message">{{ message }}</p>
-                                    </div>
-                                    <button type="button" class="alert-dismiss" onclick="this.parentElement.remove()">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                {% endwith %}
-
-                <!-- Sign In Form -->
-                <form class="signin-form" method="POST" novalidate>
-                    <div class="form-group">
-                        <label for="email" class="form-label">
-                            Email address
-                            <span class="required">*</span>
-                        </label>
-                        <div class="input-wrapper">
-                            <div class="input-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                class="form-input"
-                                placeholder="Enter your email"
-                                required
-                                autocomplete="username"
-                                maxlength="50"
-                            >
-                            <div class="input-border"></div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password" class="form-label">
-                            Password
-                            <span class="required">*</span>
-                        </label>
-                        <div class="input-wrapper">
-                            <div class="input-icon">
-                                <i class="fas fa-lock"></i>
-                            </div>
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                class="form-input"
-                                placeholder="Enter your password"
-                                required
-                                autocomplete="current-password"
-                                maxlength="50"
-                            >
-                            <button type="button" class="password-toggle" aria-label="Toggle password visibility">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <div class="input-border"></div>
-                        </div>
-                    </div>
-
-                    <div class="form-options">
-                        <div class="checkbox-wrapper">
-                            <input type="checkbox" id="remember" class="checkbox-input">
-                            <label for="remember" class="checkbox-label">
-                                <div class="checkbox-custom">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <span class="checkbox-text">Remember me</span>
-                            </label>
-                        </div>
-                        <a href="#" class="forgot-password">Forgot password?</a>
-                    </div>
-
-                    <button type="submit" class="signin-button">
-                        <span class="button-text">Sign In</span>
-                        <div class="button-icon">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                        <div class="button-ripple"></div>
-                    </button>
-                </form>
-
-                <!-- Divider -->
-                <div class="divider">
-                    <span class="divider-text">or</span>
-                </div>
-
-                <!-- Demo Button -->
-                <form method="POST">
-                    <button type="submit" name="demo_user" class="demo-button">
-                        <span class="button-text">Try Demo Account</span>
-                        <div class="button-icon">
-                            <i class="fas fa-play"></i>
-                        </div>
-                        <div class="button-ripple"></div>
-                    </button>
-                </form>
-
-                <!-- Footer -->
-                <div class="form-footer">
-                    <p class="footer-text">
-                        Don't have an account? 
-                        <a href="/signup" class="signup-link">Create one now</a>
-                    </p>
-                </div>
+    <!-- Main authentication card -->
+    <div class="auth-card">
+        <!-- Brand section for mobile -->
+        <div class="auth-brand">
+            <div class="brand-logo-container">
+                <img src="/static/images/logo-nobg.png" alt="Ares" class="brand-logo">
+                <div class="brand-logo-glow"></div>
             </div>
+            <h1 class="brand-title">Ares</h1>
+            <p class="brand-subtitle">Welcome back to your fitness journey</p>
+        </div>
+
+        <!-- Alert Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alerts-section">
+                    {% for category, message in messages %}
+                        <div class="alert-message alert-{{ 'error' if category == 'error' else 'success' }}" role="alert">
+                            <div class="alert-icon">
+                                {% if category == "error" %}
+                                    <i class="fas fa-exclamation-circle"></i>
+                                {% else %}
+                                    <i class="fas fa-check-circle"></i>
+                                {% endif %}
+                            </div>
+                            <div class="alert-content">
+                                <p class="alert-text">{{ message }}</p>
+                            </div>
+                            <button type="button" class="alert-dismiss" onclick="this.parentElement.remove()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Sign In Form -->
+        <div class="auth-form-section">
+            <form class="auth-form" method="POST" novalidate>
+                <div class="form-group">
+                    <label for="email" class="form-label">
+                        <i class="fas fa-envelope"></i>
+                        Email Address
+                        <span class="required-indicator">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="form-input"
+                            placeholder="Enter your email address"
+                            required
+                            autocomplete="username"
+                            maxlength="50"
+                        >
+                        <div class="input-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock"></i>
+                        Password
+                        <span class="required-indicator">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-input"
+                            placeholder="Enter your password"
+                            required
+                            autocomplete="current-password"
+                            maxlength="50"
+                        >
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="remember" class="checkbox-input">
+                        <label for="remember" class="checkbox-label">
+                            <div class="checkbox-custom">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="checkbox-text">Remember me</span>
+                        </label>
+                    </div>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="auth-submit-btn btn-primary">
+                    <span class="button-text">Sign In</span>
+                    <div class="button-icon">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </button>
+            </form>
+        </div>
+
+        <!-- Divider -->
+        <div class="auth-divider">
+            <span class="divider-text">or</span>
+        </div>
+
+        <!-- Demo Button -->
+        <form method="POST">
+            <button type="submit" name="demo_user" class="auth-demo-btn btn-secondary">
+                <span class="button-text">Try Demo Account</span>
+                <div class="button-icon">
+                    <i class="fas fa-play"></i>
+                </div>
+            </button>
+        </form>
+
+        <!-- Footer -->
+        <div class="auth-footer">
+            <p class="auth-footer-text">
+                Don't have an account? 
+                <a href="/signup" class="auth-link">Create one now</a>
+            </p>
         </div>
     </div>
 </div>
@@ -229,8 +222,8 @@
 <!-- Enhanced JavaScript -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Enhanced form interactions
-    const form = document.querySelector('.signin-form');
+    // Form interactions
+    const form = document.querySelector('.auth-form');
     const inputs = form.querySelectorAll('.form-input');
     const passwordToggle = document.querySelector('.password-toggle');
     const passwordInput = document.getElementById('password');
@@ -285,32 +278,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Enhanced button interactions with ripple effect
-    const buttons = document.querySelectorAll('.signin-button, .demo-button');
-    buttons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            // Create ripple effect
-            const ripple = this.querySelector('.button-ripple');
-            const rect = this.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            const x = e.clientX - rect.left - size / 2;
-            const y = e.clientY - rect.top - size / 2;
-            
-            ripple.style.width = ripple.style.height = size + 'px';
-            ripple.style.left = x + 'px';
-            ripple.style.top = y + 'px';
-            ripple.classList.remove('animate');
-            
-            // Trigger animation
-            requestAnimationFrame(() => {
-                ripple.classList.add('animate');
-            });
-        });
-    });
-    
     // Form submission handling
     form.addEventListener('submit', function(e) {
-        const submitButton = form.querySelector('.signin-button');
+        const submitButton = form.querySelector('.auth-submit-btn');
         const buttonText = submitButton.querySelector('.button-text');
         const buttonIcon = submitButton.querySelector('.button-icon i');
         
@@ -336,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Auto-dismiss alerts
-    const alerts = document.querySelectorAll('.alert');
+    const alerts = document.querySelectorAll('.alert-message');
     alerts.forEach(alert => {
         setTimeout(() => {
             alert.style.opacity = '0';
@@ -350,26 +320,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
             form.dispatchEvent(new Event('submit'));
         }
-    });
-    
-    // Animate background orbs
-    const orbs = document.querySelectorAll('.gradient-orb');
-    orbs.forEach((orb, index) => {
-        orb.style.animationDelay = `${index * 2}s`;
-    });
-    
-    // Smooth scrolling for any internal links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
     });
 });
 </script>
