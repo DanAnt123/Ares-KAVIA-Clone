@@ -431,23 +431,43 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Enhanced edit form handling
+    const editForms = document.querySelectorAll('form[action="/edit-workout"]');
+    editForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            console.log('Edit form submitting:', {
+                action: this.action,
+                method: this.method,
+                workoutId: this.querySelector('input[name="workout"]')?.value
+            });
+            
+            // Add visual feedback
+            const submitBtn = this.querySelector('.edit-action');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Loading...</span>';
+                submitBtn.disabled = true;
+            }
+            
+            // Let the form submit normally
+        });
+    });
+=======
+    
     // Handle action item clicks (edit, duplicate)
     const actionItems = document.querySelectorAll('.action-item');
     actionItems.forEach(item => {
         item.addEventListener('click', function(e) {
-            // Don't stop propagation - let the form submit
             console.log('Action item clicked:', this);
             
-            // If this is an edit action, ensure the form submits
+            // For edit actions, let the default form submission happen
             if (this.classList.contains('edit-action')) {
-                const form = this.closest('form');
-                if (form) {
-                    console.log('Submitting edit form:', form);
-                    form.submit();
-                }
+                // Don't prevent default - let the form submit naturally
+                console.log('Edit action triggered - allowing default form submission');
+                // Don't call form.submit() manually as it bypasses browser validation
+                return; // Let the browser handle the form submission
             }
             
-            // Close the dropdown menu after action
+            // For other actions, close the dropdown menu after action
             const menu = this.closest('.actions-menu');
             if (menu) {
                 menu.classList.remove('active');
@@ -455,24 +475,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Handle form submissions within action menus
+    // Handle form submissions within action menus - ensure they work properly
     const actionForms = document.querySelectorAll('.action-form');
     actionForms.forEach(form => {
         form.addEventListener('submit', function(e) {
             console.log('Form submitting:', this.action, this.method);
             // Let the form submit normally - don't prevent default
+            // This is crucial for proper POST request handling
         });
     });
+=======
     
     // Close dropdowns when clicking outside
     document.addEventListener('click', function(e) {
-        // Don't close if clicking inside an action menu
-        if (!e.target.closest('.actions-menu') && !e.target.closest('.actions-trigger')) {
+        // Don't close if clicking inside an action menu or on form submission buttons
+        if (!e.target.closest('.actions-menu') && 
+            !e.target.closest('.actions-trigger') &&
+            !e.target.closest('.action-form')) {
             document.querySelectorAll('.actions-menu').forEach(menu => {
                 menu.classList.remove('active');
             });
         }
     });
+=======
     
     // Stagger animation for workout cards
     const observerOptions = {
