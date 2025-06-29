@@ -39,22 +39,46 @@ function updateExerciseCounter() {
     });
 }
 
-/* Ensure category selection interacts smoothly in the form */
-var categorySelectors = document.querySelectorAll('select[name="category_id"]');
-categorySelectors.forEach(function(select) {
-    select.addEventListener("focus", function() {
-        select.size = select.options.length > 8 ? 8 : select.options.length;
-    });
-    select.addEventListener("blur", function() {
-        select.size = 0;
-    });
-    select.addEventListener("change", function() {
-        if (select.value) {
-            document.getElementById('new_category_name').value = '';
-            document.getElementById('new_category_description').value = '';
+/* Enhanced category selection with custom dropdown support */
+var categorySelect = document.getElementById('category_id');
+var categoryDropdown = null;
+
+// Initialize custom dropdown when available
+function initializeCategoryDropdownInteraction() {
+    // Wait for custom dropdown to be initialized
+    setTimeout(function() {
+        categoryDropdown = window.customDropdowns ? window.customDropdowns.get(categorySelect) : null;
+        
+        if (categoryDropdown) {
+            console.log('Custom dropdown integration ready');
+            // Custom dropdown handles its own interactions
+        } else {
+            // Fallback to native select behavior
+            console.log('Using native select fallback');
+            if (categorySelect) {
+                categorySelect.addEventListener("focus", function() {
+                    categorySelect.size = categorySelect.options.length > 8 ? 8 : categorySelect.options.length;
+                });
+                categorySelect.addEventListener("blur", function() {
+                    categorySelect.size = 0;
+                });
+            }
         }
-    });
-});
+        
+        // Listen for changes regardless of dropdown type
+        if (categorySelect) {
+            categorySelect.addEventListener("change", function() {
+                if (categorySelect.value) {
+                    document.getElementById('new_category_name').value = '';
+                    document.getElementById('new_category_description').value = '';
+                }
+            });
+        }
+    }, 100);
+}
+
+// Initialize category dropdown interaction
+initializeCategoryDropdownInteraction();
 
 /* New category input handling */
 var newCategoryName = document.getElementById('new_category_name');

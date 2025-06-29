@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Dropdown Test - Ares</title>
+    
+    <!-- Include Ares styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/custom-dropdown.css">
+    
+    <style>
+        body {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            font-family: 'AvertaStd', sans-serif;
+        }
+        
+        .test-section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--tertiary);
+        }
+        
+        .test-title {
+            font-size: var(--fs-xl);
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .test-description {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 2rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: var(--fs-sm);
+            font-weight: var(--fw-semibold);
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .test-btn {
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: var(--text-on-primary);
+            border: none;
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            font-size: var(--fs-sm);
+            transition: all var(--transition-fast);
+        }
+        
+        .test-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+        
+        .test-output {
+            background: var(--dark-elevated);
+            padding: 1rem;
+            border-radius: var(--radius-base);
+            border: 1px solid var(--tertiary);
+            font-family: monospace;
+            font-size: var(--fs-sm);
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+        
+        .keyboard-help {
+            background: var(--accent-subtle);
+            border: 1px solid var(--accent);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .keyboard-help h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+        
+        .keyboard-shortcuts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+        }
+        
+        .shortcut {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+        }
+        
+        .key {
+            background: var(--surface);
+            padding: 0.125rem 0.5rem;
+            border-radius: var(--radius-sm);
+            font-family: monospace;
+            font-size: var(--fs-xs);
+            border: 1px solid var(--tertiary);
+        }
+    </style>
+</head>
+<body>
+    <h1 style="color: var(--text-primary); text-align: center; margin-bottom: 2rem;">
+        🎯 Custom Dropdown Test Suite
+    </h1>
+    
+    <!-- Basic Dropdown Test -->
+    <div class="test-section">
+        <h2 class="test-title">Basic Category Dropdown</h2>
+        <p class="test-description">
+            This tests the basic functionality of the custom dropdown with category options.
+        </p>
+        
+        <div class="form-group">
+            <label for="category-test" class="form-label">
+                Select Category <span style="color: var(--error-bg);">*</span>
+            </label>
+            <select id="category-test" class="form-select custom-dropdown" required 
+                    data-placeholder="Choose a category...">
+                <option value="" disabled selected>Choose a category...</option>
+                <option value="strength">Strength Training</option>
+                <option value="cardio">Cardio</option>
+                <option value="flexibility">Flexibility</option>
+                <option value="sports">Sports</option>
+                <option value="martial-arts">Martial Arts</option>
+                <option value="yoga">Yoga</option>
+                <option value="pilates">Pilates</option>
+                <option value="functional">Functional Training</option>
+            </select>
+        </div>
+        
+        <div class="test-controls">
+            <button class="test-btn" onclick="testBasicFunctionality()">Test Basic Functions</button>
+            <button class="test-btn" onclick="clearSelection()">Clear Selection</button>
+            <button class="test-btn" onclick="selectRandom()">Select Random</button>
+            <button class="test-btn" onclick="toggleDisabled()">Toggle Disabled</button>
+        </div>
+        
+        <div id="basic-output" class="test-output">Ready for testing...</div>
+    </div>
+    
+    <!-- Advanced Dropdown Test -->
+    <div class="test-section">
+        <h2 class="test-title">Advanced Dropdown with Icons</h2>
+        <p class="test-description">
+            This tests advanced features like custom max height and visual enhancements.
+        </p>
+        
+        <div class="form-group">
+            <label for="advanced-test" class="form-label">Select Workout Type</label>
+            <select id="advanced-test" class="form-select custom-dropdown" 
+                    data-placeholder="Select workout type..."
+                    data-max-height="200">
+                <option value="" disabled selected>Select workout type...</option>
+                <option value="beginner" data-icon="fa-solid fa-seedling">Beginner Friendly</option>
+                <option value="intermediate" data-icon="fa-solid fa-dumbbell">Intermediate</option>
+                <option value="advanced" data-icon="fa-solid fa-fire">Advanced</option>
+                <option value="expert" data-icon="fa-solid fa-crown">Expert Level</option>
+                <option value="recovery" data-icon="fa-solid fa-heart">Recovery</option>
+                <option value="hiit" data-icon="fa-solid fa-bolt">HIIT</option>
+                <option value="endurance" data-icon="fa-solid fa-mountain">Endurance</option>
+                <option value="power" data-icon="fa-solid fa-rocket">Power Training</option>
+                <option value="mobility" data-icon="fa-solid fa-yoga">Mobility</option>
+                <option value="balance" data-icon="fa-solid fa-balance-scale">Balance</option>
+            </select>
+        </div>
+        
+        <div class="test-controls">
+            <button class="test-btn" onclick="testAdvancedFunctionality()">Test Advanced Features</button>
+            <button class="test-btn" onclick="simulateFormSubmit()">Simulate Form Submit</button>
+            <button class="test-btn" onclick="testKeyboardNav()">Test Keyboard Navigation</button>
+        </div>
+        
+        <div id="advanced-output" class="test-output">Ready for advanced testing...</div>
+    </div>
+    
+    <!-- Accessibility Test -->
+    <div class="test-section">
+        <h2 class="test-title">Accessibility Features</h2>
+        <p class="test-description">
+            This section tests accessibility features and ARIA compliance.
+        </p>
+        
+        <div class="form-group">
+            <label for="accessibility-test" class="form-label">Accessible Dropdown</label>
+            <select id="accessibility-test" class="form-select custom-dropdown" 
+                    aria-describedby="accessibility-help"
+                    data-placeholder="Choose accessible option...">
+                <option value="" disabled selected>Choose accessible option...</option>
+                <option value="option1">Screen Reader Friendly</option>
+                <option value="option2">Keyboard Navigation</option>
+                <option value="option3">High Contrast Support</option>
+                <option value="option4">Focus Management</option>
+                <option value="option5">ARIA Compliance</option>
+            </select>
+            <small id="accessibility-help" style="color: var(--text-tertiary); font-size: var(--fs-xs);">
+                This dropdown demonstrates accessibility features including screen reader support and keyboard navigation.
+            </small>
+        </div>
+        
+        <div class="test-controls">
+            <button class="test-btn" onclick="testAccessibility()">Test Accessibility</button>
+            <button class="test-btn" onclick="announceToScreenReader()">Test Screen Reader</button>
+            <button class="test-btn" onclick="testAriaAttributes()">Check ARIA Attributes</button>
+        </div>
+        
+        <div id="accessibility-output" class="test-output">Ready for accessibility testing...</div>
+    </div>
+    
+    <!-- Keyboard Navigation Help -->
+    <div class="keyboard-help">
+        <h3>🎹 Keyboard Navigation Reference</h3>
+        <div class="keyboard-shortcuts">
+            <div class="shortcut">
+                <span>Focus dropdown:</span>
+                <kbd class="key">Tab</kbd>
+            </div>
+            <div class="shortcut">
+                <span>Open dropdown:</span>
+                <kbd class="key">Enter</kbd> / <kbd class="key">Space</kbd>
+            </div>
+            <div class="shortcut">
+                <span>Navigate options:</span>
+                <kbd class="key">↑</kbd> / <kbd class="key">↓</kbd>
+            </div>
+            <div class="shortcut">
+                <span>First option:</span>
+                <kbd class="key">Home</kbd>
+            </div>
+            <div class="shortcut">
+                <span>Last option:</span>
+                <kbd class="key">End</kbd>
+            </div>
+            <div class="shortcut">
+                <span>Close dropdown:</span>
+                <kbd class="key">Escape</kbd>
+            </div>
+            <div class="shortcut">
+                <span>Type-ahead search:</span>
+                <kbd class="key">A-Z</kbd>
+            </div>
+            <div class="shortcut">
+                <span>Select option:</span>
+                <kbd class="key">Enter</kbd>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include Required JavaScript -->
+    <script src="https://kit.fontawesome.com/9aea94aa37.js" crossorigin="anonymous"></script>
+    <script src="js/custom-dropdown.js"></script>
+    
+    <script>
+        // Test functions
+        let testOutput = {};
+        
+        function log(section, message) {
+            const outputElement = document.getElementById(section + '-output');
+            const timestamp = new Date().toLocaleTimeString();
+            outputElement.textContent += `[${timestamp}] ${message}\n`;
+            outputElement.scrollTop = outputElement.scrollHeight;
+        }
+        
+        function testBasicFunctionality() {
+            log('basic', 'Testing basic dropdown functionality...');
+            
+            const select = document.getElementById('category-test');
+            const dropdown = window.customDropdowns.get(select);
+            
+            if (dropdown) {
+                log('basic', '✅ Dropdown instance found');
+                log('basic', `Current value: ${dropdown.getValue()}`);
+                log('basic', `Current text: ${dropdown.getText()}`);
+                log('basic', `Is disabled: ${dropdown.isDisabled()}`);
+                
+                // Test programmatic selection
+                setTimeout(() => {
+                    dropdown.setValue('strength');
+                    log('basic', '✅ Programmatically set value to "strength"');
+                }, 1000);
+            } else {
+                log('basic', '❌ Dropdown instance not found');
+            }
+        }
+        
+        function clearSelection() {
+            const select = document.getElementById('category-test');
+            const dropdown = window.customDropdowns.get(select);
+            
+            if (dropdown) {
+                dropdown.setValue('');
+                log('basic', '🗑️ Selection cleared');
+            }
+        }
+        
+        function selectRandom() {
+            const select = document.getElementById('category-test');
+            const options = Array.from(select.options).filter(opt => opt.value !== '');
+            const randomOption = options[Math.floor(Math.random() * options.length)];
+            
+            const dropdown = window.customDropdowns.get(select);
+            if (dropdown && randomOption) {
+                dropdown.setValue(randomOption.value);
+                log('basic', `🎲 Randomly selected: ${randomOption.textContent}`);
+            }
+        }
+        
+        function toggleDisabled() {
+            const select = document.getElementById('category-test');
+            const dropdown = window.customDropdowns.get(select);
+            
+            if (dropdown) {
+                if (dropdown.isDisabled()) {
+                    dropdown.enable();
+                    log('basic', '✅ Dropdown enabled');
+                } else {
+                    dropdown.disable();
+                    log('basic', '🚫 Dropdown disabled');
+                }
+            }
+        }
+        
+        function testAdvancedFunctionality() {
+            log('advanced', 'Testing advanced dropdown features...');
+            
+            const select = document.getElementById('advanced-test');
+            const dropdown = window.customDropdowns.get(select);
+            
+            if (dropdown) {
+                log('advanced', '✅ Advanced dropdown found');
+                
+                // Test all methods
+                const methods = ['open', 'close', 'toggle', 'refresh'];
+                methods.forEach((method, index) => {
+                    setTimeout(() => {
+                        if (typeof dropdown[method] === 'function') {
+                            dropdown[method]();
+                            log('advanced', `✅ ${method}() executed successfully`);
+                        }
+                    }, index * 500);
+                });
+            }
+        }
+        
+        function simulateFormSubmit() {
+            const form = document.createElement('form');
+            const select = document.getElementById('advanced-test');
+            const clonedSelect = select.cloneNode(true);
+            
+            form.appendChild(clonedSelect);
+            document.body.appendChild(form);
+            
+            const formData = new FormData(form);
+            const value = formData.get(select.name || 'test-select');
+            
+            log('advanced', `📤 Form submission simulation:`);
+            log('advanced', `Selected value: ${value || 'None'}`);
+            
+            document.body.removeChild(form);
+        }
+        
+        function testKeyboardNav() {
+            log('advanced', '⌨️ Keyboard navigation test:');
+            log('advanced', '1. Tab to focus the dropdown');
+            log('advanced', '2. Press Enter to open');
+            log('advanced', '3. Use arrow keys to navigate');
+            log('advanced', '4. Press Enter to select');
+            log('advanced', '5. Press Escape to close');
+        }
+        
+        function testAccessibility() {
+            log('accessibility', 'Testing accessibility features...');
+            
+            const select = document.getElementById('accessibility-test');
+            const dropdown = window.customDropdowns.get(select);
+            
+            if (dropdown) {
+                const container = dropdown.container;
+                const trigger = dropdown.trigger;
+                
+                // Check ARIA attributes
+                const ariaAttrs = [
+                    'aria-expanded',
+                    'aria-haspopup',
+                    'role'
+                ];
+                
+                ariaAttrs.forEach(attr => {
+                    const value = container.getAttribute(attr);
+                    log('accessibility', `${attr}: ${value || 'Not set'}`);
+                });
+                
+                // Check focus management
+                trigger.focus();
+                log('accessibility', '✅ Focus set to dropdown trigger');
+            }
+        }
+        
+        function announceToScreenReader() {
+            const select = document.getElementById('accessibility-test');
+            const dropdown = window.customDropdowns.get(select);
+            
+            if (dropdown) {
+                dropdown.announceToScreenReader('Custom announcement test message');
+                log('accessibility', '📢 Test announcement sent to screen reader');
+            }
+        }
+        
+        function testAriaAttributes() {
+            log('accessibility', 'Checking ARIA attributes...');
+            
+            const containers = document.querySelectorAll('.custom-dropdown-container');
+            containers.forEach((container, index) => {
+                log('accessibility', `\nDropdown ${index + 1}:`);
+                
+                const requiredAttrs = [
+                    'role',
+                    'aria-expanded',
+                    'aria-haspopup'
+                ];
+                
+                requiredAttrs.forEach(attr => {
+                    const value = container.getAttribute(attr);
+                    const status = value ? '✅' : '❌';
+                    log('accessibility', `  ${status} ${attr}: ${value || 'Missing'}`);
+                });
+            });
+        }
+        
+        // Event listeners for testing
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add change event listeners
+            const selects = document.querySelectorAll('select');
+            selects.forEach(select => {
+                select.addEventListener('change', function() {
+                    const sectionId = this.id.replace('-test', '');
+                    log(sectionId, `Selection changed: ${this.value} (${this.options[this.selectedIndex]?.textContent})`);
+                });
+            });
+            
+            log('basic', 'Test suite initialized');
+            log('advanced', 'Advanced tests ready');
+            log('accessibility', 'Accessibility tests ready');
+        });
+    </script>
+</body>
+</html>

@@ -37,6 +37,26 @@ Ares is a minimalist workout tracker built with Flask, Python, SQLAlchemy, JavaS
 -   [PostgreSQL](https://www.postgresql.org/)
 -   [Figma](https://www.figma.com/ui-design-tool/)
 
+### Recent Enhancements
+
+#### 🎯 Modern Custom Dropdown Component
+The Category selector in the new-workout form has been upgraded with a modern, accessible custom dropdown that provides:
+
+- **Enhanced UX**: Smooth animations, hover effects, and modern styling
+- **Full Accessibility**: ARIA compliance, keyboard navigation, and screen reader support
+- **Mobile Responsive**: Touch-friendly interface optimized for all devices
+- **Zero Dependencies**: Built with vanilla HTML, CSS, and JavaScript
+- **Backward Compatible**: Maintains existing form functionality
+
+**Key Features:**
+- Keyboard navigation (Tab, Enter, Arrow keys, Escape)
+- Type-ahead search for quick option selection
+- Custom arrow icon with rotation animation
+- Elegant gradient border effects
+- High contrast and reduced motion support
+
+For implementation details, see [Custom Dropdown Documentation](kavia-docs/custom_dropdown_implementation.md).
+
 ## Database Migrations
 
 This project uses [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) to handle database schema changes. 

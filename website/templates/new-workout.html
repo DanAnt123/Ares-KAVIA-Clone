@@ -2,6 +2,11 @@
 
 {% block title %}Create New Workout - Ares{% endblock %}
 
+{% block head %}
+<!-- Custom Dropdown Styles -->
+<link rel="stylesheet" href="/static/css/custom-dropdown.css">
+{% endblock %}
+
 {% block active %}
 <li class="nav-item" role="none">
     <a class="nav-link" href="/" role="menuitem">
@@ -117,7 +122,7 @@
                     <label for="category_id" class="form-label">
                         Category <span class="required">*</span>
                     </label>
-                    <select id="category_id" name="category_id" class="form-select" required aria-describedby="category_help">
+                    <select id="category_id" name="category_id" class="form-select custom-dropdown" required aria-describedby="category_help" data-placeholder="Choose a category...">
                         <option value="" disabled selected>Choose a category...</option>
                         {% for category in categories %}
                             <option value="{{ category.id }}">{{ category.name }}</option>
@@ -292,6 +297,7 @@
 </div>
 
 <!-- JavaScript -->
+<script type="text/javascript" src="/static/js/custom-dropdown.js"></script>
 <script type="text/javascript" src="/static/js/new-workout.js"></script>
 <script type="text/javascript" src="/static/js/alert.js"></script>
 
