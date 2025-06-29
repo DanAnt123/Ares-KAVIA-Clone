@@ -269,9 +269,12 @@
                                     <div class="exercises-grid">
                                         {% for exercise in session_data.exercises %}
                                             <!-- Normalize data-exercise-name attribute: lowercase and trimmed to match filter option -->
-                                            <div class="exercise-card" data-exercise-name="{{ exercise.exercise_name | trim | lower }}">
+                                            <div class="exercise-card" 
+                                                 data-exercise-name="{{ exercise.exercise_name | trim | lower }}"
+                                                 data-session-id="{{ session.id }}"
+                                                 data-workout-id="{{ session.workout_id }}">
                                                 <div class="exercise-header">
-                                                    <span class="exercise-name" data-exercise-name="{{ exercise.exercise_name }}">{{ exercise.exercise_name }}</span>
+                                                    <span class="exercise-name" data-exercise-name="{{ exercise.exercise_name | trim | lower }}">{{ exercise.exercise_name }}</span>
                                                     {% if exercise.total_sets > 1 %}
                                                         <span class="sets-badge">{{ exercise.total_sets }} sets</span>
                                                     {% endif %}

@@ -666,6 +666,7 @@ def _get_top_set_for_exercise(exercise_logs):
 def _group_sessions_with_top_sets(sessions):
     """
     Group exercise logs by session and find top set for each exercise in each session.
+    Ensures exercises are properly associated with their parent workout session.
     
     Args:
         sessions (list): List of WorkoutSession objects
@@ -676,14 +677,22 @@ def _group_sessions_with_top_sets(sessions):
     grouped_sessions = []
     
     for session in sessions:
-        # Group exercise logs by exercise name
+        # Verify session has valid workout association
+        if not session.workout_id or not session.workout:
+            continue
+            
+        # Group exercise logs by exercise name within this specific session
         exercises_dict = {}
         for log in session.exercise_logs:
+            # Ensure log belongs to this session
+            if log.session_id != session.id:
+                continue
+                
             if log.exercise_name not in exercises_dict:
                 exercises_dict[log.exercise_name] = []
             exercises_dict[log.exercise_name].append(log)
         
-        # Find top set for each exercise
+        # Find top set for each exercise in this session
         exercises_with_top_sets = []
         for exercise_name, logs in exercises_dict.items():
             top_set = _get_top_set_for_exercise(logs)
@@ -691,13 +700,15 @@ def _group_sessions_with_top_sets(sessions):
                 exercises_with_top_sets.append({
                     'exercise_name': exercise_name,
                     'top_set': top_set,
-                    'total_sets': len(logs)
+                    'total_sets': len(logs),
+                    'session_id': session.id,  # Add session ID for verification
+                    'workout_id': session.workout_id  # Add workout ID for verification
                 })
         
         # Calculate session statistics
         total_weight = sum(
             log.weight for log in session.exercise_logs 
-            if log.weight is not None
+            if log.weight is not None and log.session_id == session.id
         )
         
         grouped_sessions.append({
@@ -705,7 +716,7 @@ def _group_sessions_with_top_sets(sessions):
             'exercises': exercises_with_top_sets,
             'total_exercises': len(exercises_dict),
             'total_weight': total_weight,
-            'total_sets': len(session.exercise_logs)
+            'total_sets': len([log for log in session.exercise_logs if log.session_id == session.id])
         })
     
     return grouped_sessions

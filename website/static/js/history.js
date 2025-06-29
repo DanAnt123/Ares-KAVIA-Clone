@@ -117,9 +117,19 @@ class WorkoutHistoryManager {
          * Build searchable text content from session card for efficient searching
          */
         const workoutName = sessionCard.dataset.workoutName || '';
-        const exerciseNames = Array.from(sessionCard.querySelectorAll('[data-exercise-name]'))
+        const sessionId = sessionCard.dataset.sessionId || '';
+        const workoutId = sessionCard.dataset.workoutId || '';
+        
+        // Only get exercise names that belong to this specific session
+        const exerciseNames = Array.from(sessionCard.querySelectorAll('.exercise-card'))
+            .filter(exercise => {
+                // Verify exercise belongs to this session
+                return exercise.dataset.sessionId === sessionId && 
+                       exercise.dataset.workoutId === workoutId;
+            })
             .map(el => el.dataset.exerciseName || el.textContent.trim())
             .join(' ');
+        
         const exerciseDetails = Array.from(sessionCard.querySelectorAll('.exercise-details'))
             .map(el => el.textContent.trim())
             .join(' ');
@@ -496,14 +506,21 @@ class WorkoutHistoryManager {
             
             // Apply workout filter
             if (this.activeFiltersObj.workout) {
-                // Use normalized comparison for workoutId and string values.
-                const filterVal = String(this.activeFiltersObj.workout).trim().toLowerCase();
-                filtered = filtered.filter(session => {
-                    let workoutId = String(session.workoutId).trim().toLowerCase();
-                    // Additionally, allow comparison to workout name for robustness.
-                    let workoutName = (session.workoutName || "").trim().toLowerCase();
-                    return workoutId === filterVal || workoutName === filterVal;
-                });
+                // Use strict numeric comparison for workout IDs to prevent mismatches
+                const filterWorkoutId = parseInt(this.activeFiltersObj.workout);
+                if (!isNaN(filterWorkoutId)) {
+                    filtered = filtered.filter(session => {
+                        const sessionWorkoutId = parseInt(session.workoutId);
+                        return sessionWorkoutId === filterWorkoutId;
+                    });
+                } else {
+                    // Fallback to string comparison for workout names
+                    const filterVal = String(this.activeFiltersObj.workout).trim().toLowerCase();
+                    filtered = filtered.filter(session => {
+                        let workoutName = (session.workoutName || "").trim().toLowerCase();
+                        return workoutName === filterVal;
+                    });
+                }
             }
 
             // Apply exercise filter
@@ -511,14 +528,22 @@ class WorkoutHistoryManager {
                 // Normalize filter and DOM exercise names: trimmed and lowercased
                 const searchExercise = this.activeFiltersObj.exercise.trim().toLowerCase();
                 filtered = filtered.filter(session => {
-                    // Try both .exercise-card and .exercise-log-item, robust to variations.
-                    const exercises = Array.from(session.element.querySelectorAll('.exercise-card,[data-exercise-name],.exercise-log-item'));
+                    // Look specifically for exercise cards within this session that match the filter
+                    const exercises = Array.from(session.element.querySelectorAll('.exercise-card'));
                     return exercises.some(exercise => {
-                        // Use data-exercise-name OR fall back to .exercise-name's text
-                        let exerciseName = 
-                            (typeof exercise.dataset.exerciseName !== "undefined" && exercise.dataset.exerciseName)
-                            ? exercise.dataset.exerciseName
-                            : (exercise.querySelector?.('.exercise-name')?.textContent || exercise.textContent || '');
+                        // Verify this exercise belongs to the current session by checking data attributes
+                        const exerciseSessionId = exercise.dataset.sessionId;
+                        const exerciseWorkoutId = exercise.dataset.workoutId;
+                        const sessionId = session.element.dataset.sessionId;
+                        const sessionWorkoutId = session.element.dataset.workoutId;
+                        
+                        // Only consider exercises that belong to this specific session
+                        if (exerciseSessionId !== sessionId || exerciseWorkoutId !== sessionWorkoutId) {
+                            return false;
+                        }
+                        
+                        // Get the normalized exercise name
+                        let exerciseName = exercise.dataset.exerciseName || '';
                         if (typeof exerciseName !== "string") exerciseName = "";
                         exerciseName = exerciseName.trim().toLowerCase();
                         return exerciseName === searchExercise;
