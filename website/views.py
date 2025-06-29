@@ -2,6 +2,10 @@ from . import db
 from .models import Workout, Exercise, WorkoutSession, ExerciseLog, Category
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
+from sqlalchemy import func, desc, asc
+from datetime import datetime, timedelta
+from collections import defaultdict
+=======
 
 # Define blueprint
 views = Blueprint('views', __name__)
@@ -393,6 +397,297 @@ def _create_workout_session(workout_id, exercises_data, user_id):
         "workout_name": workout.name,
         "exercises_logged": exercises_logged,
     }, 201
+
+
+# PUBLIC_INTERFACE
+@views.route("/api/progress/weight-progression/<exercise_name>", methods=["GET"])
+@login_required
+def get_weight_progression(exercise_name):
+    """
+    Get weight progression data for a specific exercise over time.
+    Returns data suitable for chart visualization showing weight progression.
+    
+    Args:
+        exercise_name (str): Name of the exercise to track
+        
+    Returns:
+        JSON response with weight progression data points
+    """
+    try:
+        # Get all exercise logs for this exercise for the current user
+        logs = (db.session.query(ExerciseLog, WorkoutSession.timestamp)
+                .join(WorkoutSession)
+                .filter(WorkoutSession.user_id == current_user.id)
+                .filter(ExerciseLog.exercise_name.ilike(f"%{exercise_name}%"))
+                .filter(ExerciseLog.weight.isnot(None))
+                .order_by(WorkoutSession.timestamp.asc())
+                .all())
+        
+        if not logs:
+            return jsonify({
+                "exercise_name": exercise_name,
+                "data_points": [],
+                "message": "No weight data found for this exercise"
+            })
+        
+        # Group by date and find max weight per day
+        daily_max = defaultdict(float)
+        for log, timestamp in logs:
+            date_key = timestamp.date().isoformat()
+            daily_max[date_key] = max(daily_max[date_key], log.weight)
+        
+        # Format data for chart consumption
+        data_points = [
+            {
+                "date": date,
+                "weight": weight,
+                "formatted_date": datetime.fromisoformat(date).strftime("%b %d, %Y")
+            }
+            for date, weight in sorted(daily_max.items())
+        ]
+        
+        return jsonify({
+            "exercise_name": exercise_name,
+            "data_points": data_points,
+            "total_sessions": len(data_points),
+            "weight_range": {
+                "min": min(point["weight"] for point in data_points) if data_points else 0,
+                "max": max(point["weight"] for point in data_points) if data_points else 0
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "error": f"Failed to retrieve weight progression: {str(e)}",
+            "exercise_name": exercise_name
+        }), 500
+
+
+# PUBLIC_INTERFACE
+@views.route("/api/progress/volume-trends/<int:workout_id>", methods=["GET"])
+@login_required
+def get_volume_trends(workout_id):
+    """
+    Get workout volume trends for a specific workout over time.
+    Volume is calculated as total weight lifted (sets × reps × weight).
+    
+    Args:
+        workout_id (int): ID of the workout to analyze
+        
+    Returns:
+        JSON response with volume trend data points
+    """
+    try:
+        # Verify workout belongs to current user
+        workout = Workout.query.filter_by(id=workout_id, user_id=current_user.id).first()
+        if not workout:
+            return jsonify({"error": "Workout not found or access denied"}), 404
+        
+        # Get all sessions for this workout
+        sessions = (WorkoutSession.query
+                   .filter_by(user_id=current_user.id, workout_id=workout_id)
+                   .order_by(WorkoutSession.timestamp.asc())
+                   .all())
+        
+        if not sessions:
+            return jsonify({
+                "workout_id": workout_id,
+                "workout_name": workout.name,
+                "data_points": [],
+                "message": "No workout sessions found"
+            })
+        
+        # Calculate volume for each session
+        data_points = []
+        for session in sessions:
+            total_volume = 0
+            total_sets = 0
+            
+            for log in session.exercise_logs:
+                if log.weight and log.reps:
+                    # Calculate volume for this set (weight × reps)
+                    set_volume = log.weight * log.reps
+                    total_volume += set_volume
+                    total_sets += 1
+            
+            data_points.append({
+                "date": session.timestamp.date().isoformat(),
+                "volume": round(total_volume, 2),
+                "total_sets": total_sets,
+                "session_id": session.id,
+                "formatted_date": session.timestamp.strftime("%b %d, %Y")
+            })
+        
+        return jsonify({
+            "workout_id": workout_id,
+            "workout_name": workout.name,
+            "data_points": data_points,
+            "total_sessions": len(data_points),
+            "volume_range": {
+                "min": min(point["volume"] for point in data_points) if data_points else 0,
+                "max": max(point["volume"] for point in data_points) if data_points else 0
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "error": f"Failed to retrieve volume trends: {str(e)}",
+            "workout_id": workout_id
+        }), 500
+
+
+# PUBLIC_INTERFACE
+@views.route("/api/progress/performance-summary", methods=["GET"])
+@login_required
+def get_performance_summary():
+    """
+    Get overall performance summary including key metrics across all workouts.
+    Provides aggregate statistics suitable for dashboard display.
+    
+    Returns:
+        JSON response with performance summary metrics
+    """
+    try:
+        # Get date range filter from query parameters
+        days = request.args.get('days', 30, type=int)
+        start_date = datetime.utcnow() - timedelta(days=days)
+        
+        # Get all sessions within the date range
+        sessions = (WorkoutSession.query
+                   .filter_by(user_id=current_user.id)
+                   .filter(WorkoutSession.timestamp >= start_date)
+                   .all())
+        
+        if not sessions:
+            return jsonify({
+                "period_days": days,
+                "total_sessions": 0,
+                "message": "No workout sessions found in the specified period"
+            })
+        
+        # Calculate summary metrics
+        total_sessions = len(sessions)
+        total_exercises = sum(len(session.exercise_logs) for session in sessions)
+        total_volume = 0
+        exercise_frequency = defaultdict(int)
+        workout_frequency = defaultdict(int)
+        
+        for session in sessions:
+            # Track workout frequency
+            if session.workout and session.workout.name:
+                workout_frequency[session.workout.name] += 1
+            
+            for log in session.exercise_logs:
+                # Track exercise frequency
+                exercise_frequency[log.exercise_name] += 1
+                
+                # Calculate total volume
+                if log.weight and log.reps:
+                    total_volume += log.weight * log.reps
+        
+        # Find most frequent exercises and workouts
+        top_exercises = sorted(exercise_frequency.items(), key=lambda x: x[1], reverse=True)[:5]
+        top_workouts = sorted(workout_frequency.items(), key=lambda x: x[1], reverse=True)[:5]
+        
+        # Calculate averages
+        avg_exercises_per_session = round(total_exercises / total_sessions, 1) if total_sessions > 0 else 0
+        avg_volume_per_session = round(total_volume / total_sessions, 2) if total_sessions > 0 else 0
+        
+        # Calculate weekly frequency
+        weeks_in_period = max(1, days / 7)
+        sessions_per_week = round(total_sessions / weeks_in_period, 1)
+        
+        return jsonify({
+            "period_days": days,
+            "start_date": start_date.date().isoformat(),
+            "end_date": datetime.utcnow().date().isoformat(),
+            "total_sessions": total_sessions,
+            "total_exercises": total_exercises,
+            "total_volume": round(total_volume, 2),
+            "averages": {
+                "exercises_per_session": avg_exercises_per_session,
+                "volume_per_session": avg_volume_per_session,
+                "sessions_per_week": sessions_per_week
+            },
+            "top_exercises": [{"name": name, "frequency": freq} for name, freq in top_exercises],
+            "top_workouts": [{"name": name, "frequency": freq} for name, freq in top_workouts],
+            "unique_exercises": len(exercise_frequency),
+            "unique_workouts": len(workout_frequency)
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "error": f"Failed to retrieve performance summary: {str(e)}"
+        }), 500
+
+
+# PUBLIC_INTERFACE
+@views.route("/api/progress/exercise-frequency", methods=["GET"])
+@login_required
+def get_exercise_frequency():
+    """
+    Get exercise frequency data showing how often each exercise is performed.
+    Returns data suitable for chart visualization (bar chart, pie chart, etc.).
+    
+    Returns:
+        JSON response with exercise frequency data
+    """
+    try:
+        # Get date range filter from query parameters
+        days = request.args.get('days', 90, type=int)  # Default to 90 days
+        start_date = datetime.utcnow() - timedelta(days=days)
+        
+        # Get exercise frequency data
+        frequency_data = (db.session.query(
+                ExerciseLog.exercise_name,
+                func.count(ExerciseLog.id).label('frequency'),
+                func.count(func.distinct(WorkoutSession.id)).label('sessions'),
+                func.avg(ExerciseLog.weight).label('avg_weight'),
+                func.max(ExerciseLog.weight).label('max_weight')
+            )
+            .join(WorkoutSession)
+            .filter(WorkoutSession.user_id == current_user.id)
+            .filter(WorkoutSession.timestamp >= start_date)
+            .group_by(ExerciseLog.exercise_name)
+            .order_by(desc('frequency'))
+            .all())
+        
+        if not frequency_data:
+            return jsonify({
+                "period_days": days,
+                "exercises": [],
+                "message": "No exercise data found in the specified period"
+            })
+        
+        # Format data for chart consumption
+        exercises = []
+        total_frequency = sum(row.frequency for row in frequency_data)
+        
+        for row in frequency_data:
+            percentage = round((row.frequency / total_frequency) * 100, 1) if total_frequency > 0 else 0
+            
+            exercises.append({
+                "exercise_name": row.exercise_name,
+                "frequency": row.frequency,
+                "sessions": row.sessions,
+                "percentage": percentage,
+                "avg_weight": round(row.avg_weight, 2) if row.avg_weight else None,
+                "max_weight": round(row.max_weight, 2) if row.max_weight else None
+            })
+        
+        return jsonify({
+            "period_days": days,
+            "start_date": start_date.date().isoformat(),
+            "end_date": datetime.utcnow().date().isoformat(),
+            "exercises": exercises,
+            "total_exercises": len(exercises),
+            "total_frequency": total_frequency
+        })
+        
+    except Exception as e:
+        return jsonify({
+            "error": f"Failed to retrieve exercise frequency: {str(e)}"
+        }), 500
 
 
 # PUBLIC_INTERFACE
