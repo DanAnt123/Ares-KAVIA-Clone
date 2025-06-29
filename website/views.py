@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from sqlalchemy import func, desc, asc
 from datetime import datetime, timedelta
 from collections import defaultdict
-=======
+
 
 # Define blueprint
 views = Blueprint('views', __name__)
