@@ -39,6 +39,14 @@ class WorkoutHistoryManager {
         this.exportBtn = document.getElementById('export-data');
         this.clearFiltersBtn = document.getElementById('clear-filters');
         this.resetFiltersBtn = document.getElementById('reset-filters');
+        this.clearHistoryBtn = document.getElementById('clear-all-history');
+        
+        // Clear history modal elements
+        this.clearHistoryModal = document.getElementById('clear-history-modal');
+        this.clearModalClose = document.getElementById('clear-modal-close');
+        this.clearModalCancel = document.getElementById('clear-modal-cancel');
+        this.clearModalConfirm = document.getElementById('clear-modal-confirm');
+        this.clearConfirmationInput = document.getElementById('clear-confirmation-input');
         
         // Results info
         this.resultsCount = document.getElementById('results-count');
@@ -197,11 +205,18 @@ class WorkoutHistoryManager {
             this.resetFiltersBtn.addEventListener('click', () => this.clearAllFilters());
         }
         
+        if (this.clearHistoryBtn) {
+            this.clearHistoryBtn.addEventListener('click', () => this.showClearHistoryModal());
+        }
+        
         // Session expansion
         this.setupSessionExpansion();
         
         // Modal functionality
         this.setupModalHandlers();
+        
+        // Clear history modal functionality
+        this.setupClearHistoryModal();
     }
 
     // PUBLIC_INTERFACE
@@ -251,6 +266,52 @@ class WorkoutHistoryManager {
                 }
             });
         }
+    }
+
+    // PUBLIC_INTERFACE
+    setupClearHistoryModal() {
+        /**
+         * Setup clear history modal functionality with confirmation validation
+         */
+        if (!this.clearHistoryModal) return;
+        
+        // Close modal handlers
+        if (this.clearModalClose) {
+            this.clearModalClose.addEventListener('click', () => this.closeClearHistoryModal());
+        }
+        
+        if (this.clearModalCancel) {
+            this.clearModalCancel.addEventListener('click', () => this.closeClearHistoryModal());
+        }
+        
+        // Confirmation input validation
+        if (this.clearConfirmationInput) {
+            this.clearConfirmationInput.addEventListener('input', () => this.validateClearConfirmation());
+            this.clearConfirmationInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && this.clearModalConfirm && !this.clearModalConfirm.disabled) {
+                    this.confirmClearHistory();
+                }
+            });
+        }
+        
+        // Confirm button handler
+        if (this.clearModalConfirm) {
+            this.clearModalConfirm.addEventListener('click', () => this.confirmClearHistory());
+        }
+        
+        // Modal overlay click to close
+        this.clearHistoryModal.addEventListener('click', (e) => {
+            if (e.target === this.clearHistoryModal) {
+                this.closeClearHistoryModal();
+            }
+        });
+        
+        // Keyboard navigation
+        this.clearHistoryModal.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closeClearHistoryModal();
+            }
+        });
     }
 
     // PUBLIC_INTERFACE
@@ -996,6 +1057,115 @@ class WorkoutHistoryManager {
                 }
             }, 300);
         }, 3000);
+    }
+
+    // PUBLIC_INTERFACE
+    showClearHistoryModal() {
+        /**
+         * Show the clear history confirmation modal
+         */
+        if (!this.clearHistoryModal) return;
+        
+        // Reset modal state
+        if (this.clearConfirmationInput) {
+            this.clearConfirmationInput.value = '';
+        }
+        if (this.clearModalConfirm) {
+            this.clearModalConfirm.disabled = true;
+        }
+        
+        // Show modal
+        this.clearHistoryModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Focus management
+        setTimeout(() => {
+            if (this.clearConfirmationInput) {
+                this.clearConfirmationInput.focus();
+            }
+        }, 100);
+    }
+
+    // PUBLIC_INTERFACE
+    closeClearHistoryModal() {
+        /**
+         * Close the clear history confirmation modal
+         */
+        if (!this.clearHistoryModal) return;
+        
+        this.clearHistoryModal.style.display = 'none';
+        document.body.style.overflow = '';
+        
+        // Reset form state
+        if (this.clearConfirmationInput) {
+            this.clearConfirmationInput.value = '';
+        }
+        if (this.clearModalConfirm) {
+            this.clearModalConfirm.disabled = true;
+        }
+    }
+
+    // PUBLIC_INTERFACE
+    validateClearConfirmation() {
+        /**
+         * Validate the confirmation input and enable/disable confirm button
+         */
+        if (!this.clearConfirmationInput || !this.clearModalConfirm) return;
+        
+        const inputValue = this.clearConfirmationInput.value.trim().toUpperCase();
+        const requiredText = 'CLEAR HISTORY';
+        
+        this.clearModalConfirm.disabled = inputValue !== requiredText;
+    }
+
+    // PUBLIC_INTERFACE
+    confirmClearHistory() {
+        /**
+         * Execute the clear history action after confirmation
+         */
+        if (!this.clearModalConfirm || this.clearModalConfirm.disabled) return;
+        
+        // Show loading state
+        const originalText = this.clearModalConfirm.innerHTML;
+        this.clearModalConfirm.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Clearing...';
+        this.clearModalConfirm.disabled = true;
+        
+        // Call the clear history API
+        fetch('/api/workout/history/clear', {
+            method: 'DELETE',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                this.closeClearHistoryModal();
+                this.showSuccessMessage(`Successfully cleared ${data.sessions_deleted} workout sessions`);
+                
+                // Refresh the page to show empty state
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                throw new Error(data.error || 'Unknown error occurred');
+            }
+        })
+        .catch(error => {
+            console.error('Failed to clear workout history:', error);
+            this.showErrorMessage('Failed to clear workout history. Please try again.');
+            
+            // Reset button state
+            this.clearModalConfirm.innerHTML = originalText;
+            this.clearModalConfirm.disabled = false;
+        });
     }
 }
 
