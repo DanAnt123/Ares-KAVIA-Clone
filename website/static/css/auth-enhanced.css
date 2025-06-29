@@ -17,7 +17,7 @@
         var(--dark) 100%
     );
     overflow: hidden;
-    padding: var(--space-2);
+    padding: var(--space-1);
 }
 
 /* Enhanced Background decoration */
@@ -100,9 +100,10 @@
     position: relative;
     z-index: 2;
     gap: 0;
-    height: 100vh;
-    max-height: 100vh;
+    height: calc(100vh - 2rem);
+    max-height: calc(100vh - 2rem);
     align-items: center;
+    overflow: hidden;
 }
 
 .auth-form-container {
@@ -681,27 +682,30 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: var(--space-6);
+    padding: var(--space-4);
     position: relative;
     z-index: 2;
+    overflow-y: auto;
+    max-height: calc(100vh - 4rem);
 }
 
 .info-visual {
     position: relative;
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-4);
 }
 
 .info-image-container {
     position: relative;
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     overflow: hidden;
-    box-shadow: var(--shadow-xl);
+    box-shadow: var(--shadow-lg);
     width: 100%;
     max-width: 100%;
-    aspect-ratio: 16/9;
+    aspect-ratio: 4/3;
     display: flex;
     align-items: center;
     justify-content: center;
+    max-height: 200px;
 }
 
 .info-image {
@@ -804,21 +808,22 @@
 .info-features {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
-    margin-bottom: var(--space-6);
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
 }
 
 .feature-item {
     display: flex;
     align-items: flex-start;
-    gap: var(--space-3);
-    padding: var(--space-3);
+    gap: var(--space-2);
+    padding: var(--space-2);
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     backdrop-filter: blur(10px);
     transition: all var(--transition-base);
 }
+=======
 
 .feature-item:hover {
     background: rgba(255, 255, 255, 0.1);
@@ -827,15 +832,15 @@
 }
 
 .feature-icon {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     background: var(--primary);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
     transition: all var(--transition-fast);
 }
 
@@ -904,7 +909,9 @@
 /* Responsive Design */
 @media (min-width: 1024px) {
     .auth-layout {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 0.8fr;
+        height: calc(100vh - 1rem);
+        max-height: calc(100vh - 1rem);
     }
     
     .auth-info-panel {
@@ -912,7 +919,44 @@
     }
     
     .auth-form-container {
-        padding: var(--space-4) var(--space-3);
+        padding: var(--space-3) var(--space-2);
+    }
+    
+    .auth-card {
+        padding: var(--space-3) var(--space-4);
+        max-width: 380px;
+    }
+    
+    .brand-logo {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .brand-title {
+        font-size: var(--fs-lg);
+    }
+    
+    .info-image-container {
+        aspect-ratio: 4/3;
+        max-height: 180px;
+    }
+    
+    .info-content {
+        padding: var(--space-3);
+        max-height: calc(100vh - 2rem);
+    }
+}
+
+@media (min-width: 1200px) {
+    .auth-layout {
+        grid-template-columns: 1.2fr 0.8fr;
+        height: calc(100vh - 1rem);
+        max-height: calc(100vh - 1rem);
+    }
+    
+    .info-content {
+        padding: var(--space-4);
+        max-height: calc(100vh - 2rem);
     }
     
     .auth-card {
@@ -931,34 +975,18 @@
     
     .info-image-container {
         aspect-ratio: 4/3;
+        max-height: 200px;
     }
 }
 
-@media (min-width: 1200px) {
+/* Hide info panel on smaller laptops to prevent overflow */
+@media (max-width: 1023px) {
+    .auth-info-panel {
+        display: none !important;
+    }
+    
     .auth-layout {
-        grid-template-columns: 1.2fr 1fr;
-    }
-    
-    .info-content {
-        padding: var(--space-6);
-    }
-    
-    .auth-card {
-        padding: var(--space-4) var(--space-6);
-        max-width: 420px;
-    }
-    
-    .brand-logo {
-        width: 52px;
-        height: 52px;
-    }
-    
-    .brand-title {
-        font-size: var(--fs-xl);
-    }
-    
-    .info-image-container {
-        aspect-ratio: 3/2;
+        grid-template-columns: 1fr;
     }
 }
 
