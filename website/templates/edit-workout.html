@@ -138,6 +138,9 @@
     {% for workout in user.workouts %}
         <div class="workout-edit-container workout-{{ workout.id }}" hidden>
             <form autocomplete="off" method="POST" class="workout-edit-form">
+                <input type="hidden" name="workout" value="{{ workout.id }}">
+                <input type="hidden" name="request_type" value="save">
+
                 <!-- Workout Information Section -->
                 <div class="section-card">
                     <div class="card-header-section">
@@ -210,7 +213,7 @@
                                         <span class="required-indicator">*</span>
                                     </label>
                                     <div class="select-container">
-                                        <select id="edit-category_id-{{ workout.id }}" class="form-field-select" name="category_id" required>
+                                        <select id="edit-category_id-{{ workout.id }}" class="form-field-select" name="category_id">
                                             <option value="" disabled>Select category</option>
                                             {% for category in categories %}
                                                 <option value="{{ category.id }}" {% if workout.category_id == category.id %}selected{% endif %}>
@@ -269,17 +272,159 @@
                         </div>
                     </div>
                 </div>
-                <!-- ... Rest of the template remains unchanged, including the exercise editing block ... -->
-                {% comment %} 
-                No changes needed for the rest of the file for this specific task, as only name/description fields are affected.
-                {% endcomment %}
-                <!-- The remaining code (exercises, actions, JS links) is out of scope and unchanged. -->
+
+                <!-- Exercises Section -->
+                <div class="section-card">
+                    <div class="card-header-section">
+                        <div class="card-icon">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <div class="card-header-text">
+                            <h2 class="card-section-title">Exercises</h2>
+                            <p class="card-section-description">Manage your workout exercises</p>
+                        </div>
+                    </div>
+                    <div class="card-body-section">
+                        <div class="exercises-container" id="exercises-container-{{ workout.id }}">
+                            {% for exercise in workout.exercises %}
+                                <div class="exercise-item" data-exercise-index="{{ loop.index0 }}">
+                                    <div class="exercise-header">
+                                        <div class="exercise-number">{{ loop.index }}</div>
+                                        <div class="exercise-controls">
+                                            <button type="button" class="move-handle" title="Drag to reorder">
+                                                <i class="fa-solid fa-grip-vertical"></i>
+                                            </button>
+                                            <button type="button" class="delete-exercise" title="Delete exercise">
+                                                <i class="fa-solid fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="exercise-fields">
+                                        <div class="input-field-group">
+                                            <label class="field-label">
+                                                <i class="fa-solid fa-dumbbell"></i>
+                                                Exercise Name
+                                            </label>
+                                            <div class="input-container">
+                                                <input 
+                                                    class="form-field-input exercise-name-input" 
+                                                    type="text" 
+                                                    name="exercise_name" 
+                                                    placeholder="Exercise name" 
+                                                    value="{{ exercise.name }}" 
+                                                    maxlength="45" 
+                                                    required
+                                                >
+                                                <div class="input-focus-indicator"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="input-field-group checkbox-field">
+                                            <label class="checkbox-label">
+                                                <input 
+                                                    type="checkbox" 
+                                                    name="include_details" 
+                                                    value="1" 
+                                                    {% if exercise.include_details %}checked{% endif %}
+                                                >
+                                                <span class="checkbox-custom"></span>
+                                                <span class="checkbox-text">
+                                                    <i class="fa-solid fa-clipboard-list"></i>
+                                                    Include details field
+                                                </span>
+                                            </label>
+                                        </div>
+                                        
+                                        <!-- Current values display -->
+                                        <div class="current-values">
+                                            <div class="value-item">
+                                                <span class="value-label">Current Weight:</span>
+                                                <span class="value-data">{{ exercise.weight if exercise.weight else 'Not set' }}</span>
+                                                <input type="hidden" name="weight" value="{{ exercise.weight if exercise.weight else 'None' }}">
+                                            </div>
+                                            <div class="value-item">
+                                                <span class="value-label">Current Details:</span>
+                                                <span class="value-data">{{ exercise.details if exercise.details else 'Not set' }}</span>
+                                                <input type="hidden" name="details" value="{{ exercise.details or '' }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="add-exercise-section">
+                            <button type="button" class="add-exercise-btn" onclick="addExercise('{{ workout.id }}')">
+                                <i class="fa-solid fa-plus"></i>
+                                Add Exercise
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons-section">
+                    <div class="action-buttons-container">
+                        <button type="button" class="btn btn-secondary" onclick="cancelEdit()">
+                            <i class="fa-solid fa-times"></i>
+                            Cancel
+                        </button>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-save"></i>
+                            Save Changes
+                        </button>
+                        
+                        <button type="button" class="btn btn-danger" onclick="showDeleteModal('{{ workout.id }}')">
+                            <i class="fa-solid fa-trash"></i>
+                            Delete Workout
+                        </button>
+                    </div>
+                </div>
             </form>
-            <!-- ... modal and delete functionality unchanged ... -->
+            
+            <!-- Delete Modal -->
+            <div class="modal-container modal-delete-{{ workout.id }}" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title-{{ workout.id }}">
+                <div class="modal-overlay"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="delete-modal-title-{{ workout.id }}">Delete Workout</h3>
+                        <button type="button" class="modal-close" onclick="closeDeleteModal('{{ workout.id }}')" aria-label="Close modal">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="delete-warning">
+                            <div class="warning-icon">
+                                <i class="fa-solid fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="warning-content">
+                                <p><strong>Are you sure you want to delete "{{ workout.name }}"?</strong></p>
+                                <p>This action cannot be undone. All exercises and progress data for this workout will be permanently deleted.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeDeleteModal('{{ workout.id }}')">
+                            Cancel
+                        </button>
+                        <form action="/edit-workout" method="POST" style="display: inline;">
+                            <input type="hidden" name="workout" value="{{ workout.id }}">
+                            <input type="hidden" name="request_type" value="delete">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fa-solid fa-trash"></i>
+                                Delete Workout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     {% endfor %}
 
 </div>
+
 <!-- JavaScript -->
 {% if displayRequested %}
     <script>
@@ -293,6 +438,157 @@
         });
     </script>
 {% endif %}
+
+<script>
+// Show/hide workout selection
+function showSelectedWorkout(workoutId) {
+    // Hide all workout forms
+    document.querySelectorAll('.workout-edit-container').forEach(container => {
+        container.hidden = true;
+    });
+    
+    // Show selected workout form
+    const selectedContainer = document.querySelector(`.workout-${workoutId}`);
+    if (selectedContainer) {
+        selectedContainer.hidden = false;
+    }
+}
+
+// Add new exercise
+function addExercise(workoutId) {
+    const container = document.getElementById(`exercises-container-${workoutId}`);
+    const exerciseCount = container.children.length;
+    
+    const exerciseHtml = `
+        <div class="exercise-item" data-exercise-index="${exerciseCount}">
+            <div class="exercise-header">
+                <div class="exercise-number">${exerciseCount + 1}</div>
+                <div class="exercise-controls">
+                    <button type="button" class="move-handle" title="Drag to reorder">
+                        <i class="fa-solid fa-grip-vertical"></i>
+                    </button>
+                    <button type="button" class="delete-exercise" title="Delete exercise">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="exercise-fields">
+                <div class="input-field-group">
+                    <label class="field-label">
+                        <i class="fa-solid fa-dumbbell"></i>
+                        Exercise Name
+                    </label>
+                    <div class="input-container">
+                        <input 
+                            class="form-field-input exercise-name-input" 
+                            type="text" 
+                            name="exercise_name" 
+                            placeholder="Exercise name" 
+                            maxlength="45" 
+                            required
+                        >
+                        <div class="input-focus-indicator"></div>
+                    </div>
+                </div>
+                
+                <div class="input-field-group checkbox-field">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="include_details" value="1">
+                        <span class="checkbox-custom"></span>
+                        <span class="checkbox-text">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                            Include details field
+                        </span>
+                    </label>
+                </div>
+                
+                <div class="current-values">
+                    <div class="value-item">
+                        <span class="value-label">Current Weight:</span>
+                        <span class="value-data">Not set</span>
+                        <input type="hidden" name="weight" value="None">
+                    </div>
+                    <div class="value-item">
+                        <span class="value-label">Current Details:</span>
+                        <span class="value-data">Not set</span>
+                        <input type="hidden" name="details" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', exerciseHtml);
+    updateExerciseNumbers();
+}
+
+// Delete exercise
+function deleteExercise(button) {
+    button.closest('.exercise-item').remove();
+    updateExerciseNumbers();
+}
+
+// Update exercise numbers
+function updateExerciseNumbers() {
+    document.querySelectorAll('.exercise-item').forEach((item, index) => {
+        const numberElement = item.querySelector('.exercise-number');
+        if (numberElement) {
+            numberElement.textContent = index + 1;
+        }
+        item.dataset.exerciseIndex = index;
+    });
+}
+
+// Modal functions
+function showDeleteModal(workoutId) {
+    const modal = document.querySelector(`.modal-delete-${workoutId}`);
+    if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeDeleteModal(workoutId) {
+    const modal = document.querySelector(`.modal-delete-${workoutId}`);
+    if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+}
+
+// Cancel edit
+function cancelEdit() {
+    if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+        window.location.href = '/';
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize workout selection
+    const selectWorkout = document.getElementById('select_workout');
+    if (selectWorkout) {
+        // Show first workout by default
+        if (selectWorkout.options.length > 0) {
+            showSelectedWorkout(selectWorkout.options[0].value);
+        }
+        
+        // Handle workout selection change
+        selectWorkout.addEventListener('change', function() {
+            showSelectedWorkout(this.value);
+        });
+    }
+    
+    // Initialize delete exercise buttons
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-exercise')) {
+            deleteExercise(e.target.closest('.delete-exercise'));
+        }
+    });
+});
+</script>
+
 <script type="text/javascript" src="/static/js/edit-workout.js"></script>
 <script type="text/javascript" src="/static/js/alert.js"></script>
 

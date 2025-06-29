@@ -1,23 +1,35 @@
 var select_workout = document.getElementById("select_workout");
 
+// PUBLIC_INTERFACE
+/**
+ * Show the selected workout form and hide others.
+ * @param {string} workoutId - The ID of the workout to show
+ */
+function showSelectedWorkout(workoutId) {
+    /* Hide all workout containers */
+    var workoutContainers = document.getElementsByClassName("workout-edit-container");
+    for (let i = 0; i < workoutContainers.length; i++) {
+        workoutContainers[i].hidden = true;
+    }
+
+    /* Show selected workout container */
+    var selected = document.getElementsByClassName(`workout-${workoutId}`)[0];
+    if (selected) {
+        selected.hidden = false;
+    }
+}
+
 /* Show selected workout on page load */
-var selected_workout = document.getElementsByClassName(`workout ${select_workout.value}`)[0];
-if (selected_workout) {
-    selected_workout.hidden = false;
+if (select_workout && select_workout.value) {
+    showSelectedWorkout(select_workout.value);
 }
 
 /* Listen for change in select menu */
-select_workout.addEventListener("change", function() {
-    /* Hide all workouts */
-    var workouts = document.getElementsByClassName("workout");
-    for (let i = 0; i < workouts.length; i++) {
-        workouts[i].hidden = true;
-    }
-
-    /* Show selected workout */
-    var selected = document.getElementsByClassName(`workout ${select_workout.value}`)[0];
-    if (selected) selected.hidden = false;
-});
+if (select_workout) {
+    select_workout.addEventListener("change", function() {
+        showSelectedWorkout(this.value);
+    });
+}
 
 /* Attach submit event listener to all workout edit forms (for validation) */
 document.querySelectorAll('.workout-edit-form').forEach(function(form) {

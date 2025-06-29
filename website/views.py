@@ -869,6 +869,20 @@ def new_workout():
 @views.route("/edit-workout", methods=["GET", "POST"])
 @login_required
 def edit_workout():
+    # Ensure at least base categories exist (seed if needed)
+    if Category.query.count() == 0:
+        base_categories = [
+            {"name": "Strength", "description": "Strength training workouts"},
+            {"name": "Cardio", "description": "Cardiovascular exercises"},
+            {"name": "Flexibility", "description": "Stretching and flexibility"},
+            {"name": "Balance", "description": "Balance and stability"}
+        ]
+        for entry in base_categories:
+            db.session.add(Category(name=entry["name"], description=entry["description"]))
+        db.session.commit()
+
+    categories = Category.query.order_by(Category.name.asc()).all()
+    
     if request.method == "POST":
         # Check request type
         request_type = request.form.get("request_type")
@@ -883,60 +897,76 @@ def edit_workout():
             weight_list = request.form.getlist("weight")
             details_list = request.form.getlist("details")
 
+            # NEW: Category logic
+            category_id = request.form.get("category_id")
+            new_category_name = request.form.get("new_category_name")
+            new_category_description = request.form.get("new_category_description")
+
             # Uppercase exercise names
             exercise_names = [exercise.upper() for exercise in exercise_names]
 
-            # Ensure workout name was submitted
+            # Form validation
             if not workout_name:
                 flash("Must provide the workout name.", category="error")
-
-            # Ensure all exercises were named
             elif "" in exercise_names:
                 flash("Must name all exercises.", category="error")
-
+            elif not category_id and not new_category_name:
+                flash("Must select or create a category.", category="error")
             else:
-                # Query database for workout
-                workout = Workout.query.filter_by(id=workout_id).first()
+                # Handle category
+                if new_category_name:
+                    # Create and/or get new category
+                    new_category = Category.query.filter_by(name=new_category_name).first()
+                    if not new_category:
+                        new_category = Category(name=new_category_name, description=new_category_description)
+                        db.session.add(new_category)
+                        db.session.commit()
+                    cat_id = new_category.id
+                else:
+                    # Use existing
+                    cat_id = int(category_id)
 
-                # Delete exercises
+                # Query database for workout and verify ownership
+                workout = Workout.query.filter_by(id=workout_id, user_id=current_user.id).first()
+                if not workout:
+                    flash("Workout not found or access denied.", category="error")
+                    return redirect(url_for("views.home"))
+
+                # Delete existing exercises
                 for exercise in workout.exercises:
                     db.session.delete(exercise)
 
-                # Delete workout
-                db.session.delete(workout)
+                # Update workout information
+                workout.name = workout_name
+                workout.description = workout_description
+                workout.category_id = cat_id
 
-                # Commit changes
-                db.session.commit()
-
-                # Add workout to database
-                new_workout = Workout(
-                    id=workout_id,
-                    user_id=current_user.id,
-                    name=workout_name,
-                    description=workout_description,
-                )
-                db.session.add(new_workout)
+                # Commit workout changes
                 db.session.commit()
 
                 # Add exercises to database
                 for i in range(len(exercise_names)):
-                    if weight_list[i] == "None":
-                        new_exercise = Exercise(
-                            name=exercise_names[i],
-                            include_details=int(include_details[i]),
-                            workout_id=new_workout.id,
-                            details=details_list[i],
-                        )
-                    else:
-                        new_exercise = Exercise(
-                            name=exercise_names[i],
-                            include_details=int(include_details[i]),
-                            workout_id=new_workout.id,
-                            weight=weight_list[i],
-                            details=details_list[i],
-                        )
+                    include_detail_val = 1 if str(i) in include_details else 0
+                    weight_val = None if weight_list[i] == "None" or not weight_list[i] else weight_list[i]
+                    
+                    try:
+                        if weight_val is not None:
+                            weight_val = float(weight_val)
+                    except (ValueError, TypeError):
+                        weight_val = None
+                    
+                    new_exercise = Exercise(
+                        name=exercise_names[i],
+                        include_details=include_detail_val,
+                        workout_id=workout.id,
+                        weight=weight_val,
+                        details=details_list[i] if i < len(details_list) else "",
+                    )
                     db.session.add(new_exercise)
-                    db.session.commit()
+
+                # Commit all changes
+                db.session.commit()
+                flash("Workout updated successfully!", category="success")
 
                 # Redirect user to home page
                 return redirect(url_for("views.home"))
@@ -949,8 +979,11 @@ def edit_workout():
             # Collect form information
             workout_id = request.form.get("workout")
 
-            # Query database for workout
-            workout = Workout.query.filter_by(id=workout_id).first()
+            # Query database for workout and verify ownership
+            workout = Workout.query.filter_by(id=workout_id, user_id=current_user.id).first()
+            if not workout:
+                flash("Workout not found or access denied.", category="error")
+                return redirect(url_for("views.home"))
 
             # Delete exercises
             for exercise in workout.exercises:
@@ -961,6 +994,7 @@ def edit_workout():
 
             # Commit changes
             db.session.commit()
+            flash("Workout deleted successfully.", category="success")
 
             # Redirect user to home page
             return redirect(url_for("views.home"))
@@ -972,12 +1006,13 @@ def edit_workout():
         return render_template(
             "edit-workout.html",
             user=current_user,
+            categories=categories,
             requested_workout=requested_workout,
             displayRequested="True",
         )
 
     # Display workout
-    return render_template("edit-workout.html", user=current_user)
+    return render_template("edit-workout.html", user=current_user, categories=categories)
 
 
 # PUBLIC_INTERFACE
