@@ -265,8 +265,12 @@ class WorkoutHistoryManager {
                     this.closeSessionModal();
                 }
             });
+}
+=======
+SEARCH
         }
     }
+}
 
     // PUBLIC_INTERFACE
     setupClearHistoryModal() {
@@ -376,8 +380,12 @@ class WorkoutHistoryManager {
             this.allSessions.forEach(session => {
                 this.intersectionObserver.observe(session.element);
             });
+}
+=======
+SEARCH
         }
     }
+}
 
     // PUBLIC_INTERFACE
     setupAutoRefresh() {
@@ -577,8 +585,12 @@ class WorkoutHistoryManager {
                 
             default:
                 return sessions;
+}
+=======
+SEARCH
         }
     }
+}
 
     // PUBLIC_INTERFACE
     applySorting(sessions) {
@@ -620,8 +632,12 @@ class WorkoutHistoryManager {
                 
             default:
                 return sessions;
+}
+=======
+SEARCH
         }
     }
+}
 
     // PUBLIC_INTERFACE
     updateDisplay() {
@@ -633,8 +649,12 @@ class WorkoutHistoryManager {
         } else {
             this.showResults();
             this.renderSessions();
+}
+=======
+SEARCH
         }
     }
+}
 
     // PUBLIC_INTERFACE
     renderSessions() {
@@ -686,8 +706,12 @@ class WorkoutHistoryManager {
         
         if (this.emptyState) {
             this.emptyState.style.display = 'none';
+}
+=======
+SEARCH
         }
     }
+}
 
     // PUBLIC_INTERFACE
     showNoResults() {
@@ -704,8 +728,12 @@ class WorkoutHistoryManager {
         
         if (this.emptyState) {
             this.emptyState.style.display = 'none';
+}
+=======
+SEARCH
         }
     }
+}
 
     // PUBLIC_INTERFACE
     updateResultsInfo() {
@@ -721,8 +749,12 @@ class WorkoutHistoryManager {
             } else {
                 this.resultsCount.textContent = `${count} of ${total} sessions`;
             }
+}
+=======
+SEARCH
         }
     }
+}
 
     // PUBLIC_INTERFACE
     updateActiveFiltersDisplay() {
@@ -770,8 +802,12 @@ class WorkoutHistoryManager {
         const hasActiveFilters = activeFilters.length > 0;
         if (this.clearFiltersBtn) {
             this.clearFiltersBtn.style.display = hasActiveFilters ? 'inline-flex' : 'none';
+}
+=======
+SEARCH
         }
     }
+}
 
     // PUBLIC_INTERFACE
     clearAllFilters() {
@@ -844,8 +880,12 @@ class WorkoutHistoryManager {
                     block: 'nearest' 
                 });
             }
+}
+=======
+SEARCH
         }
     }
+}
 
     // PUBLIC_INTERFACE
     showSessionModal(sessionId) {
@@ -880,8 +920,12 @@ class WorkoutHistoryManager {
         if (this.sessionModal) {
             this.sessionModal.style.display = 'none';
             document.body.style.overflow = '';
+}
+=======
+SEARCH
         }
     }
+}
 
     // PUBLIC_INTERFACE
     refreshData() {
@@ -990,8 +1034,12 @@ class WorkoutHistoryManager {
         if (!sessionCard.dataset.preloaded) {
             sessionCard.dataset.preloaded = 'true';
             // Additional preloading logic could go here
+}
+=======
+SEARCH
         }
     }
+}
 
     // PUBLIC_INTERFACE
     showLoading() {
@@ -1000,8 +1048,12 @@ class WorkoutHistoryManager {
          */
         if (this.loadingIndicator) {
             this.loadingIndicator.style.display = 'flex';
+}
+=======
+SEARCH
         }
     }
+}
 
     // PUBLIC_INTERFACE
     hideLoading() {
@@ -1010,8 +1062,12 @@ class WorkoutHistoryManager {
          */
         if (this.loadingIndicator) {
             this.loadingIndicator.style.display = 'none';
+}
+=======
+SEARCH
         }
     }
+}
 
     // PUBLIC_INTERFACE
     showSuccessMessage(message) {
@@ -1085,13 +1141,25 @@ class WorkoutHistoryManager {
             }, 300);
         }, autoRemoveTime);
         
+
+    // PUBLIC_INTERFACE
+    showClearHistoryModal() {
+=======
+SEARCH
         // Add accessibility attributes
         messageEl.setAttribute('role', 'alert');
         messageEl.setAttribute('aria-live', 'polite');
         if (type === 'error') {
             messageEl.setAttribute('aria-live', 'assertive');
+}
+=======
+SEARCH
         }
     }
+}
+
+    // PUBLIC_INTERFACE
+    showClearHistoryModal() {
 =======
 
     // PUBLIC_INTERFACE
@@ -1177,10 +1245,18 @@ class WorkoutHistoryManager {
             this.clearModalClose.disabled = false;
         }
         
+
+    // PUBLIC_INTERFACE
+    closeClearHistoryModal() {
+=======
+SEARCH
         // Remove any error states
         const errorElements = this.clearHistoryModal.querySelectorAll('.error-message');
         errorElements.forEach(el => el.remove());
     }
+
+    // PUBLIC_INTERFACE
+    closeClearHistoryModal() {
 =======
 
     // PUBLIC_INTERFACE
@@ -1214,8 +1290,16 @@ class WorkoutHistoryManager {
             if (this.clearHistoryBtn) {
                 this.clearHistoryBtn.focus();
             }
+
+    // PUBLIC_INTERFACE
+    validateClearConfirmation() {
+=======
+SEARCH
         }, 200);
     }
+
+    // PUBLIC_INTERFACE
+    validateClearConfirmation() {
 =======
 
     // PUBLIC_INTERFACE
@@ -1385,8 +1469,12 @@ class WorkoutHistoryManager {
         
         if (this.clearModalClose) {
             this.clearModalClose.disabled = isLoading;
+}
+=======
+SEARCH
         }
     }
+}
     
     // PUBLIC_INTERFACE
     showGlobalLoadingState() {
@@ -1419,8 +1507,12 @@ class WorkoutHistoryManager {
         const overlay = document.getElementById('global-loading-overlay');
         if (overlay) {
             overlay.style.display = 'none';
+}
+=======
+SEARCH
         }
     }
+}
     
     // PUBLIC_INTERFACE
     showProgressToast(message) {
@@ -1461,8 +1553,12 @@ class WorkoutHistoryManager {
                     toast.parentNode.removeChild(toast);
                 }
             }, 300);
+}
+=======
+SEARCH
         }
     }
+}
     
     // PUBLIC_INTERFACE
     showWarningMessage(message) {
@@ -1503,8 +1599,12 @@ class WorkoutHistoryManager {
         
         if (this.clearConfirmationInput) {
             this.clearConfirmationInput.disabled = false;
+}
+=======
+SEARCH
         }
     }
+}
     
     // PUBLIC_INTERFACE
     handleSuccessfulClear() {
@@ -1540,8 +1640,12 @@ class WorkoutHistoryManager {
         if (this.clearHistoryBtn) {
             this.clearHistoryBtn.disabled = true;
             this.clearHistoryBtn.title = 'No history to clear';
+}
+=======
+SEARCH
         }
     }
+}
 =======
 }
 
@@ -1560,6 +1664,10 @@ document.addEventListener('visibilitychange', () => {
         const timeSinceLastUpdate = Date.now() - (window.historyManager.lastUpdate || 0);
         if (timeSinceLastUpdate > 300000) {
             window.historyManager.refreshData();
+}
+=======
+SEARCH
         }
     }
+}
 });
