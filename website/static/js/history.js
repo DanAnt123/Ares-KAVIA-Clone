@@ -1032,23 +1032,50 @@ class WorkoutHistoryManager {
     // PUBLIC_INTERFACE
     showMessage(message, type) {
         /**
-         * Show a temporary message to the user
+         * Show a temporary message to the user with enhanced styling and positioning
          */
+        // Remove any existing toast of the same type to prevent overlapping
+        const existingToast = document.querySelector(`.toast-message.toast-${type}`);
+        if (existingToast) {
+            existingToast.remove();
+        }
+        
         const messageEl = document.createElement('div');
         messageEl.className = `toast-message toast-${type}`;
+        
+        // Determine icon based on message type
+        let icon = 'info-circle';
+        if (type === 'success') icon = 'check-circle';
+        else if (type === 'error') icon = 'exclamation-circle';
+        else if (type === 'warning') icon = 'exclamation-triangle';
+        else if (type === 'progress') icon = 'spinner fa-spin';
+        
         messageEl.innerHTML = `
             <div class="toast-content">
-                <i class="fa fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <i class="fa fa-${icon}"></i>
                 <span>${message}</span>
+                <button class="toast-close" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fa fa-times"></i>
+                </button>
             </div>
         `;
         
-        document.body.appendChild(messageEl);
+        // Add to toast container or create one
+        let toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container';
+            toastContainer.className = 'toast-container';
+            document.body.appendChild(toastContainer);
+        }
+        
+        toastContainer.appendChild(messageEl);
         
         // Animate in
         setTimeout(() => messageEl.classList.add('show'), 10);
         
-        // Auto remove
+        // Auto remove (longer for error messages)
+        const autoRemoveTime = type === 'error' ? 5000 : type === 'warning' ? 4000 : 3000;
         setTimeout(() => {
             messageEl.classList.remove('show');
             setTimeout(() => {
@@ -1056,54 +1083,140 @@ class WorkoutHistoryManager {
                     messageEl.parentNode.removeChild(messageEl);
                 }
             }, 300);
-        }, 3000);
+        }, autoRemoveTime);
+        
+        // Add accessibility attributes
+        messageEl.setAttribute('role', 'alert');
+        messageEl.setAttribute('aria-live', 'polite');
+        if (type === 'error') {
+            messageEl.setAttribute('aria-live', 'assertive');
+        }
     }
+=======
 
     // PUBLIC_INTERFACE
     showClearHistoryModal() {
         /**
-         * Show the clear history confirmation modal
+         * Show the clear history confirmation modal with edge case validation
          */
-        if (!this.clearHistoryModal) return;
-        
-        // Reset modal state
-        if (this.clearConfirmationInput) {
-            this.clearConfirmationInput.value = '';
-        }
-        if (this.clearModalConfirm) {
-            this.clearModalConfirm.disabled = true;
+        if (!this.clearHistoryModal) {
+            this.showErrorMessage('Clear history modal is not available. Please refresh the page.');
+            return;
         }
         
-        // Show modal
+        // Edge case: Check if there's any history to clear
+        if (this.allSessions.length === 0) {
+            this.showWarningMessage('No workout history to clear. Start tracking some workouts first!');
+            return;
+        }
+        
+        // Reset modal state completely
+        this.resetModalState();
+        
+        // Update modal content with current session count
+        const sessionCount = this.allSessions.length;
+        const modalTitle = this.clearHistoryModal.querySelector('.modal-title');
+        if (modalTitle) {
+            modalTitle.textContent = `Clear All Workout History (${sessionCount} session${sessionCount !== 1 ? 's' : ''})`;
+        }
+        
+        const modalDescription = this.clearHistoryModal.querySelector('.modal-description');
+        if (modalDescription) {
+            modalDescription.innerHTML = `
+                This will permanently delete <strong>${sessionCount} workout session${sessionCount !== 1 ? 's' : ''}</strong> 
+                and cannot be undone. All exercise data, weights, and progress will be lost.
+            `;
+        }
+        
+        // Show modal with animation
         this.clearHistoryModal.style.display = 'flex';
+        this.clearHistoryModal.classList.add('modal-entering');
         document.body.style.overflow = 'hidden';
         
-        // Focus management
+        // Focus management with accessibility
         setTimeout(() => {
             if (this.clearConfirmationInput) {
                 this.clearConfirmationInput.focus();
+                this.clearConfirmationInput.setAttribute('aria-describedby', 'clear-confirmation-help');
             }
+            this.clearHistoryModal.classList.remove('modal-entering');
         }, 100);
+        
+        // Add escape key handler
+        this.modalEscapeHandler = (e) => {
+            if (e.key === 'Escape') {
+                this.closeClearHistoryModal();
+            }
+        };
+        document.addEventListener('keydown', this.modalEscapeHandler);
     }
+    
+    // PUBLIC_INTERFACE
+    resetModalState() {
+        /**
+         * Reset the modal to its initial state
+         */
+        if (this.clearConfirmationInput) {
+            this.clearConfirmationInput.value = '';
+            this.clearConfirmationInput.disabled = false;
+            this.clearConfirmationInput.classList.remove('error');
+        }
+        
+        if (this.clearModalConfirm) {
+            this.clearModalConfirm.disabled = true;
+            this.clearModalConfirm.innerHTML = 'Clear All History';
+            this.clearModalConfirm.classList.remove('loading');
+        }
+        
+        if (this.clearModalCancel) {
+            this.clearModalCancel.disabled = false;
+            this.clearModalCancel.textContent = 'Cancel';
+        }
+        
+        if (this.clearModalClose) {
+            this.clearModalClose.disabled = false;
+        }
+        
+        // Remove any error states
+        const errorElements = this.clearHistoryModal.querySelectorAll('.error-message');
+        errorElements.forEach(el => el.remove());
+    }
+=======
 
     // PUBLIC_INTERFACE
     closeClearHistoryModal() {
         /**
-         * Close the clear history confirmation modal
+         * Close the clear history confirmation modal with proper cleanup
          */
         if (!this.clearHistoryModal) return;
         
-        this.clearHistoryModal.style.display = 'none';
-        document.body.style.overflow = '';
+        // Add closing animation
+        this.clearHistoryModal.classList.add('modal-exiting');
         
-        // Reset form state
-        if (this.clearConfirmationInput) {
-            this.clearConfirmationInput.value = '';
-        }
-        if (this.clearModalConfirm) {
-            this.clearModalConfirm.disabled = true;
-        }
+        setTimeout(() => {
+            this.clearHistoryModal.style.display = 'none';
+            this.clearHistoryModal.classList.remove('modal-exiting');
+            document.body.style.overflow = '';
+            
+            // Clean up event listeners
+            if (this.modalEscapeHandler) {
+                document.removeEventListener('keydown', this.modalEscapeHandler);
+                this.modalEscapeHandler = null;
+            }
+            
+            // Reset form state completely
+            this.resetModalState();
+            
+            // Hide any progress toasts
+            this.hideProgressToast();
+            
+            // Return focus to the clear history button
+            if (this.clearHistoryBtn) {
+                this.clearHistoryBtn.focus();
+            }
+        }, 200);
     }
+=======
 
     // PUBLIC_INTERFACE
     validateClearConfirmation() {
@@ -1121,16 +1234,43 @@ class WorkoutHistoryManager {
     // PUBLIC_INTERFACE
     confirmClearHistory() {
         /**
-         * Execute the clear history action after confirmation
+         * Execute the clear history action after confirmation with comprehensive error handling
          */
         if (!this.clearModalConfirm || this.clearModalConfirm.disabled) return;
         
-        // Show loading state
+        // Edge case: Check if there's actually history to clear
+        if (this.allSessions.length === 0) {
+            this.showErrorMessage('No workout history to clear.');
+            this.closeClearHistoryModal();
+            return;
+        }
+        
+        // Store original button state for restoration
         const originalText = this.clearModalConfirm.innerHTML;
-        this.clearModalConfirm.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Clearing...';
+        const originalDisabled = this.clearModalConfirm.disabled;
+        
+        // Disable all modal controls during operation
+        this.setModalLoadingState(true);
+        
+        // Show comprehensive loading indicators
+        this.showGlobalLoadingState();
+        this.clearModalConfirm.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Clearing History...';
         this.clearModalConfirm.disabled = true;
         
-        // Call the clear history API
+        // Disable the cancel button to prevent interruption
+        if (this.clearModalCancel) {
+            this.clearModalCancel.disabled = true;
+        }
+        
+        // Show progress toast
+        this.showProgressToast('Clearing workout history...');
+        
+        // Add timeout handling for network issues
+        const timeoutId = setTimeout(() => {
+            this.handleClearHistoryTimeout();
+        }, 30000); // 30 second timeout
+        
+        // Call the clear history API with enhanced error handling
         fetch('/api/workout/history/clear', {
             method: 'DELETE',
             credentials: 'same-origin',
@@ -1140,33 +1280,269 @@ class WorkoutHistoryManager {
             }
         })
         .then(response => {
-            if (!response.ok) {
+            clearTimeout(timeoutId);
+            
+            // Handle different HTTP status codes
+            if (response.status === 404) {
+                throw new Error('Clear history endpoint not found. Please contact support.');
+            } else if (response.status === 401 || response.status === 403) {
+                throw new Error('You are not authorized to perform this action. Please sign in again.');
+            } else if (response.status === 500) {
+                throw new Error('Server error occurred. Please try again later.');
+            } else if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
+            
             return response.json();
         })
         .then(data => {
+            // Validate response data
+            if (!data || typeof data !== 'object') {
+                throw new Error('Invalid response from server');
+            }
+            
             if (data.success) {
-                this.closeClearHistoryModal();
-                this.showSuccessMessage(`Successfully cleared ${data.sessions_deleted} workout sessions`);
+                // Handle successful deletion
+                const sessionsDeleted = data.sessions_deleted || 0;
                 
-                // Refresh the page to show empty state
+                this.closeClearHistoryModal();
+                this.hideGlobalLoadingState();
+                
+                if (sessionsDeleted === 0) {
+                    this.showWarningMessage('No workout sessions were found to delete.');
+                } else {
+                    this.showSuccessMessage(`Successfully cleared ${sessionsDeleted} workout session${sessionsDeleted !== 1 ? 's' : ''}`);
+                }
+                
+                // Update local state immediately
+                this.handleSuccessfulClear();
+                
+                // Refresh the page after a brief delay to ensure user sees the success message
                 setTimeout(() => {
                     window.location.reload();
-                }, 1500);
+                }, 2000);
             } else {
-                throw new Error(data.error || 'Unknown error occurred');
+                // Handle server-side errors
+                const errorMessage = data.error || data.message || 'Unknown error occurred';
+                throw new Error(errorMessage);
             }
         })
         .catch(error => {
+            clearTimeout(timeoutId);
             console.error('Failed to clear workout history:', error);
-            this.showErrorMessage('Failed to clear workout history. Please try again.');
             
-            // Reset button state
-            this.clearModalConfirm.innerHTML = originalText;
-            this.clearModalConfirm.disabled = false;
+            // Determine error type and show appropriate message
+            let errorMessage = 'Failed to clear workout history. Please try again.';
+            
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                errorMessage = 'Network error: Unable to connect to server. Please check your internet connection.';
+            } else if (error.message.includes('timeout')) {
+                errorMessage = 'Request timed out. The server may be busy, please try again later.';
+            } else if (error.message.includes('authorized')) {
+                errorMessage = error.message;
+            } else if (error.message.includes('endpoint not found')) {
+                errorMessage = error.message;
+            } else if (error.message.length > 10 && error.message.length < 200) {
+                errorMessage = error.message;
+            }
+            
+            this.showErrorMessage(errorMessage);
+            
+            // Reset modal state for retry
+            this.resetModalAfterError(originalText, originalDisabled);
+        })
+        .finally(() => {
+            clearTimeout(timeoutId);
+            this.hideGlobalLoadingState();
+            this.setModalLoadingState(false);
         });
     }
+    
+    // PUBLIC_INTERFACE
+    setModalLoadingState(isLoading) {
+        /**
+         * Set loading state for the entire modal
+         */
+        if (!this.clearHistoryModal) return;
+        
+        const modalContent = this.clearHistoryModal.querySelector('.modal-content');
+        if (modalContent) {
+            if (isLoading) {
+                modalContent.classList.add('loading');
+            } else {
+                modalContent.classList.remove('loading');
+            }
+        }
+        
+        // Disable/enable form inputs
+        if (this.clearConfirmationInput) {
+            this.clearConfirmationInput.disabled = isLoading;
+        }
+        
+        if (this.clearModalCancel) {
+            this.clearModalCancel.disabled = isLoading;
+        }
+        
+        if (this.clearModalClose) {
+            this.clearModalClose.disabled = isLoading;
+        }
+    }
+    
+    // PUBLIC_INTERFACE
+    showGlobalLoadingState() {
+        /**
+         * Show global loading overlay during critical operations
+         */
+        let overlay = document.getElementById('global-loading-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'global-loading-overlay';
+            overlay.className = 'global-loading-overlay';
+            overlay.innerHTML = `
+                <div class="loading-content">
+                    <div class="loading-spinner">
+                        <i class="fa fa-spinner fa-spin fa-3x"></i>
+                    </div>
+                    <div class="loading-text">Processing request...</div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+        overlay.style.display = 'flex';
+    }
+    
+    // PUBLIC_INTERFACE
+    hideGlobalLoadingState() {
+        /**
+         * Hide global loading overlay
+         */
+        const overlay = document.getElementById('global-loading-overlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+    }
+    
+    // PUBLIC_INTERFACE
+    showProgressToast(message) {
+        /**
+         * Show a progress toast message
+         */
+        const toastId = 'progress-toast';
+        let existingToast = document.getElementById(toastId);
+        
+        if (existingToast) {
+            existingToast.remove();
+        }
+        
+        const toast = document.createElement('div');
+        toast.id = toastId;
+        toast.className = 'toast-message toast-progress';
+        toast.innerHTML = `
+            <div class="toast-content">
+                <i class="fa fa-spinner fa-spin"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10);
+    }
+    
+    // PUBLIC_INTERFACE
+    hideProgressToast() {
+        /**
+         * Hide progress toast message
+         */
+        const toast = document.getElementById('progress-toast');
+        if (toast) {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }
+    }
+    
+    // PUBLIC_INTERFACE
+    showWarningMessage(message) {
+        /**
+         * Show warning message to user
+         */
+        this.showMessage(message, 'warning');
+    }
+    
+    // PUBLIC_INTERFACE
+    handleClearHistoryTimeout() {
+        /**
+         * Handle timeout during clear history operation
+         */
+        this.showErrorMessage('Request timed out. The operation may still be in progress. Please refresh the page to check the status.');
+        this.resetModalAfterError('Clear All History', false);
+    }
+    
+    // PUBLIC_INTERFACE
+    resetModalAfterError(originalText, originalDisabled) {
+        /**
+         * Reset modal state after an error for retry capability
+         */
+        this.hideProgressToast();
+        
+        if (this.clearModalConfirm) {
+            this.clearModalConfirm.innerHTML = originalText;
+            this.clearModalConfirm.disabled = originalDisabled;
+        }
+        
+        if (this.clearModalCancel) {
+            this.clearModalCancel.disabled = false;
+        }
+        
+        if (this.clearModalClose) {
+            this.clearModalClose.disabled = false;
+        }
+        
+        if (this.clearConfirmationInput) {
+            this.clearConfirmationInput.disabled = false;
+        }
+    }
+    
+    // PUBLIC_INTERFACE
+    handleSuccessfulClear() {
+        /**
+         * Handle successful clear operation by updating local state
+         */
+        this.hideProgressToast();
+        
+        // Clear local session data
+        this.allSessions = [];
+        this.filteredSessions = [];
+        
+        // Update UI immediately to show empty state
+        if (this.sessionsContainer) {
+            this.sessionsContainer.style.display = 'none';
+        }
+        
+        if (this.emptyState) {
+            this.emptyState.style.display = 'flex';
+        }
+        
+        if (this.noResults) {
+            this.noResults.style.display = 'none';
+        }
+        
+        // Update results info
+        this.updateResultsInfo();
+        
+        // Clear any active filters since there's no data
+        this.clearAllFilters();
+        
+        // Disable clear history button
+        if (this.clearHistoryBtn) {
+            this.clearHistoryBtn.disabled = true;
+            this.clearHistoryBtn.title = 'No history to clear';
+        }
+    }
+=======
 }
 
 // Initialize when DOM is loaded
