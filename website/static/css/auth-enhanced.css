@@ -548,6 +548,12 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* Special padding for password fields with toggle buttons */
+.input-wrapper:has(.password-toggle) .form-input,
+.input-wrapper:has(.password-toggle-confirm) .form-input {
+  padding-right: var(--space-16);
+}
+
 .form-input:focus {
   background: var(--surface);
   border-color: var(--primary-light);
@@ -568,6 +574,13 @@
   font-size: var(--fs-lg);
   pointer-events: none;
   transition: color var(--transition-fast);
+  z-index: 1;
+}
+
+/* Hide input icon when password toggle is present to avoid overlap */
+.input-wrapper:has(.password-toggle) .input-icon,
+.input-wrapper:has(.password-toggle-confirm) .input-icon {
+  display: none;
 }
 
 .input-wrapper.focused .input-icon {
@@ -591,7 +604,8 @@
   color: var(--error-border);
 }
 
-.password-toggle {
+.password-toggle,
+.password-toggle-confirm {
   position: absolute;
   right: var(--space-4);
   background: none;
@@ -601,21 +615,40 @@
   padding: var(--space-2);
   border-radius: var(--radius-base);
   transition: all var(--transition-fast);
-  z-index: 2;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
+  margin-right: var(--space-1);
 }
 
-.password-toggle:hover {
+.password-toggle:hover,
+.password-toggle-confirm:hover {
   color: var(--primary-light);
   background: var(--primary-subtle);
 }
 
-.password-toggle.clicked {
+.password-toggle.clicked,
+.password-toggle-confirm.clicked {
   transform: scale(0.95);
+}
+
+/* Field help text styling */
+.field-help-text {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  font-weight: var(--fw-regular);
+}
+
+.field-help-text i {
+  color: var(--primary-light);
+  font-size: var(--fs-xs);
 }
 
 /* Form Options */
@@ -917,6 +950,19 @@
   
   .form-input {
     padding: var(--space-3) var(--space-10) var(--space-3) var(--space-3);
+  }
+  
+  /* Adjust password field padding for mobile */
+  .input-wrapper:has(.password-toggle) .form-input,
+  .input-wrapper:has(.password-toggle-confirm) .form-input {
+    padding-right: var(--space-14);
+  }
+  
+  .password-toggle,
+  .password-toggle-confirm {
+    right: var(--space-3);
+    width: 28px;
+    height: 28px;
   }
   
   .auth-submit-btn, .auth-demo-btn {
