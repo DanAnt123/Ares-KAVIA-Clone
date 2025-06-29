@@ -414,52 +414,131 @@ def get_weight_progression(exercise_name):
         JSON response with weight progression data points
     """
     try:
+        # Decode the exercise name from URL encoding
+        from urllib.parse import unquote
+        exercise_name = unquote(exercise_name).strip()
+        
         # Get all exercise logs for this exercise for the current user
+        # Use exact match first, then fuzzy match if no results
         logs = (db.session.query(ExerciseLog, WorkoutSession.timestamp)
                 .join(WorkoutSession)
                 .filter(WorkoutSession.user_id == current_user.id)
-                .filter(ExerciseLog.exercise_name.ilike(f"%{exercise_name}%"))
+                .filter(ExerciseLog.exercise_name == exercise_name)
                 .filter(ExerciseLog.weight.isnot(None))
+                .filter(ExerciseLog.weight > 0)  # Ensure positive weights
                 .order_by(WorkoutSession.timestamp.asc())
                 .all())
         
+        # If no exact match, try case-insensitive search
         if not logs:
+            logs = (db.session.query(ExerciseLog, WorkoutSession.timestamp)
+                    .join(WorkoutSession)
+                    .filter(WorkoutSession.user_id == current_user.id)
+                    .filter(ExerciseLog.exercise_name.ilike(exercise_name))
+                    .filter(ExerciseLog.weight.isnot(None))
+                    .filter(ExerciseLog.weight > 0)
+                    .order_by(WorkoutSession.timestamp.asc())
+                    .all())
+        
+        # If still no match, try partial match
+        if not logs:
+            logs = (db.session.query(ExerciseLog, WorkoutSession.timestamp)
+                    .join(WorkoutSession)
+                    .filter(WorkoutSession.user_id == current_user.id)
+                    .filter(ExerciseLog.exercise_name.ilike(f"%{exercise_name}%"))
+                    .filter(ExerciseLog.weight.isnot(None))
+                    .filter(ExerciseLog.weight > 0)
+                    .order_by(WorkoutSession.timestamp.asc())
+                    .all())
+        
+        if not logs:
+            # Find all available exercises for debugging
+            available_exercises = (db.session.query(ExerciseLog.exercise_name)
+                                 .join(WorkoutSession)
+                                 .filter(WorkoutSession.user_id == current_user.id)
+                                 .filter(ExerciseLog.weight.isnot(None))
+                                 .filter(ExerciseLog.weight > 0)
+                                 .distinct()
+                                 .all())
+            
             return jsonify({
                 "exercise_name": exercise_name,
                 "data_points": [],
-                "message": "No weight data found for this exercise"
+                "message": f"No weight data found for exercise '{exercise_name}'",
+                "available_exercises": [ex[0] for ex in available_exercises],
+                "debug_info": {
+                    "searched_name": exercise_name,
+                    "user_id": current_user.id,
+                    "total_available": len(available_exercises)
+                }
             })
         
-        # Group by date and find max weight per day
-        daily_max = defaultdict(float)
+        # Process all data points (not just daily max) to show progression
+        data_points = []
+        seen_dates = set()
+        
         for log, timestamp in logs:
             date_key = timestamp.date().isoformat()
-            daily_max[date_key] = max(daily_max[date_key], log.weight)
+            formatted_date = timestamp.strftime("%b %d, %Y")
+            
+            # If we have multiple entries on the same date, take the highest weight
+            existing_point = None
+            for point in data_points:
+                if point["date"] == date_key:
+                    existing_point = point
+                    break
+            
+            if existing_point:
+                if log.weight > existing_point["weight"]:
+                    existing_point["weight"] = float(log.weight)
+                    existing_point["session_count"] = existing_point.get("session_count", 1) + 1
+            else:
+                data_points.append({
+                    "date": date_key,
+                    "weight": float(log.weight),
+                    "formatted_date": formatted_date,
+                    "session_count": 1,
+                    "timestamp": timestamp.isoformat()
+                })
         
-        # Format data for chart consumption
-        data_points = [
-            {
-                "date": date,
-                "weight": weight,
-                "formatted_date": datetime.fromisoformat(date).strftime("%b %d, %Y")
-            }
-            for date, weight in sorted(daily_max.items())
-        ]
+        # Sort by date to ensure proper chronological order
+        data_points.sort(key=lambda x: x["date"])
+        
+        # Calculate weight range and progression stats
+        weights = [point["weight"] for point in data_points]
+        min_weight = min(weights) if weights else 0
+        max_weight = max(weights) if weights else 0
+        
+        # Calculate progression (difference between first and last)
+        progression = 0
+        if len(weights) >= 2:
+            progression = weights[-1] - weights[0]
         
         return jsonify({
             "exercise_name": exercise_name,
             "data_points": data_points,
             "total_sessions": len(data_points),
+            "total_logs": len(logs),
             "weight_range": {
-                "min": min(point["weight"] for point in data_points) if data_points else 0,
-                "max": max(point["weight"] for point in data_points) if data_points else 0
+                "min": min_weight,
+                "max": max_weight
+            },
+            "progression_stats": {
+                "total_progression": round(progression, 2),
+                "progression_percentage": round((progression / weights[0] * 100) if weights and weights[0] > 0 else 0, 1),
+                "average_weight": round(sum(weights) / len(weights), 2) if weights else 0
             }
         })
         
     except Exception as e:
+        print(f"Error in get_weight_progression: {str(e)}")  # Debug logging
         return jsonify({
             "error": f"Failed to retrieve weight progression: {str(e)}",
-            "exercise_name": exercise_name
+            "exercise_name": exercise_name,
+            "debug_info": {
+                "user_authenticated": current_user.is_authenticated if current_user else False,
+                "user_id": current_user.id if current_user and current_user.is_authenticated else None
+            }
         }), 500
 
 
@@ -618,6 +697,71 @@ def get_performance_summary():
     except Exception as e:
         return jsonify({
             "error": f"Failed to retrieve performance summary: {str(e)}"
+        }), 500
+
+
+# PUBLIC_INTERFACE  
+@views.route("/api/debug/weight-data", methods=["GET"])
+@login_required  
+def debug_weight_data():
+    """
+    Debug endpoint to show available weight data for troubleshooting.
+    """
+    try:
+        # Get all exercise logs with weights for current user
+        logs_with_weights = (db.session.query(
+                ExerciseLog.exercise_name,
+                ExerciseLog.weight,
+                WorkoutSession.timestamp,
+                ExerciseLog.id
+            )
+            .join(WorkoutSession)
+            .filter(WorkoutSession.user_id == current_user.id)
+            .filter(ExerciseLog.weight.isnot(None))
+            .filter(ExerciseLog.weight > 0)
+            .order_by(ExerciseLog.exercise_name, WorkoutSession.timestamp)
+            .all())
+        
+        # Group by exercise
+        exercise_data = defaultdict(list)
+        for log in logs_with_weights:
+            exercise_data[log.exercise_name].append({
+                'weight': float(log.weight),
+                'timestamp': log.timestamp.isoformat(),
+                'log_id': log.id,
+                'date': log.timestamp.date().isoformat()
+            })
+        
+        # Calculate stats
+        total_logs = len(logs_with_weights)
+        unique_exercises = len(exercise_data)
+        
+        return jsonify({
+            'user_id': current_user.id,
+            'total_weight_logs': total_logs,
+            'unique_exercises': unique_exercises,
+            'exercises': dict(exercise_data),
+            'exercise_names': list(exercise_data.keys()),
+            'summary': {
+                name: {
+                    'count': len(data),
+                    'weight_range': {
+                        'min': min(d['weight'] for d in data),
+                        'max': max(d['weight'] for d in data)
+                    },
+                    'date_range': {
+                        'first': min(d['date'] for d in data),
+                        'last': max(d['date'] for d in data)
+                    }
+                }
+                for name, data in exercise_data.items()
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'Debug query failed: {str(e)}',
+            'user_id': current_user.id if current_user and current_user.is_authenticated else None
         }), 500
 
 
