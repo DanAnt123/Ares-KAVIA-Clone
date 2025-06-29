@@ -239,31 +239,7 @@
                     </div>
                 </div>
 
-                <!-- Exercise Frequency Chart -->
-                <div class="chart-section">
-                    <div class="chart-header">
-                        <h2 class="chart-title">
-                            <i class="fa fa-bar-chart"></i>
-                            Exercise Frequency
-                        </h2>
-                        <div class="chart-actions">
-                            <select class="chart-period-select" id="exercise-frequency-period">
-                                <option value="30">Last 30 Days</option>
-                                <option value="90" selected>Last 90 Days</option>
-                                <option value="180">Last 6 Months</option>
-                                <option value="365">Last Year</option>
-                            </select>
-                            <button class="chart-refresh-btn" data-chart="exercise-frequency-chart" title="Refresh Exercise Frequency">
-                                <i class="fa fa-refresh"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="exercise-frequency-chart" class="chart-canvas"></canvas>
-                    </div>
-                </div>
-
-                <!-- Weight Progression Chart -->
+                <!-- Weight Progression Chart (moved to top) -->
                 <div class="chart-section">
                     <div class="chart-header">
                         <h2 class="chart-title">
@@ -291,31 +267,27 @@
                     </div>
                 </div>
 
-                <!-- Volume Trends Chart -->
+                <!-- Exercise Frequency Chart -->
                 <div class="chart-section">
                     <div class="chart-header">
                         <h2 class="chart-title">
-                            <i class="fa fa-area-chart"></i>
-                            Volume Trends
+                            <i class="fa fa-bar-chart"></i>
+                            Exercise Frequency
                         </h2>
                         <div class="chart-actions">
-                            <select class="chart-workout-select" id="volume-trends-workout">
-                                <option value="">Select Workout...</option>
-                                {% for workout in workouts %}
-                                    <option value="{{ workout.id }}">{{ workout.name }}</option>
-                                {% endfor %}
+                            <select class="chart-period-select" id="exercise-frequency-period">
+                                <option value="30">Last 30 Days</option>
+                                <option value="90" selected>Last 90 Days</option>
+                                <option value="180">Last 6 Months</option>
+                                <option value="365">Last Year</option>
                             </select>
-                            <button class="chart-refresh-btn" data-chart="volume-trends-chart" title="Refresh Volume Trends">
+                            <button class="chart-refresh-btn" data-chart="exercise-frequency-chart" title="Refresh Exercise Frequency">
                                 <i class="fa fa-refresh"></i>
                             </button>
                         </div>
                     </div>
                     <div class="chart-container">
-                        <div id="volume-trends-placeholder" class="chart-placeholder">
-                            <i class="fa fa-area-chart"></i>
-                            <p>Select a workout to view volume trends</p>
-                        </div>
-                        <canvas id="volume-trends-chart" class="chart-canvas" style="display: none;"></canvas>
+                        <canvas id="exercise-frequency-chart" class="chart-canvas"></canvas>
                     </div>
                 </div>
             </div>
@@ -664,24 +636,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Volume trends workout selector
-        const volumeTrendsWorkout = document.getElementById('volume-trends-workout');
-        if (volumeTrendsWorkout) {
-            volumeTrendsWorkout.addEventListener('change', function() {
-                const workoutId = this.value;
-                const placeholder = document.getElementById('volume-trends-placeholder');
-                const canvas = document.getElementById('volume-trends-chart');
-                
-                if (workoutId && typeof fetchVolumeTrends === 'function') {
-                    placeholder.style.display = 'none';
-                    canvas.style.display = 'block';
-                    fetchVolumeTrends(parseInt(workoutId));
-                } else {
-                    placeholder.style.display = 'flex';
-                    canvas.style.display = 'none';
-                }
-            });
-        }
+
         
         // Chart refresh buttons
         const refreshButtons = document.querySelectorAll('.chart-refresh-btn');
