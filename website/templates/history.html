@@ -36,7 +36,7 @@
                 <div class="workout-selector-section">
                     <h1 class="workout-page-title">
                         <i class="fa fa-history"></i>
-                        Workout History
+                        Workout History & Progress
                     </h1>
                     <p class="dashboard-subtitle">Track your progress and review past workout sessions</p>
                 </div>
@@ -50,6 +50,20 @@
                         <span class="stat-label">Workouts</span>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="history-tabs-container">
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="history" id="history-tab-btn">
+                    <i class="fa fa-history"></i>
+                    <span>Workout History</span>
+                </button>
+                <button class="tab-btn" data-tab="charts" id="charts-tab-btn">
+                    <i class="fa fa-chart-line"></i>
+                    <span>Progress Charts</span>
+                </button>
             </div>
         </div>
 
@@ -169,6 +183,144 @@
             </div>
         </div>
 
+        <!-- Progress Charts Tab Content -->
+        <div id="charts-tab-content" class="tab-content" style="display: none;">
+            <!-- Charts Loading Indicator -->
+            <div id="charts-loading-indicator" class="loading-indicator" style="display: none;">
+                <div class="spinner"></div>
+                <span>Loading progress charts...</span>
+            </div>
+
+            <!-- Charts Grid Container -->
+            <div class="charts-dashboard">
+                <!-- Performance Summary Section -->
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <h2 class="chart-title">
+                            <i class="fa fa-dashboard"></i>
+                            Performance Summary
+                        </h2>
+                        <div class="chart-actions">
+                            <button class="chart-refresh-btn" data-chart="performance-summary" title="Refresh Performance Summary">
+                                <i class="fa fa-refresh"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="summary-stats-grid">
+                            <div class="summary-stat-card">
+                                <span class="stat-number" id="total-sessions-chart">0</span>
+                                <span class="stat-label">Total Sessions</span>
+                            </div>
+                            <div class="summary-stat-card">
+                                <span class="stat-number" id="total-exercises-chart">0</span>
+                                <span class="stat-label">Total Exercises</span>
+                            </div>
+                            <div class="summary-stat-card">
+                                <span class="stat-number" id="total-volume-chart">0 kg</span>
+                                <span class="stat-label">Total Volume</span>
+                            </div>
+                            <div class="summary-stat-card">
+                                <span class="stat-number" id="sessions-per-week">0</span>
+                                <span class="stat-label">Sessions/Week</span>
+                            </div>
+                            <div class="summary-stat-card">
+                                <span class="stat-number" id="avg-exercises-per-session">0</span>
+                                <span class="stat-label">Avg Exercises</span>
+                            </div>
+                            <div class="summary-stat-card">
+                                <span class="stat-number" id="unique-exercises-chart">0</span>
+                                <span class="stat-label">Unique Exercises</span>
+                            </div>
+                        </div>
+                        <div class="chart-canvas-container">
+                            <canvas id="workout-frequency-chart" class="chart-canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercise Frequency Chart -->
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <h2 class="chart-title">
+                            <i class="fa fa-bar-chart"></i>
+                            Exercise Frequency
+                        </h2>
+                        <div class="chart-actions">
+                            <select class="chart-period-select" id="exercise-frequency-period">
+                                <option value="30">Last 30 Days</option>
+                                <option value="90" selected>Last 90 Days</option>
+                                <option value="180">Last 6 Months</option>
+                                <option value="365">Last Year</option>
+                            </select>
+                            <button class="chart-refresh-btn" data-chart="exercise-frequency-chart" title="Refresh Exercise Frequency">
+                                <i class="fa fa-refresh"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="exercise-frequency-chart" class="chart-canvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Weight Progression Chart -->
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <h2 class="chart-title">
+                            <i class="fa fa-line-chart"></i>
+                            Weight Progression
+                        </h2>
+                        <div class="chart-actions">
+                            <select class="chart-exercise-select" id="weight-progression-exercise">
+                                <option value="">Select Exercise...</option>
+                                {% for exercise in unique_exercises %}
+                                    <option value="{{ exercise.name }}">{{ exercise.display_name }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="chart-refresh-btn" data-chart="weight-progression-chart" title="Refresh Weight Progression">
+                                <i class="fa fa-refresh"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div id="weight-progression-placeholder" class="chart-placeholder">
+                            <i class="fa fa-line-chart"></i>
+                            <p>Select an exercise to view weight progression</p>
+                        </div>
+                        <canvas id="weight-progression-chart" class="chart-canvas" style="display: none;"></canvas>
+                    </div>
+                </div>
+
+                <!-- Volume Trends Chart -->
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <h2 class="chart-title">
+                            <i class="fa fa-area-chart"></i>
+                            Volume Trends
+                        </h2>
+                        <div class="chart-actions">
+                            <select class="chart-workout-select" id="volume-trends-workout">
+                                <option value="">Select Workout...</option>
+                                {% for workout in workouts %}
+                                    <option value="{{ workout.id }}">{{ workout.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="chart-refresh-btn" data-chart="volume-trends-chart" title="Refresh Volume Trends">
+                                <i class="fa fa-refresh"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div id="volume-trends-placeholder" class="chart-placeholder">
+                            <i class="fa fa-area-chart"></i>
+                            <p>Select a workout to view volume trends</p>
+                        </div>
+                        <canvas id="volume-trends-chart" class="chart-canvas" style="display: none;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Loading Indicator -->
         <div id="loading-indicator" class="loading-indicator" style="display: none;">
             <div class="spinner"></div>
@@ -176,7 +328,7 @@
         </div>
 
         <!-- History Content -->
-        <div id="history-content" class="history-content">
+        <div id="history-tab-content" class="tab-content">
             {% if not grouped_sessions or grouped_sessions|length == 0 %}
                 <div class="empty-state" id="empty-state">
                     <div class="empty-state-content">
@@ -349,6 +501,7 @@
                 </div>
             {% endif %}
         </div>
+        </div> <!-- End history-tab-content -->
     </div>
 </div>
 
@@ -416,6 +569,150 @@
         </div>
     </div>
 </div>
+
+<!-- Progress Charts JavaScript -->
+<script src="{{ url_for('static', filename='js/progress-charts.js') }}?v={{ config.get('VERSION', '1.0') or now()|int }}" 
+        onerror="console.error('Could not load progress-charts.js');">
+</script>
+
+<!-- Tab Switching and Integration JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const historyTabContent = document.getElementById('history-tab-content');
+    const chartsTabContent = document.getElementById('charts-tab-content');
+    const chartsLoadingIndicator = document.getElementById('charts-loading-indicator');
+    
+    let chartsInitialized = false;
+    
+    // Tab button click handlers
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+            
+            // Update active tab button
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Switch tab content
+            if (targetTab === 'history') {
+                historyTabContent.style.display = 'block';
+                chartsTabContent.style.display = 'none';
+            } else if (targetTab === 'charts') {
+                historyTabContent.style.display = 'none';
+                chartsTabContent.style.display = 'block';
+                
+                // Initialize charts if not already done
+                if (!chartsInitialized) {
+                    initializeProgressCharts();
+                    chartsInitialized = true;
+                }
+            }
+        });
+    });
+    
+    // Initialize progress charts functionality
+    function initializeProgressCharts() {
+        if (typeof fetchAndRenderCharts === 'function') {
+            chartsLoadingIndicator.style.display = 'flex';
+            
+            // Initialize main charts
+            fetchAndRenderCharts();
+            
+            // Set up chart control handlers
+            setupChartControls();
+            
+            // Hide loading indicator after a delay
+            setTimeout(() => {
+                chartsLoadingIndicator.style.display = 'none';
+            }, 1000);
+        } else {
+            console.error('Progress charts functions not available');
+        }
+    }
+    
+    // Set up chart control handlers
+    function setupChartControls() {
+        // Exercise frequency period selector
+        const exerciseFrequencyPeriod = document.getElementById('exercise-frequency-period');
+        if (exerciseFrequencyPeriod) {
+            exerciseFrequencyPeriod.addEventListener('change', function() {
+                const days = parseInt(this.value);
+                if (typeof fetchExerciseFrequency === 'function') {
+                    fetchExerciseFrequency(days);
+                }
+            });
+        }
+        
+        // Weight progression exercise selector
+        const weightProgressionExercise = document.getElementById('weight-progression-exercise');
+        if (weightProgressionExercise) {
+            weightProgressionExercise.addEventListener('change', function() {
+                const exerciseName = this.value;
+                const placeholder = document.getElementById('weight-progression-placeholder');
+                const canvas = document.getElementById('weight-progression-chart');
+                
+                if (exerciseName && typeof fetchWeightProgression === 'function') {
+                    placeholder.style.display = 'none';
+                    canvas.style.display = 'block';
+                    fetchWeightProgression(exerciseName);
+                } else {
+                    placeholder.style.display = 'flex';
+                    canvas.style.display = 'none';
+                }
+            });
+        }
+        
+        // Volume trends workout selector
+        const volumeTrendsWorkout = document.getElementById('volume-trends-workout');
+        if (volumeTrendsWorkout) {
+            volumeTrendsWorkout.addEventListener('change', function() {
+                const workoutId = this.value;
+                const placeholder = document.getElementById('volume-trends-placeholder');
+                const canvas = document.getElementById('volume-trends-chart');
+                
+                if (workoutId && typeof fetchVolumeTrends === 'function') {
+                    placeholder.style.display = 'none';
+                    canvas.style.display = 'block';
+                    fetchVolumeTrends(parseInt(workoutId));
+                } else {
+                    placeholder.style.display = 'flex';
+                    canvas.style.display = 'none';
+                }
+            });
+        }
+        
+        // Chart refresh buttons
+        const refreshButtons = document.querySelectorAll('.chart-refresh-btn');
+        refreshButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const chartId = this.getAttribute('data-chart');
+                
+                // Add spinning animation
+                this.classList.add('spinning');
+                
+                // Refresh specific chart
+                if (typeof refreshChart === 'function') {
+                    refreshChart(chartId);
+                }
+                
+                // Remove spinning animation after delay
+                setTimeout(() => {
+                    this.classList.remove('spinning');
+                }, 1000);
+            });
+        });
+    }
+    
+    // Clean up charts when leaving the page
+    window.addEventListener('beforeunload', function() {
+        if (typeof destroyAllCharts === 'function') {
+            destroyAllCharts();
+        }
+    });
+});
+</script>
 
 <!-- Debug note: Cache busting and error debug for history.js -->
 <script src="{{ url_for('static', filename='js/history.js') }}?v={{ config.get('VERSION', '1.0') or now()|int }}" 

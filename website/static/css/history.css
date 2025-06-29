@@ -14,6 +14,334 @@
 }
 
 /* ===============================
+   TAB NAVIGATION STYLES
+   =============================== */
+
+.history-tabs-container {
+  margin-bottom: var(--space-6);
+}
+
+.tab-buttons {
+  display: flex;
+  gap: var(--space-2);
+  background: var(--dark-elevated);
+  border: 1px solid var(--tertiary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2);
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-lg);
+  color: var(--text-tertiary);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  min-height: 48px;
+}
+
+.tab-btn i {
+  font-size: var(--fs-lg);
+  transition: color var(--transition-fast);
+}
+
+.tab-btn span {
+  font-weight: var(--fw-semibold);
+}
+
+.tab-btn:hover {
+  background: var(--surface);
+  color: var(--text-secondary);
+  transform: translateY(-1px);
+}
+
+.tab-btn.active {
+  background: var(--primary);
+  color: var(--text-on-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.tab-btn.active i {
+  color: var(--text-on-primary);
+}
+
+.tab-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.tab-btn:hover::before {
+  left: 100%;
+}
+
+.tab-content {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all var(--transition-base);
+}
+
+.tab-content:not([style*="display: none"]) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===============================
+   PROGRESS CHARTS STYLES
+   =============================== */
+
+.charts-dashboard {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  margin-bottom: var(--space-8);
+}
+
+.chart-section {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-elevated) 100%);
+  border: 1px solid var(--tertiary);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: var(--radius-full);
+}
+
+.chart-section:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px);
+  border-color: var(--primary-light);
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--tertiary);
+}
+
+.chart-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.chart-title i {
+  color: var(--primary-light);
+  font-size: var(--fs-lg);
+}
+
+.chart-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.chart-period-select,
+.chart-exercise-select,
+.chart-workout-select {
+  padding: var(--space-2) var(--space-4);
+  background: var(--dark-elevated);
+  border: 1px solid var(--tertiary);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  min-width: 160px;
+}
+
+.chart-period-select:focus,
+.chart-exercise-select:focus,
+.chart-workout-select:focus {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 2px var(--primary-subtle);
+  outline: none;
+}
+
+.chart-refresh-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--surface);
+  border: 1px solid var(--tertiary);
+  border-radius: var(--radius-lg);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--fs-sm);
+}
+
+.chart-refresh-btn:hover {
+  background: var(--primary-subtle);
+  border-color: var(--primary-light);
+  color: var(--primary-light);
+  transform: scale(1.1);
+}
+
+.chart-refresh-btn.spinning {
+  animation: spin 1s linear infinite;
+}
+
+.chart-container {
+  position: relative;
+  min-height: 300px;
+}
+
+.chart-canvas-container {
+  margin-top: var(--space-4);
+  height: 300px;
+  position: relative;
+}
+
+.chart-canvas {
+  width: 100% !important;
+  height: 300px !important;
+  background: var(--dark-elevated);
+  border-radius: var(--radius-lg);
+}
+
+.chart-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  background: var(--dark-elevated);
+  border: 2px dashed var(--tertiary);
+  border-radius: var(--radius-lg);
+  color: var(--text-tertiary);
+  text-align: center;
+  gap: var(--space-3);
+}
+
+.chart-placeholder i {
+  font-size: var(--fs-3xl);
+  color: var(--primary-light);
+  opacity: 0.5;
+}
+
+.chart-placeholder p {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+  margin: 0;
+}
+
+.chart-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  background: var(--error-subtle);
+  border: 1px solid var(--error-border);
+  border-radius: var(--radius-lg);
+  color: var(--error-border);
+  text-align: center;
+}
+
+.chart-error i {
+  font-size: var(--fs-2xl);
+}
+
+.chart-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  background: var(--surface);
+  border: 1px solid var(--tertiary);
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.chart-message i {
+  font-size: var(--fs-2xl);
+  color: var(--primary-light);
+}
+
+.summary-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.summary-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-4);
+  background: var(--dark-elevated);
+  border: 1px solid var(--tertiary);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.summary-stat-card:hover {
+  border-color: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.summary-stat-card .stat-number {
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  color: var(--primary-light);
+  line-height: 1;
+  margin-bottom: var(--space-2);
+}
+
+.summary-stat-card .stat-label {
+  font-size: var(--fs-sm);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: var(--fw-medium);
+}
+
+/* ===============================
    HISTORY PAGE LAYOUT
    =============================== */
 
@@ -1754,6 +2082,56 @@
   .sessions-container.view-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Charts Mobile Styles */
+  .tab-buttons {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  
+  .tab-btn {
+    justify-content: center;
+    padding: var(--space-3) var(--space-4);
+  }
+  
+  .chart-section {
+    padding: var(--space-4);
+  }
+  
+  .chart-header {
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+  
+  .chart-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .chart-period-select,
+  .chart-exercise-select,
+  .chart-workout-select {
+    min-width: auto;
+    flex: 1;
+  }
+  
+  .summary-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+  
+  .chart-canvas {
+    height: 250px !important;
+  }
+  
+  .chart-canvas-container {
+    height: 250px;
+  }
+  
+  .chart-placeholder {
+    height: 250px;
+  }
   
   /* Workout Session Card Mobile Styles */
   .workout-session-card {
@@ -1922,6 +2300,62 @@
   
   .quick-actions {
     gap: var(--space-2);
+  }
+  
+  /* Small Mobile Charts Styles */
+  .tab-btn span {
+    display: none;
+  }
+  
+  .tab-btn {
+    min-width: 48px;
+    padding: var(--space-3);
+    justify-content: center;
+  }
+  
+  .chart-title {
+    font-size: var(--fs-lg);
+  }
+  
+  .chart-title span {
+    display: none;
+  }
+  
+  .chart-actions {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .summary-stats-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+  
+  .summary-stat-card {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    padding: var(--space-3);
+  }
+  
+  .summary-stat-card .stat-number {
+    font-size: var(--fs-xl);
+  }
+  
+  .chart-canvas {
+    height: 200px !important;
+  }
+  
+  .chart-canvas-container {
+    height: 200px;
+  }
+  
+  .chart-placeholder {
+    height: 200px;
+  }
+  
+  .chart-placeholder i {
+    font-size: var(--fs-2xl);
   }
   
   /* Workout Session Card Small Mobile Styles */
