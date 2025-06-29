@@ -431,11 +431,47 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function() {
-        document.querySelectorAll('.actions-menu').forEach(menu => {
-            menu.classList.remove('active');
+    // Handle action item clicks (edit, duplicate)
+    const actionItems = document.querySelectorAll('.action-item');
+    actionItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Don't stop propagation - let the form submit
+            console.log('Action item clicked:', this);
+            
+            // If this is an edit action, ensure the form submits
+            if (this.classList.contains('edit-action')) {
+                const form = this.closest('form');
+                if (form) {
+                    console.log('Submitting edit form:', form);
+                    form.submit();
+                }
+            }
+            
+            // Close the dropdown menu after action
+            const menu = this.closest('.actions-menu');
+            if (menu) {
+                menu.classList.remove('active');
+            }
         });
+    });
+    
+    // Handle form submissions within action menus
+    const actionForms = document.querySelectorAll('.action-form');
+    actionForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            console.log('Form submitting:', this.action, this.method);
+            // Let the form submit normally - don't prevent default
+        });
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        // Don't close if clicking inside an action menu
+        if (!e.target.closest('.actions-menu') && !e.target.closest('.actions-trigger')) {
+            document.querySelectorAll('.actions-menu').forEach(menu => {
+                menu.classList.remove('active');
+            });
+        }
     });
     
     // Stagger animation for workout cards
