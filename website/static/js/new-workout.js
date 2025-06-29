@@ -45,13 +45,27 @@ var categoryDropdown = null;
 
 // Initialize custom dropdown when available
 function initializeCategoryDropdownInteraction() {
-    // Wait for custom dropdown to be initialized
-    setTimeout(function() {
-        categoryDropdown = window.customDropdowns ? window.customDropdowns.get(categorySelect) : null;
-        
-        if (categoryDropdown) {
+    // Wait for custom dropdown to be initialized with multiple retries
+    let retryCount = 0;
+    const maxRetries = 10;
+    
+    function tryInitialize() {
+        if (window.customDropdowns && window.customDropdowns.has(categorySelect)) {
+            categoryDropdown = window.customDropdowns.get(categorySelect);
             console.log('Custom dropdown integration ready');
-            // Custom dropdown handles its own interactions
+            
+            // Add additional click handler for debugging
+            if (categoryDropdown && categoryDropdown.menu) {
+                categoryDropdown.menu.addEventListener('click', function(e) {
+                    console.log('Menu clicked:', e.target);
+                }, true);
+            }
+            
+            return true;
+        } else if (retryCount < maxRetries) {
+            retryCount++;
+            setTimeout(tryInitialize, 100);
+            return false;
         } else {
             // Fallback to native select behavior
             console.log('Using native select fallback');
@@ -63,22 +77,29 @@ function initializeCategoryDropdownInteraction() {
                     categorySelect.size = 0;
                 });
             }
+            return false;
         }
-        
-        // Listen for changes regardless of dropdown type
-        if (categorySelect) {
-            categorySelect.addEventListener("change", function() {
-                if (categorySelect.value) {
-                    document.getElementById('new_category_name').value = '';
-                    document.getElementById('new_category_description').value = '';
-                }
-            });
-        }
-    }, 100);
+    }
+    
+    tryInitialize();
+    
+    // Listen for changes regardless of dropdown type
+    if (categorySelect) {
+        categorySelect.addEventListener("change", function() {
+            if (categorySelect.value) {
+                document.getElementById('new_category_name').value = '';
+                document.getElementById('new_category_description').value = '';
+            }
+        });
+    }
 }
 
-// Initialize category dropdown interaction
-initializeCategoryDropdownInteraction();
+// Initialize category dropdown interaction when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeCategoryDropdownInteraction);
+} else {
+    initializeCategoryDropdownInteraction();
+}
 
 /* New category input handling */
 var newCategoryName = document.getElementById('new_category_name');
