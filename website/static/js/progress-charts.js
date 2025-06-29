@@ -92,22 +92,54 @@ function fetchPerformanceSummary(days = 30) {
      */
     const url = `/api/progress/performance-summary?days=${days}`;
     
-    fetch(url)
+    console.log(`Fetching performance summary for ${days} days from: ${url}`);
+    
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
         .then(response => {
+            console.log(`Performance summary API response status: ${response.status}`);
+            if (response.status === 401) {
+                throw new Error('Authentication required. Please log in.');
+            }
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
             }
             return response.json();
         })
         .then(data => {
+            console.log('Received performance summary data:', data);
+            
             if (data.error) {
                 throw new Error(data.error);
             }
+            
+            // Validate required data structure
+            if (typeof data.total_sessions === 'undefined') {
+                throw new Error('Invalid response: missing total_sessions');
+            }
+            
             renderPerformanceSummaryCharts(data);
         })
         .catch(error => {
             console.error('Error fetching performance summary:', error);
-            showChartError('performance-summary-container', 'Failed to load performance summary');
+            
+            let errorMessage = 'Failed to load performance summary';
+            
+            if (error.message.includes('Authentication required')) {
+                errorMessage = 'Please log in to view performance summary.';
+            } else if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+                errorMessage = 'Network error. Please check your connection and try again.';
+            } else {
+                errorMessage += `\n\nError details: ${error.message}`;
+            }
+            
+            showChartError('performance-summary-container', errorMessage);
         });
 }
 
@@ -588,19 +620,38 @@ function updateSummaryStats(data) {
      * @param {Object} data - Performance summary data
      */
     const statsElements = {
-        'total-sessions': data.total_sessions,
-        'total-exercises': data.total_exercises,
-        'total-volume': data.total_volume ? `${data.total_volume.toLocaleString()} kg` : '0 kg',
+        'total-sessions-chart': data.total_sessions || 0,
+        'total-exercises-chart': data.total_exercises || 0,
+        'total-volume-chart': data.total_volume ? `${data.total_volume.toLocaleString()} kg` : '0 kg',
         'sessions-per-week': data.averages ? data.averages.sessions_per_week : '0',
         'avg-exercises-per-session': data.averages ? data.averages.exercises_per_session : '0',
-        'unique-exercises': data.unique_exercises || 0
+        'unique-exercises-chart': data.unique_exercises || 0
     };
     
+    // Update elements with validation
     for (const [elementId, value] of Object.entries(statsElements)) {
         const element = document.getElementById(elementId);
         if (element) {
             element.textContent = value;
+            // Add visual feedback for corrected data
+            if (data.data_quality && data.data_quality.duplicate_sessions_filtered > 0) {
+                element.setAttribute('title', 
+                    `Corrected data: ${data.data_quality.duplicate_sessions_filtered} duplicate sessions filtered out`);
+                element.style.borderBottom = '2px solid #28a745'; // Green indicator for corrected data
+            }
+        } else {
+            console.warn(`Element with ID '${elementId}' not found in DOM`);
         }
+    }
+    
+    // Log data quality information for debugging
+    if (data.data_quality) {
+        console.log('Performance Summary Data Quality:', {
+            rawSessions: data.data_quality.raw_sessions_found,
+            duplicatesFiltered: data.data_quality.duplicate_sessions_filtered,
+            finalSessions: data.total_sessions,
+            deduplicationThreshold: data.data_quality.deduplication_threshold_minutes + ' minutes'
+        });
     }
 }
 
@@ -663,18 +714,50 @@ function showChartError(chartId, message) {
      * @param {string} chartId - ID of the chart container or canvas
      * @param {string} message - Error message to display
      */
-    const container = document.getElementById(chartId) || document.getElementById(chartId + '-container');
+    const container = document.getElementById(chartId) || 
+                      document.getElementById(chartId + '-container') ||
+                      document.querySelector(`[data-chart="${chartId}"]`) ||
+                      document.querySelector('.summary-stats-grid'); // Fallback for performance summary
+    
     if (container) {
         container.innerHTML = `
-            <div class="chart-error">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <p>${message}</p>
+            <div class="chart-error" style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                text-align: center;
+                color: #dc3545;
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                margin: 10px 0;
+            ">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 24px; margin-bottom: 10px;"></i>
+                <p style="margin: 0; font-weight: 500;">${message}</p>
+                <button onclick="fetchPerformanceSummary()" style="
+                    margin-top: 10px;
+                    padding: 8px 16px;
+                    background-color: #007bff;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 14px;
+                ">
+                    <i class="fa fa-refresh"></i> Retry
+                </button>
             </div>
         `;
         container.style.display = 'flex';
         container.style.alignItems = 'center';
         container.style.justifyContent = 'center';
         container.style.minHeight = '200px';
+    } else {
+        console.error(`Cannot display chart error: container '${chartId}' not found`);
+        // Fallback: show alert if no container found
+        alert(`Chart Error: ${message}`);
     }
 }
 

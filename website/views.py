@@ -765,6 +765,91 @@ def debug_weight_data():
         }), 500
 
 
+# PUBLIC_INTERFACE  
+@views.route("/api/debug/performance-metrics", methods=["GET"])
+@login_required  
+def debug_performance_metrics():
+    """
+    Debug endpoint to show performance metrics calculation breakdown for troubleshooting.
+    """
+    try:
+        days = request.args.get('days', 30, type=int)
+        start_date = datetime.utcnow() - timedelta(days=days)
+        
+        # Get raw session data
+        all_sessions = (WorkoutSession.query
+                       .filter_by(user_id=current_user.id)
+                       .filter(WorkoutSession.timestamp >= start_date)
+                       .order_by(WorkoutSession.timestamp.desc())
+                       .all())
+        
+        # Analyze sessions for duplicates
+        session_analysis = []
+        duplicate_pairs = []
+        session_threshold = timedelta(minutes=5)
+        
+        for i, session in enumerate(all_sessions):
+            session_info = {
+                'id': session.id,
+                'workout_id': session.workout_id,
+                'workout_name': session.workout.name if session.workout else 'Unknown',
+                'timestamp': session.timestamp.isoformat(),
+                'exercise_count': len(session.exercise_logs),
+                'total_volume': sum(log.weight * log.reps for log in session.exercise_logs 
+                                  if log.weight and log.reps),
+                'is_potential_duplicate': False,
+                'duplicate_of': None
+            }
+            
+            # Check for potential duplicates
+            for j, other_session in enumerate(all_sessions[:i]):
+                if (session.workout_id == other_session.workout_id and 
+                    abs((session.timestamp - other_session.timestamp).total_seconds()) < session_threshold.total_seconds()):
+                    session_info['is_potential_duplicate'] = True
+                    session_info['duplicate_of'] = other_session.id
+                    duplicate_pairs.append({
+                        'session1_id': other_session.id,
+                        'session2_id': session.id,
+                        'time_diff_seconds': abs((session.timestamp - other_session.timestamp).total_seconds()),
+                        'same_workout': session.workout_id == other_session.workout_id
+                    })
+                    break
+            
+            session_analysis.append(session_info)
+        
+        # Get the corrected performance summary
+        performance_summary = get_performance_summary()
+        summary_data = performance_summary.get_json() if hasattr(performance_summary, 'get_json') else {}
+        
+        return jsonify({
+            'debug_info': {
+                'user_id': current_user.id,
+                'period_days': days,
+                'start_date': start_date.isoformat(),
+                'analysis_timestamp': datetime.utcnow().isoformat()
+            },
+            'raw_data': {
+                'total_sessions_found': len(all_sessions),
+                'potential_duplicates': len([s for s in session_analysis if s['is_potential_duplicate']]),
+                'duplicate_pairs': duplicate_pairs,
+                'session_analysis': session_analysis
+            },
+            'corrected_metrics': summary_data,
+            'recommendations': [
+                'Check for rapid-fire session creation in the UI',
+                'Consider implementing client-side duplicate prevention',
+                'Review session creation API for race conditions',
+                'Validate workout completion workflow'
+            ]
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'Debug metrics query failed: {str(e)}',
+            'user_id': current_user.id if current_user and current_user.is_authenticated else None
+        }), 500
+
+
 # PUBLIC_INTERFACE
 @views.route("/api/progress/exercise-frequency", methods=["GET"])
 @login_required
