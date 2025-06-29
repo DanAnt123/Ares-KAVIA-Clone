@@ -197,11 +197,24 @@ class CustomDropdown {
         
         optionElement.appendChild(optionContent);
         
-        // Add direct click listener for better reliability
+        // Add direct click listener for better reliability with proper event handling
         optionElement.addEventListener('click', (e) => {
+            console.log('Direct option click handler triggered:', e.target);
             e.preventDefault();
             e.stopPropagation();
             if (!optionElement.classList.contains('disabled')) {
+                console.log('Selecting option via direct handler, index:', index);
+                this.selectOption(index);
+                this.close();
+            }
+        });
+        
+        // Add mousedown listener as backup
+        optionElement.addEventListener('mousedown', (e) => {
+            console.log('Option mousedown triggered:', e.target);
+            e.preventDefault();
+            if (!optionElement.classList.contains('disabled')) {
+                console.log('Selecting option via mousedown handler, index:', index);
                 this.selectOption(index);
                 this.close();
             }
@@ -245,6 +258,12 @@ class CustomDropdown {
         // Option clicks - use event delegation for better reliability
         this.menu.addEventListener('click', this.handleOptionClick);
         this.menu.addEventListener('mousedown', this.handleOptionClick);
+        
+        // Add touchstart for mobile devices
+        this.menu.addEventListener('touchstart', this.handleOptionClick);
+        
+        // Ensure menu container has proper pointer events
+        this.menu.style.pointerEvents = 'auto';
         
         // Close on outside click
         document.addEventListener('click', this.handleDocumentClick);
@@ -290,16 +309,23 @@ class CustomDropdown {
      * Handle option click
      */
     handleOptionClick(event) {
+        // Allow the event to bubble up for debugging
+        console.log('Option clicked:', event.target);
+        
         event.preventDefault();
         event.stopPropagation();
         
         const optionElement = event.target.closest('.dropdown-option');
+        console.log('Option element found:', optionElement);
         
         if (!optionElement || optionElement.classList.contains('disabled')) {
+            console.log('Option element invalid or disabled');
             return;
         }
         
         const index = parseInt(optionElement.getAttribute('data-index'));
+        console.log('Option index:', index);
+        
         if (index >= 0) {
             this.selectOption(index);
             this.close();
@@ -421,6 +447,9 @@ class CustomDropdown {
         this.container.classList.add('open');
         this.container.setAttribute('aria-expanded', 'true');
         
+        // Ensure menu is clickable
+        this.menu.style.pointerEvents = 'auto';
+        
         // Focus selected option or first option
         const focusIndex = this.selectedIndex >= 0 ? this.selectedIndex : 0;
         this.setFocusedOption(focusIndex);
@@ -431,7 +460,8 @@ class CustomDropdown {
         // Announce to screen readers
         this.announceToScreenReader('Options expanded');
         
-        console.log('Dropdown opened');
+        console.log('Dropdown opened, menu pointer events:', this.menu.style.pointerEvents);
+        console.log('Options available:', this.optionElements.length);
     }
     
     /**
@@ -813,11 +843,31 @@ function initializeCustomDropdown(selectElement, options = {}) {
         return window.customDropdowns.get(selectElement);
     }
     
-    // Create new dropdown instance
-    const dropdown = new CustomDropdown(selectElement, options);
-    window.customDropdowns.set(selectElement, dropdown);
-    
-    return dropdown;
+    try {
+        // Create new dropdown instance
+        const dropdown = new CustomDropdown(selectElement, options);
+        window.customDropdowns.set(selectElement, dropdown);
+        
+        // Verify dropdown was created successfully
+        if (dropdown.container && dropdown.menu && dropdown.optionElements) {
+            console.log('Dropdown created successfully for:', selectElement.id);
+            console.log('Options count:', dropdown.optionElements.length);
+            
+            // Force pointer events as failsafe
+            dropdown.menu.style.pointerEvents = 'auto';
+            dropdown.optionElements.forEach(option => {
+                option.style.pointerEvents = 'auto';
+            });
+            
+            return dropdown;
+        } else {
+            console.error('Dropdown creation incomplete for:', selectElement.id);
+            return null;
+        }
+    } catch (error) {
+        console.error('Error creating dropdown for:', selectElement.id, error);
+        return null;
+    }
 }
 
 /**
