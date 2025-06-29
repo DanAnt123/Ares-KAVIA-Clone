@@ -265,12 +265,8 @@ class WorkoutHistoryManager {
                     this.closeSessionModal();
                 }
             });
-}
-=======
-SEARCH
         }
     }
-}
 
     // PUBLIC_INTERFACE
     setupClearHistoryModal() {
@@ -380,12 +376,8 @@ SEARCH
             this.allSessions.forEach(session => {
                 this.intersectionObserver.observe(session.element);
             });
-}
-=======
-SEARCH
         }
     }
-}
 
     // PUBLIC_INTERFACE
     setupAutoRefresh() {
@@ -585,12 +577,8 @@ SEARCH
                 
             default:
                 return sessions;
-}
-=======
-SEARCH
         }
     }
-}
 
     // PUBLIC_INTERFACE
     applySorting(sessions) {
@@ -632,12 +620,8 @@ SEARCH
                 
             default:
                 return sessions;
-}
-=======
-SEARCH
         }
     }
-}
 
     // PUBLIC_INTERFACE
     updateDisplay() {
@@ -649,12 +633,8 @@ SEARCH
         } else {
             this.showResults();
             this.renderSessions();
-}
-=======
-SEARCH
         }
     }
-}
 
     // PUBLIC_INTERFACE
     renderSessions() {
@@ -706,12 +686,8 @@ SEARCH
         
         if (this.emptyState) {
             this.emptyState.style.display = 'none';
-}
-=======
-SEARCH
         }
     }
-}
 
     // PUBLIC_INTERFACE
     showNoResults() {
@@ -728,12 +704,8 @@ SEARCH
         
         if (this.emptyState) {
             this.emptyState.style.display = 'none';
-}
-=======
-SEARCH
         }
     }
-}
 
     // PUBLIC_INTERFACE
     updateResultsInfo() {
@@ -749,12 +721,8 @@ SEARCH
             } else {
                 this.resultsCount.textContent = `${count} of ${total} sessions`;
             }
-}
-=======
-SEARCH
         }
     }
-}
 
     // PUBLIC_INTERFACE
     updateActiveFiltersDisplay() {
@@ -802,12 +770,8 @@ SEARCH
         const hasActiveFilters = activeFilters.length > 0;
         if (this.clearFiltersBtn) {
             this.clearFiltersBtn.style.display = hasActiveFilters ? 'inline-flex' : 'none';
-}
-=======
-SEARCH
         }
     }
-}
 
     // PUBLIC_INTERFACE
     clearAllFilters() {
@@ -880,12 +844,8 @@ SEARCH
                     block: 'nearest' 
                 });
             }
-}
-=======
-SEARCH
         }
     }
-}
 
     // PUBLIC_INTERFACE
     showSessionModal(sessionId) {
@@ -920,12 +880,8 @@ SEARCH
         if (this.sessionModal) {
             this.sessionModal.style.display = 'none';
             document.body.style.overflow = '';
-}
-=======
-SEARCH
         }
     }
-}
 
     // PUBLIC_INTERFACE
     refreshData() {
@@ -1034,12 +990,8 @@ SEARCH
         if (!sessionCard.dataset.preloaded) {
             sessionCard.dataset.preloaded = 'true';
             // Additional preloading logic could go here
-}
-=======
-SEARCH
         }
     }
-}
 
     // PUBLIC_INTERFACE
     showLoading() {
@@ -1048,12 +1000,8 @@ SEARCH
          */
         if (this.loadingIndicator) {
             this.loadingIndicator.style.display = 'flex';
-}
-=======
-SEARCH
         }
     }
-}
 
     // PUBLIC_INTERFACE
     hideLoading() {
@@ -1062,12 +1010,8 @@ SEARCH
          */
         if (this.loadingIndicator) {
             this.loadingIndicator.style.display = 'none';
-}
-=======
-SEARCH
         }
     }
-}
 
     // PUBLIC_INTERFACE
     showSuccessMessage(message) {
@@ -1083,6 +1027,14 @@ SEARCH
          * Show error message to user
          */
         this.showMessage(message, 'error');
+    }
+
+    // PUBLIC_INTERFACE
+    showWarningMessage(message) {
+        /**
+         * Show warning message to user
+         */
+        this.showMessage(message, 'warning');
     }
 
     // PUBLIC_INTERFACE
@@ -1141,26 +1093,13 @@ SEARCH
             }, 300);
         }, autoRemoveTime);
         
-
-    // PUBLIC_INTERFACE
-    showClearHistoryModal() {
-=======
-SEARCH
         // Add accessibility attributes
         messageEl.setAttribute('role', 'alert');
         messageEl.setAttribute('aria-live', 'polite');
         if (type === 'error') {
             messageEl.setAttribute('aria-live', 'assertive');
-}
-=======
-SEARCH
         }
     }
-}
-
-    // PUBLIC_INTERFACE
-    showClearHistoryModal() {
-=======
 
     // PUBLIC_INTERFACE
     showClearHistoryModal() {
@@ -1185,14 +1124,9 @@ SEARCH
         const sessionCount = this.allSessions.length;
         const modalTitle = this.clearHistoryModal.querySelector('.modal-title');
         if (modalTitle) {
-            modalTitle.textContent = `Clear All Workout History (${sessionCount} session${sessionCount !== 1 ? 's' : ''})`;
-        }
-        
-        const modalDescription = this.clearHistoryModal.querySelector('.modal-description');
-        if (modalDescription) {
-            modalDescription.innerHTML = `
-                This will permanently delete <strong>${sessionCount} workout session${sessionCount !== 1 ? 's' : ''}</strong> 
-                and cannot be undone. All exercise data, weights, and progress will be lost.
+            modalTitle.innerHTML = `
+                <i class="fa fa-exclamation-triangle"></i>
+                Clear All Workout History (${sessionCount} session${sessionCount !== 1 ? 's' : ''})
             `;
         }
         
@@ -1232,32 +1166,23 @@ SEARCH
         
         if (this.clearModalConfirm) {
             this.clearModalConfirm.disabled = true;
-            this.clearModalConfirm.innerHTML = 'Clear All History';
+            this.clearModalConfirm.innerHTML = '<i class="fa fa-trash"></i> Clear All History';
             this.clearModalConfirm.classList.remove('loading');
         }
         
         if (this.clearModalCancel) {
             this.clearModalCancel.disabled = false;
-            this.clearModalCancel.textContent = 'Cancel';
+            this.clearModalCancel.innerHTML = '<i class="fa fa-times"></i> Cancel';
         }
         
         if (this.clearModalClose) {
             this.clearModalClose.disabled = false;
         }
         
-
-    // PUBLIC_INTERFACE
-    closeClearHistoryModal() {
-=======
-SEARCH
         // Remove any error states
         const errorElements = this.clearHistoryModal.querySelectorAll('.error-message');
         errorElements.forEach(el => el.remove());
     }
-
-    // PUBLIC_INTERFACE
-    closeClearHistoryModal() {
-=======
 
     // PUBLIC_INTERFACE
     closeClearHistoryModal() {
@@ -1290,17 +1215,8 @@ SEARCH
             if (this.clearHistoryBtn) {
                 this.clearHistoryBtn.focus();
             }
-
-    // PUBLIC_INTERFACE
-    validateClearConfirmation() {
-=======
-SEARCH
         }, 200);
     }
-
-    // PUBLIC_INTERFACE
-    validateClearConfirmation() {
-=======
 
     // PUBLIC_INTERFACE
     validateClearConfirmation() {
@@ -1469,12 +1385,8 @@ SEARCH
         
         if (this.clearModalClose) {
             this.clearModalClose.disabled = isLoading;
-}
-=======
-SEARCH
         }
     }
-}
     
     // PUBLIC_INTERFACE
     showGlobalLoadingState() {
@@ -1507,12 +1419,8 @@ SEARCH
         const overlay = document.getElementById('global-loading-overlay');
         if (overlay) {
             overlay.style.display = 'none';
-}
-=======
-SEARCH
         }
     }
-}
     
     // PUBLIC_INTERFACE
     showProgressToast(message) {
@@ -1553,19 +1461,7 @@ SEARCH
                     toast.parentNode.removeChild(toast);
                 }
             }, 300);
-}
-=======
-SEARCH
         }
-    }
-}
-    
-    // PUBLIC_INTERFACE
-    showWarningMessage(message) {
-        /**
-         * Show warning message to user
-         */
-        this.showMessage(message, 'warning');
     }
     
     // PUBLIC_INTERFACE
@@ -1574,7 +1470,7 @@ SEARCH
          * Handle timeout during clear history operation
          */
         this.showErrorMessage('Request timed out. The operation may still be in progress. Please refresh the page to check the status.');
-        this.resetModalAfterError('Clear All History', false);
+        this.resetModalAfterError('<i class="fa fa-trash"></i> Clear All History', false);
     }
     
     // PUBLIC_INTERFACE
@@ -1599,12 +1495,8 @@ SEARCH
         
         if (this.clearConfirmationInput) {
             this.clearConfirmationInput.disabled = false;
-}
-=======
-SEARCH
         }
     }
-}
     
     // PUBLIC_INTERFACE
     handleSuccessfulClear() {
@@ -1640,13 +1532,8 @@ SEARCH
         if (this.clearHistoryBtn) {
             this.clearHistoryBtn.disabled = true;
             this.clearHistoryBtn.title = 'No history to clear';
-}
-=======
-SEARCH
         }
     }
-}
-=======
 }
 
 // Initialize when DOM is loaded
@@ -1664,10 +1551,6 @@ document.addEventListener('visibilitychange', () => {
         const timeSinceLastUpdate = Date.now() - (window.historyManager.lastUpdate || 0);
         if (timeSinceLastUpdate > 300000) {
             window.historyManager.refreshData();
-}
-=======
-SEARCH
         }
     }
-}
 });
