@@ -1,683 +1,489 @@
-/**
- * Responsive Utilities CSS
- * Provides container classes, responsive utilities, and layout fixes
- * to ensure all components fit the web page properly
- */
-
 /* ===============================
-   CONTAINER SYSTEM
+   ENHANCED RESPONSIVE UTILITIES
    =============================== */
 
-.container {
-  width: 100%;
-  max-width: var(--max-width-7xl, 80rem);
-  margin: 0 auto;
-  padding-left: var(--space-4, 1rem);
-  padding-right: var(--space-4, 1rem);
-}
-
+/* Base Container Classes */
 .container-fluid {
-  width: 100%;
-  padding-left: var(--space-4, 1rem);
-  padding-right: var(--space-4, 1rem);
+    width: 100%;
+    padding-right: var(--space-4, 1rem);
+    padding-left: var(--space-4, 1rem);
+    margin-right: auto;
+    margin-left: auto;
 }
-
-.container-sm {
-  max-width: var(--max-width-2xl, 42rem);
-}
-
-.container-md {
-  max-width: var(--max-width-4xl, 56rem);
-}
-
-.container-lg {
-  max-width: var(--max-width-6xl, 72rem);
-}
-
-/* ===============================
-   RESPONSIVE CONTAINERS
-   =============================== */
-
-@media (max-width: 1200px) {
-  .container,
-  .container-fluid {
-    padding-left: var(--space-3, 0.75rem);
-    padding-right: var(--space-3, 0.75rem);
-  }
-}
-
-@media (max-width: 768px) {
-  .container,
-  .container-fluid {
-    padding-left: var(--space-2, 0.5rem);
-    padding-right: var(--space-2, 0.5rem);
-  }
-}
-
-@media (max-width: 480px) {
-  .container,
-  .container-fluid {
-    padding-left: var(--space-1, 0.25rem);
-    padding-right: var(--space-1, 0.25rem);
-  }
-}
-
-/* ===============================
-   LAYOUT UTILITIES
-   =============================== */
 
 .h-100 {
-  height: 100%;
-}
-
-.min-h-screen {
-  min-height: 100vh;
+    height: 100% !important;
 }
 
 .w-100 {
-  width: 100%;
+    width: 100% !important;
 }
 
-.d-flex {
-  display: flex;
+/* Display Utilities */
+.d-none { display: none !important; }
+.d-block { display: block !important; }
+.d-flex { display: flex !important; }
+.d-grid { display: grid !important; }
+.d-inline { display: inline !important; }
+.d-inline-block { display: inline-block !important; }
+.d-inline-flex { display: inline-flex !important; }
+
+/* Flex Utilities */
+.flex-column { flex-direction: column !important; }
+.flex-row { flex-direction: row !important; }
+.flex-wrap { flex-wrap: wrap !important; }
+.flex-nowrap { flex-wrap: nowrap !important; }
+.flex-1 { flex: 1 !important; }
+.flex-auto { flex: 1 1 auto !important; }
+.flex-none { flex: none !important; }
+
+.justify-content-start { justify-content: flex-start !important; }
+.justify-content-end { justify-content: flex-end !important; }
+.justify-content-center { justify-content: center !important; }
+.justify-content-between { justify-content: space-between !important; }
+.justify-content-around { justify-content: space-around !important; }
+.justify-content-evenly { justify-content: space-evenly !important; }
+
+.align-items-start { align-items: flex-start !important; }
+.align-items-end { align-items: flex-end !important; }
+.align-items-center { align-items: center !important; }
+.align-items-baseline { align-items: baseline !important; }
+.align-items-stretch { align-items: stretch !important; }
+
+.align-self-start { align-self: flex-start !important; }
+.align-self-end { align-self: flex-end !important; }
+.align-self-center { align-self: center !important; }
+.align-self-baseline { align-self: baseline !important; }
+.align-self-stretch { align-self: stretch !important; }
+
+/* Text Utilities */
+.text-left { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+.text-justify { text-align: justify !important; }
+
+.text-uppercase { text-transform: uppercase !important; }
+.text-lowercase { text-transform: lowercase !important; }
+.text-capitalize { text-transform: capitalize !important; }
+
+.font-weight-light { font-weight: 300 !important; }
+.font-weight-normal { font-weight: 400 !important; }
+.font-weight-medium { font-weight: 500 !important; }
+.font-weight-semibold { font-weight: 600 !important; }
+.font-weight-bold { font-weight: 700 !important; }
+
+/* Spacing Utilities */
+.m-0 { margin: 0 !important; }
+.m-1 { margin: 0.25rem !important; }
+.m-2 { margin: 0.5rem !important; }
+.m-3 { margin: 0.75rem !important; }
+.m-4 { margin: 1rem !important; }
+.m-5 { margin: 1.25rem !important; }
+.m-auto { margin: auto !important; }
+
+.mt-0 { margin-top: 0 !important; }
+.mt-1 { margin-top: 0.25rem !important; }
+.mt-2 { margin-top: 0.5rem !important; }
+.mt-3 { margin-top: 0.75rem !important; }
+.mt-4 { margin-top: 1rem !important; }
+.mt-5 { margin-top: 1.25rem !important; }
+.mt-auto { margin-top: auto !important; }
+
+.mb-0 { margin-bottom: 0 !important; }
+.mb-1 { margin-bottom: 0.25rem !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-3 { margin-bottom: 0.75rem !important; }
+.mb-4 { margin-bottom: 1rem !important; }
+.mb-5 { margin-bottom: 1.25rem !important; }
+.mb-auto { margin-bottom: auto !important; }
+
+.ml-0 { margin-left: 0 !important; }
+.ml-1 { margin-left: 0.25rem !important; }
+.ml-2 { margin-left: 0.5rem !important; }
+.ml-3 { margin-left: 0.75rem !important; }
+.ml-4 { margin-left: 1rem !important; }
+.ml-5 { margin-left: 1.25rem !important; }
+.ml-auto { margin-left: auto !important; }
+
+.mr-0 { margin-right: 0 !important; }
+.mr-1 { margin-right: 0.25rem !important; }
+.mr-2 { margin-right: 0.5rem !important; }
+.mr-3 { margin-right: 0.75rem !important; }
+.mr-4 { margin-right: 1rem !important; }
+.mr-5 { margin-right: 1.25rem !important; }
+.mr-auto { margin-right: auto !important; }
+
+.mx-0 { margin-left: 0 !important; margin-right: 0 !important; }
+.mx-1 { margin-left: 0.25rem !important; margin-right: 0.25rem !important; }
+.mx-2 { margin-left: 0.5rem !important; margin-right: 0.5rem !important; }
+.mx-3 { margin-left: 0.75rem !important; margin-right: 0.75rem !important; }
+.mx-4 { margin-left: 1rem !important; margin-right: 1rem !important; }
+.mx-5 { margin-left: 1.25rem !important; margin-right: 1.25rem !important; }
+.mx-auto { margin-left: auto !important; margin-right: auto !important; }
+
+.my-0 { margin-top: 0 !important; margin-bottom: 0 !important; }
+.my-1 { margin-top: 0.25rem !important; margin-bottom: 0.25rem !important; }
+.my-2 { margin-top: 0.5rem !important; margin-bottom: 0.5rem !important; }
+.my-3 { margin-top: 0.75rem !important; margin-bottom: 0.75rem !important; }
+.my-4 { margin-top: 1rem !important; margin-bottom: 1rem !important; }
+.my-5 { margin-top: 1.25rem !important; margin-bottom: 1.25rem !important; }
+.my-auto { margin-top: auto !important; margin-bottom: auto !important; }
+
+.p-0 { padding: 0 !important; }
+.p-1 { padding: 0.25rem !important; }
+.p-2 { padding: 0.5rem !important; }
+.p-3 { padding: 0.75rem !important; }
+.p-4 { padding: 1rem !important; }
+.p-5 { padding: 1.25rem !important; }
+
+.pt-0 { padding-top: 0 !important; }
+.pt-1 { padding-top: 0.25rem !important; }
+.pt-2 { padding-top: 0.5rem !important; }
+.pt-3 { padding-top: 0.75rem !important; }
+.pt-4 { padding-top: 1rem !important; }
+.pt-5 { padding-top: 1.25rem !important; }
+
+.pb-0 { padding-bottom: 0 !important; }
+.pb-1 { padding-bottom: 0.25rem !important; }
+.pb-2 { padding-bottom: 0.5rem !important; }
+.pb-3 { padding-bottom: 0.75rem !important; }
+.pb-4 { padding-bottom: 1rem !important; }
+.pb-5 { padding-bottom: 1.25rem !important; }
+
+.pl-0 { padding-left: 0 !important; }
+.pl-1 { padding-left: 0.25rem !important; }
+.pl-2 { padding-left: 0.5rem !important; }
+.pl-3 { padding-left: 0.75rem !important; }
+.pl-4 { padding-left: 1rem !important; }
+.pl-5 { padding-left: 1.25rem !important; }
+
+.pr-0 { padding-right: 0 !important; }
+.pr-1 { padding-right: 0.25rem !important; }
+.pr-2 { padding-right: 0.5rem !important; }
+.pr-3 { padding-right: 0.75rem !important; }
+.pr-4 { padding-right: 1rem !important; }
+.pr-5 { padding-right: 1.25rem !important; }
+
+.px-0 { padding-left: 0 !important; padding-right: 0 !important; }
+.px-1 { padding-left: 0.25rem !important; padding-right: 0.25rem !important; }
+.px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+.px-3 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+.px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+.px-5 { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+
+.py-0 { padding-top: 0 !important; padding-bottom: 0 !important; }
+.py-1 { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+.py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+.py-3 { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
+.py-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+.py-5 { padding-top: 1.25rem !important; padding-bottom: 1.25rem !important; }
+
+/* Gap Utilities */
+.gap-0 { gap: 0 !important; }
+.gap-1 { gap: 0.25rem !important; }
+.gap-2 { gap: 0.5rem !important; }
+.gap-3 { gap: 0.75rem !important; }
+.gap-4 { gap: 1rem !important; }
+.gap-5 { gap: 1.25rem !important; }
+.gap-6 { gap: 1.5rem !important; }
+
+/* Position Utilities */
+.position-static { position: static !important; }
+.position-relative { position: relative !important; }
+.position-absolute { position: absolute !important; }
+.position-fixed { position: fixed !important; }
+.position-sticky { position: sticky !important; }
+
+/* Overflow Utilities */
+.overflow-auto { overflow: auto !important; }
+.overflow-hidden { overflow: hidden !important; }
+.overflow-visible { overflow: visible !important; }
+.overflow-scroll { overflow: scroll !important; }
+
+/* Border Radius Utilities */
+.rounded-0 { border-radius: 0 !important; }
+.rounded-sm { border-radius: 0.125rem !important; }
+.rounded { border-radius: 0.25rem !important; }
+.rounded-md { border-radius: 0.375rem !important; }
+.rounded-lg { border-radius: 0.5rem !important; }
+.rounded-xl { border-radius: 0.75rem !important; }
+.rounded-2xl { border-radius: 1rem !important; }
+.rounded-3xl { border-radius: 1.5rem !important; }
+.rounded-full { border-radius: 50% !important; }
+
+/* Shadow Utilities */
+.shadow-none { box-shadow: none !important; }
+.shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important; }
+.shadow { box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important; }
+.shadow-md { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important; }
+.shadow-lg { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important; }
+.shadow-xl { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important; }
+
+/* Z-index Utilities */
+.z-0 { z-index: 0 !important; }
+.z-10 { z-index: 10 !important; }
+.z-20 { z-index: 20 !important; }
+.z-30 { z-index: 30 !important; }
+.z-40 { z-index: 40 !important; }
+.z-50 { z-index: 50 !important; }
+
+/* Interaction Utilities */
+.pointer-events-none { pointer-events: none !important; }
+.pointer-events-auto { pointer-events: auto !important; }
+.cursor-auto { cursor: auto !important; }
+.cursor-default { cursor: default !important; }
+.cursor-pointer { cursor: pointer !important; }
+.cursor-wait { cursor: wait !important; }
+.cursor-text { cursor: text !important; }
+.cursor-move { cursor: move !important; }
+.cursor-help { cursor: help !important; }
+.cursor-not-allowed { cursor: not-allowed !important; }
+
+/* Accessibility Utilities */
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
 }
 
-.flex-column {
-  flex-direction: column;
+.not-sr-only {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
 }
 
-.justify-center {
-  justify-content: center;
+/* Responsive Breakpoints */
+@media (max-width: 575.98px) {
+    .d-sm-none { display: none !important; }
+    .d-sm-inline { display: inline !important; }
+    .d-sm-inline-block { display: inline-block !important; }
+    .d-sm-block { display: block !important; }
+    .d-sm-flex { display: flex !important; }
+    .d-sm-inline-flex { display: inline-flex !important; }
+    .d-sm-grid { display: grid !important; }
+    
+    .flex-sm-row { flex-direction: row !important; }
+    .flex-sm-column { flex-direction: column !important; }
+    .flex-sm-wrap { flex-wrap: wrap !important; }
+    .flex-sm-nowrap { flex-wrap: nowrap !important; }
+    
+    .justify-content-sm-start { justify-content: flex-start !important; }
+    .justify-content-sm-end { justify-content: flex-end !important; }
+    .justify-content-sm-center { justify-content: center !important; }
+    .justify-content-sm-between { justify-content: space-between !important; }
+    
+    .align-items-sm-start { align-items: flex-start !important; }
+    .align-items-sm-end { align-items: flex-end !important; }
+    .align-items-sm-center { align-items: center !important; }
+    
+    .text-sm-left { text-align: left !important; }
+    .text-sm-center { text-align: center !important; }
+    .text-sm-right { text-align: right !important; }
 }
 
-.align-center {
-  align-items: center;
+@media (min-width: 576px) {
+    .d-sm-none { display: none !important; }
+    .d-sm-inline { display: inline !important; }
+    .d-sm-inline-block { display: inline-block !important; }
+    .d-sm-block { display: block !important; }
+    .d-sm-flex { display: flex !important; }
+    .d-sm-inline-flex { display: inline-flex !important; }
+    .d-sm-grid { display: grid !important; }
 }
 
-.text-center {
-  text-align: center;
+@media (min-width: 768px) {
+    .d-md-none { display: none !important; }
+    .d-md-inline { display: inline !important; }
+    .d-md-inline-block { display: inline-block !important; }
+    .d-md-block { display: block !important; }
+    .d-md-flex { display: flex !important; }
+    .d-md-inline-flex { display: inline-flex !important; }
+    .d-md-grid { display: grid !important; }
+    
+    .flex-md-row { flex-direction: row !important; }
+    .flex-md-column { flex-direction: column !important; }
+    
+    .text-md-left { text-align: left !important; }
+    .text-md-center { text-align: center !important; }
+    .text-md-right { text-align: right !important; }
 }
 
-/* ===============================
-   RESPONSIVE GRID FIXES
-   =============================== */
-
-/* Fix workout grid on mobile */
-@media (max-width: 768px) {
-  .workouts-grid {
-    grid-template-columns: 1fr !important;
-    gap: var(--space-3, 0.75rem);
-    margin: 0 var(--space-2, 0.5rem);
-  }
-  
-  .workout-card {
-    margin: 0;
-    width: 100%;
-    box-sizing: border-box;
-  }
+@media (min-width: 992px) {
+    .d-lg-none { display: none !important; }
+    .d-lg-inline { display: inline !important; }
+    .d-lg-inline-block { display: inline-block !important; }
+    .d-lg-block { display: block !important; }
+    .d-lg-flex { display: flex !important; }
+    .d-lg-inline-flex { display: inline-flex !important; }
+    .d-lg-grid { display: grid !important; }
 }
 
-/* Fix exercise grid responsiveness */
-@media (max-width: 768px) {
-  .workout-form {
-    grid-template-columns: 1fr !important;
-    gap: var(--space-4, 1rem);
-  }
-  
-  .exercise-card {
-    margin: 0;
-    width: 100%;
-    box-sizing: border-box;
-  }
+@media (min-width: 1200px) {
+    .d-xl-none { display: none !important; }
+    .d-xl-inline { display: inline !important; }
+    .d-xl-inline-block { display: inline-block !important; }
+    .d-xl-block { display: block !important; }
+    .d-xl-flex { display: flex !important; }
+    .d-xl-inline-flex { display: inline-flex !important; }
+    .d-xl-grid { display: grid !important; }
 }
 
-/* ===============================
-   FORM RESPONSIVENESS FIXES
-   =============================== */
-
-@media (max-width: 768px) {
-  .form-row {
-    grid-template-columns: 1fr !important;
-    gap: var(--space-3, 0.75rem);
-  }
-  
-  .form-input,
-  .form-select {
-    width: 100%;
-    box-sizing: border-box;
-  }
-  
-  .btn {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .btn-group {
-    flex-direction: column;
-    gap: var(--space-2, 0.5rem);
-  }
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .btn,
+    .form-input,
+    .nav-link {
+        min-height: 44px;
+        padding: 0.75rem 1rem;
+    }
+    
+    .form-input {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
 }
 
-/* ===============================
-   NAVIGATION FIXES
-   =============================== */
-
-/* Ensure consistent main content margins across all breakpoints */
-.main-content {
-  margin-top: 64px !important; /* Desktop navbar height */
-  padding-top: var(--space-4, 1rem) !important;
-  min-height: calc(100vh - 64px) !important;
+/* Mobile Specific Utilities */
+@media (max-width: 767px) {
+    .container-fluid {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+    
+    .mobile-full-width {
+        width: 100% !important;
+        max-width: none !important;
+    }
+    
+    .mobile-text-center {
+        text-align: center !important;
+    }
+    
+    .mobile-hidden {
+        display: none !important;
+    }
 }
 
-@media (max-width: 1024px) {
-  .main-content {
-    margin-top: 60px !important; /* Tablet navbar height */
-    padding-top: var(--space-3, 0.75rem) !important;
-    min-height: calc(100vh - 60px) !important;
-  }
+/* Landscape Mobile Optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+    .landscape-compact {
+        padding: 0.5rem !important;
+        margin: 0.25rem !important;
+    }
+    
+    .landscape-small-text {
+        font-size: 0.875rem !important;
+    }
 }
 
-@media (max-width: 768px) {
-  .navbar-container {
-    padding-left: var(--space-2, 0.5rem);
-    padding-right: var(--space-2, 0.5rem);
-  }
-  
-  .main-content {
-    margin-top: 56px !important; /* Mobile navbar height */
-    padding-top: var(--space-3, 0.75rem) !important;
-    min-height: calc(100vh - 56px) !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .main-content {
-    margin-top: 52px !important; /* Small mobile navbar height */
-    padding-top: var(--space-2, 0.5rem) !important;
-    min-height: calc(100vh - 52px) !important;
-  }
-}
-
-/* ===============================
-   DASHBOARD LAYOUT FIXES
-   =============================== */
-
-/* Desktop dashboard adjustments */
-.dashboard-container {
-  padding-top: var(--space-6, 1.5rem) !important;
-  margin-top: 0 !important; /* Let main-content handle the navbar margin */
-}
-
-.workout-dashboard {
-  padding-top: var(--space-6, 1.5rem) !important;
-  margin-top: 0 !important; /* Let main-content handle the navbar margin */
-}
-
-.simple-workout-creation {
-  padding-top: var(--space-6, 1.5rem) !important;
-  margin-top: 0 !important; /* Let main-content handle the navbar margin */
-}
-
-@media (max-width: 768px) {
-  .dashboard-container {
-    padding: var(--space-4, 1rem) var(--space-3, 0.75rem) 0;
-  }
-  
-  .workout-dashboard {
-    padding: var(--space-4, 1rem) var(--space-3, 0.75rem) 0;
-  }
-  
-  .simple-workout-creation {
-    padding: var(--space-4, 1rem) var(--space-3, 0.75rem) 0;
-  }
-  
-  .dashboard-header {
-    padding: var(--space-4, 1rem) var(--space-2, 0.5rem);
-    margin-bottom: var(--space-6, 1.5rem);
-  }
-  
-  .workout-header {
-    padding: var(--space-4, 1rem) var(--space-2, 0.5rem);
-    margin-bottom: var(--space-6, 1.5rem);
-  }
-  
-  .simple-header {
-    padding: 0 var(--space-2, 0.5rem);
-    margin-bottom: var(--space-6, 1.5rem);
-  }
-  
-  .header-content {
-    flex-direction: column;
-    gap: var(--space-3, 0.75rem);
-  }
-  
-  .header-stats {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .stat-card {
-    flex: 1;
-    min-width: 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .dashboard-container,
-  .workout-dashboard,
-  .simple-workout-creation {
-    padding: var(--space-3, 0.75rem) var(--space-2, 0.5rem) 0;
-  }
-}
-
-/* ===============================
-   AUTH PAGE FIXES
-   =============================== */
-
-@media (max-width: 768px) {
-  .auth-container {
-    padding: var(--space-3, 0.75rem);
-  }
-  
-  .auth-card {
-    margin: var(--space-2, 0.5rem);
-    padding: var(--space-4, 1rem);
-    width: calc(100% - var(--space-4, 1rem));
-    max-width: none;
-  }
-  
-  .form-input {
-    padding: var(--space-3, 0.75rem);
-    font-size: 16px; /* Prevent zoom on iOS */
-  }
-}
-
-/* ===============================
-   HERO SECTION FIXES
-   =============================== */
-
-.hero-section {
-  padding-top: var(--space-8, 2rem) !important;
-  margin-top: 0 !important; /* Let main-content handle the navbar margin */
-  min-height: calc(100vh - 64px) !important; /* Account for navbar */
-}
-
-.workout-empty-state {
-  padding-top: var(--space-8, 2rem) !important;
-  margin-top: 0 !important; /* Let main-content handle the navbar margin */
-  min-height: calc(100vh - 64px) !important; /* Account for navbar */
-}
-
-.auth-container {
-  padding-top: var(--space-8, 2rem) !important;
-  margin-top: 0 !important; /* Let main-content handle the navbar margin */
-  min-height: calc(100vh - 64px) !important; /* Account for navbar */
-}
-
-@media (max-width: 1024px) {
-  .hero-section,
-  .workout-empty-state,
-  .auth-container {
-    min-height: calc(100vh - 60px) !important; /* Account for tablet navbar */
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-section {
-    padding: var(--space-6, 1.5rem) var(--space-3, 0.75rem) 0;
-    min-height: calc(100vh - 56px) !important; /* Account for mobile navbar */
-  }
-  
-  .workout-empty-state {
-    padding: var(--space-6, 1.5rem) var(--space-3, 0.75rem) 0;
-    min-height: calc(100vh - 56px) !important; /* Account for mobile navbar */
-  }
-  
-  .auth-container {
-    padding: var(--space-6, 1.5rem) var(--space-3, 0.75rem) 0;
-    min-height: calc(100vh - 56px) !important; /* Account for mobile navbar */
-  }
-  
-  .hero-content {
-    padding: 0 var(--space-3, 0.75rem);
-    max-width: none;
-  }
-  
-  .cta-actions {
-    flex-direction: column;
-    width: 100%;
-    gap: var(--space-3, 0.75rem);
-  }
-  
-  .btn-cta {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-section,
-  .workout-empty-state,
-  .auth-container {
-    min-height: calc(100vh - 52px) !important; /* Account for small mobile navbar */
-  }
-}
-
-/* ===============================
-   WORKOUT PAGE FIXES
-   =============================== */
-
-@media (max-width: 768px) {
-  .workout-dashboard {
-    padding: var(--space-3, 0.75rem) 0;
-  }
-  
-  .workout-header {
-    padding: var(--space-4, 1rem) var(--space-2, 0.5rem);
-  }
-  
-  .workout-header-content {
-    flex-direction: column;
-    gap: var(--space-4, 1rem);
-  }
-  
-  .workout-selector-wrapper {
-    max-width: none;
-    width: 100%;
-  }
-  
-  .workout-stats-summary {
-    width: 100%;
-    justify-content: center;
-    gap: var(--space-3, 0.75rem);
-  }
-  
-  .workout-controls {
-    flex-direction: column;
-    gap: var(--space-3, 0.75rem);
-  }
-  
-  .control-group {
-    width: 100%;
-  }
-  
-  .workout-edit-btn,
-  .workout-save-btn,
-  .workout-cancel-btn {
-    width: 100%;
-  }
-}
-
-/* ===============================
-   HISTORY PAGE FIXES
-   =============================== */
-
-@media (max-width: 768px) {
-  .history-controls-panel {
-    margin: 0 var(--space-2, 0.5rem) var(--space-6, 1.5rem);
-    padding: var(--space-3, 0.75rem);
-  }
-  
-  .controls-container {
-    grid-template-columns: 1fr;
-    gap: var(--space-4, 1rem);
-  }
-  
-  .filter-section,
-  .sort-section,
-  .action-section {
-    width: 100%;
-  }
-  
-  .filter-group,
-  .sort-group,
-  .search-group {
-    width: 100%;
-  }
-  
-  .sessions-container.view-grid {
-    grid-template-columns: 1fr !important;
-    gap: var(--space-3, 0.75rem);
-    padding: 0 var(--space-2, 0.5rem);
-  }
-  
-  .session-card {
-    margin: 0;
-    width: 100%;
-  }
-}
-
-/* ===============================
-   NEW WORKOUT PAGE FIXES
-   =============================== */
-
-@media (max-width: 768px) {
-  .simple-workout-creation {
-    padding: var(--space-3, 0.75rem) 0;
-  }
-  
-  .simple-header {
-    padding: 0 var(--space-3, 0.75rem);
-    text-align: center;
-  }
-  
-  .form-section {
-    margin: 0 var(--space-2, 0.5rem) var(--space-4, 1rem);
-    padding: var(--space-4, 1rem);
-  }
-  
-  .form-actions {
-    margin: 0 var(--space-2, 0.5rem);
-    padding: var(--space-4, 1rem);
-    flex-direction: column;
-    gap: var(--space-3, 0.75rem);
-  }
-  
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-  }
-  
-  .exercise-item {
-    padding: var(--space-3, 0.75rem);
-  }
-  
-  .exercise-header {
-    flex-wrap: wrap;
-    gap: var(--space-2, 0.5rem);
-  }
-  
-  .add-exercise-btn {
-    margin: 0 var(--space-2, 0.5rem);
-  }
-}
-
-/* ===============================
-   EDIT WORKOUT PAGE FIXES
-   =============================== */
-
-@media (max-width: 768px) {
-  .workout-creation-wrapper {
-    padding: var(--space-3, 0.75rem) 0;
-  }
-  
-  .creation-page-header {
-    padding: 0 var(--space-3, 0.75rem);
-  }
-  
-  .page-header-content {
-    flex-direction: column;
-    text-align: center;
-    gap: var(--space-4, 1rem);
-  }
-  
-  .header-text-section {
-    text-align: center;
-  }
-  
-  .section-card {
-    margin: 0 var(--space-2, 0.5rem) var(--space-4, 1rem);
-  }
-  
-  .card-header-section {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-3, 0.75rem);
-  }
-  
-  .exercise-count-badge {
-    align-self: center;
-  }
-  
-  .input-fields-row {
-    grid-template-columns: 1fr;
-    gap: var(--space-3, 0.75rem);
-  }
-  
-  .form-actions-section {
-    margin: 0 var(--space-2, 0.5rem);
-    padding: var(--space-6, 1.5rem) var(--space-3, 0.75rem);
-  }
-  
-  .secondary-actions {
-    flex-direction: column;
-    gap: var(--space-3, 0.75rem);
-  }
-  
-  .primary-action-button,
-  .secondary-action-button {
-    width: 100%;
-    max-width: 320px;
-    margin: 0 auto;
-  }
-}
-
-/* ===============================
-   RESPONSIVE TEXT SCALING
-   =============================== */
-
-@media (max-width: 480px) {
-  .hero-title,
-  .page-main-title {
-    font-size: var(--fs-2xl, 1.5rem) !important;
-  }
-  
-  .workout-page-title {
-    font-size: var(--fs-xl, 1.25rem) !important;
-  }
-  
-  .section-title {
-    font-size: var(--fs-lg, 1.125rem) !important;
-  }
-  
-  .btn {
-    padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
-    font-size: var(--fs-base, 1rem);
-  }
-  
-  .btn-cta {
-    padding: var(--space-4, 1rem) var(--space-6, 1.5rem);
-    font-size: var(--fs-base, 1rem);
-  }
-}
-
-/* ===============================
-   PREVENT HORIZONTAL OVERFLOW
-   =============================== */
-
-* {
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-body {
-  overflow-x: hidden;
-}
-
-.main-content {
-  overflow-x: hidden;
-  width: 100%;
-}
-
-/* Ensure images don't overflow */
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-/* ===============================
-   MOBILE TOUCH IMPROVEMENTS
-   =============================== */
-
-@media (max-width: 768px) {
-  /* Increase touch targets */
-  .btn,
-  .nav-link,
-  .card-btn,
-  .session-action-btn {
-    min-height: 44px;
-    min-width: 44px;
-  }
-  
-  /* Improve form inputs for mobile */
-  .form-input,
-  .form-select {
-    min-height: 44px;
-    font-size: 16px; /* Prevent zoom on iOS */
-  }
-  
-  /* Better spacing for touch interfaces */
-  .workout-card,
-  .session-card,
-  .exercise-card {
-    margin-bottom: var(--space-3, 0.75rem);
-  }
-}
-
-/* ===============================
-   ACCESSIBILITY IMPROVEMENTS
-   =============================== */
-
+/* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+    .no-motion,
+    .no-motion * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }
 
-/* High contrast mode support */
+/* High Contrast Support */
 @media (prefers-contrast: high) {
-  .workout-card,
-  .session-card,
-  .exercise-card,
-  .form-input,
-  .btn {
-    border-width: 2px !important;
-  }
+    .high-contrast-border {
+        border: 2px solid currentColor !important;
+    }
 }
 
-/* ===============================
-   PRINT STYLES
-   =============================== */
+/* Loading State Utilities */
+.loading {
+    opacity: 0.6 !important;
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+}
 
-@media print {
-  .navbar,
-  .nav-action-btn,
-  .workout-controls,
-  .session-actions,
-  .form-actions {
-    display: none !important;
-  }
-  
-  .main-content {
-    margin-top: 0 !important;
-  }
-  
-  .workout-card,
-  .session-card,
-  .exercise-card {
-    break-inside: avoid;
-    box-shadow: none !important;
-    border: 1px solid #333 !important;
-  }
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    margin-left: -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Animation Utilities */
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.slide-in-down {
+    animation: slideInDown 0.3s ease-out;
+}
+
+.slide-in-up {
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ripple Effect for Enhanced Buttons */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(0);
+    animation: ripple-animation 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
 }

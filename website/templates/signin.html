@@ -13,142 +13,222 @@
             <div class="decoration-circle circle-1"></div>
             <div class="decoration-circle circle-2"></div>
             <div class="decoration-circle circle-3"></div>
+            <div class="decoration-mesh"></div>
         </div>
 
-        <!-- Main authentication card -->
-        <div class="auth-card">
-            <!-- Brand section -->
-            <div class="auth-brand">
-                <div class="brand-logo-container">
-                    <img class="brand-logo" src="/static/images/logo-nobg.png" alt="Ares Workout Logo" />
-                    <div class="brand-logo-glow"></div>
-                </div>
-                <h1 class="brand-title">Welcome to Ares</h1>
-                <p class="brand-subtitle">Sign in to continue your fitness journey</p>
-            </div>
+        <!-- Main authentication layout -->
+        <div class="auth-layout">
+            <!-- Left side - Login Form -->
+            <div class="auth-form-container">
+                <div class="auth-card">
+                    <!-- Brand section -->
+                    <div class="auth-brand">
+                        <div class="brand-logo-container">
+                            <img class="brand-logo" src="/static/images/logo-nobg.png" alt="Ares Workout Logo" />
+                            <div class="brand-logo-glow"></div>
+                        </div>
+                        <h1 class="brand-title">Welcome Back</h1>
+                        <p class="brand-subtitle">Sign in to continue your fitness journey</p>
+                    </div>
 
-            <!-- Alert messages -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        {% if category == "error" %}
-                            <div class="alert alert-error show" role="alert" aria-live="polite">
-                                <div class="alert-content">
-                                    <i class="alert-icon fa-solid fa-exclamation-triangle"></i>
-                                    <span class="alert-message">{{ message }}</span>
-                                </div>
-                                <button type="button" class="alert-close" aria-label="Close alert">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-                        {% else %}
-                            <div class="alert alert-success show" role="alert" aria-live="polite">
-                                <div class="alert-content">
-                                    <i class="alert-icon fa-solid fa-check-circle"></i>
-                                    <span class="alert-message">{{ message }}</span>
-                                </div>
-                                <button type="button" class="alert-close" aria-label="Close alert">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
+                    <!-- Alert messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="alerts-section">
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ 'error' if category == 'error' else 'success' }} show" role="alert" aria-live="polite">
+                                        <div class="alert-content">
+                                            <div class="alert-icon">
+                                                {% if category == "error" %}
+                                                    <i class="fa-solid fa-exclamation-triangle"></i>
+                                                {% else %}
+                                                    <i class="fa-solid fa-check-circle"></i>
+                                                {% endif %}
+                                            </div>
+                                            <span class="alert-message">{{ message }}</span>
+                                        </div>
+                                        <button type="button" class="alert-close" aria-label="Close alert" onclick="this.parentElement.remove()">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+                                {% endfor %}
                             </div>
                         {% endif %}
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+                    {% endwith %}
 
-            <!-- Sign in form -->
-            <div class="auth-form-section">
-                <form class="auth-form" method="POST" autocomplete="on">
-                    <div class="form-group">
-                        <label for="signin-email" class="form-label">Email Address</label>
-                        <div class="input-wrapper">
-                            <input
-                                id="signin-email"
-                                class="form-input"
-                                type="email"
-                                placeholder="Enter your email"
-                                name="email"
-                                maxlength="50"
-                                required
-                                autocomplete="username"
-                                aria-describedby="email-help"
-                            />
-                            <i class="input-icon fa-solid fa-envelope"></i>
+                    <!-- Sign in form -->
+                    <div class="auth-form-section">
+                        <form class="auth-form" method="POST" autocomplete="on">
+                            <div class="form-group">
+                                <label for="signin-email" class="form-label">
+                                    <i class="fa-solid fa-envelope"></i>
+                                    Email Address
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <input
+                                        id="signin-email"
+                                        class="form-input"
+                                        type="email"
+                                        placeholder="Enter your email address"
+                                        name="email"
+                                        maxlength="50"
+                                        required
+                                        autocomplete="username"
+                                        aria-describedby="email-help"
+                                    />
+                                    <div class="input-focus-line"></div>
+                                </div>
+                                <small id="email-help" class="field-help">We'll never share your email with anyone else.</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="signin-password" class="form-label">
+                                    <i class="fa-solid fa-lock"></i>
+                                    Password
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <input
+                                        id="signin-password"
+                                        class="form-input"
+                                        type="password"
+                                        placeholder="Enter your password"
+                                        name="password"
+                                        maxlength="50"
+                                        required
+                                        autocomplete="current-password"
+                                        aria-describedby="password-help"
+                                    />
+                                    <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <div class="input-focus-line"></div>
+                                </div>
+                                <small id="password-help" class="field-help">Your password is securely encrypted.</small>
+                            </div>
+
+                            <div class="form-options">
+                                <div class="remember-me">
+                                    <input type="checkbox" id="remember-me" class="checkbox-input">
+                                    <label for="remember-me" class="checkbox-label">
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-text">Remember me</span>
+                                    </label>
+                                </div>
+                                <a href="#" class="forgot-password">Forgot password?</a>
+                            </div>
+
+                            <button class="btn btn-primary auth-submit-btn" type="submit">
+                                <div class="btn-content">
+                                    <i class="fa-solid fa-sign-in-alt"></i>
+                                    <span>Sign In</span>
+                                </div>
+                                <div class="btn-shine"></div>
+                            </button>
+                        </form>
+
+                        <!-- Divider -->
+                        <div class="auth-divider">
+                            <div class="divider-line"></div>
+                            <span class="divider-text">or continue with</span>
+                            <div class="divider-line"></div>
                         </div>
+
+                        <!-- Demo user option -->
+                        <form class="auth-form" method="POST">
+                            <button class="btn btn-secondary auth-demo-btn" name="demo_user" type="submit">
+                                <div class="btn-content">
+                                    <i class="fa-solid fa-user-circle"></i>
+                                    <span>Try Demo Account</span>
+                                </div>
+                                <div class="btn-shine"></div>
+                            </button>
+                        </form>
                     </div>
 
-                    <div class="form-group">
-                        <label for="signin-password" class="form-label">Password</label>
-                        <div class="input-wrapper">
-                            <input
-                                id="signin-password"
-                                class="form-input"
-                                type="password"
-                                placeholder="Enter your password"
-                                name="password"
-                                maxlength="50"
-                                required
-                                autocomplete="current-password"
-                                aria-describedby="password-help"
-                            />
-                            <i class="input-icon fa-solid fa-lock"></i>
+                    <!-- Sign up link -->
+                    <div class="auth-footer">
+                        <p class="auth-footer-text">
+                            Don't have an account? 
+                            <a href="/signup" class="auth-link">Create one here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right side - Info panel -->
+            <div class="auth-info-panel">
+                <div class="info-content">
+                    <div class="info-visual">
+                        <div class="info-image-container">
+                            <img class="info-image" src="/static/images/intro.png" alt="Workout motivation" />
+                            <div class="info-image-overlay"></div>
+                        </div>
+                        <div class="info-floating-elements">
+                            <div class="floating-element element-1">
+                                <i class="fa-solid fa-dumbbell"></i>
+                            </div>
+                            <div class="floating-element element-2">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                            <div class="floating-element element-3">
+                                <i class="fa-solid fa-target"></i>
+                            </div>
                         </div>
                     </div>
-
-                    <button class="btn btn-primary auth-submit-btn" type="submit">
-                        <i class="fa-solid fa-sign-in-alt"></i>
-                        Sign In
-                    </button>
-                </form>
-
-                <!-- Demo user option -->
-                <div class="auth-divider">
-                    <span class="divider-text">or</span>
-                </div>
-
-                <form class="auth-form" method="POST">
-                    <button class="btn btn-secondary auth-demo-btn" name="demo_user" type="submit">
-                        <i class="fa-solid fa-user-circle"></i>
-                        Try Demo Account
-                    </button>
-                </form>
-            </div>
-
-            <!-- Sign up link -->
-            <div class="auth-footer">
-                <p class="auth-footer-text">
-                    Don't have an account? 
-                    <a href="/signup" class="auth-link">Create one here</a>
-                </p>
-            </div>
-        </div>
-
-        <!-- Info panel for larger screens -->
-        <div class="auth-info-panel">
-            <div class="info-content">
-                <div class="info-image-container">
-                    <img class="info-image" src="/static/images/intro.png" alt="Workout motivation" />
-                    <div class="info-image-overlay"></div>
-                </div>
-                <div class="info-text">
-                    <h2 class="info-title">Never lose track</h2>
-                    <p class="info-description">
-                        Focus on performing your absolute best. Keep your exercises, weights, 
-                        and machine adjustments organized across multiple workouts—all in one place, 
-                        so you can get straight to work and achieve your fitness goals.
-                    </p>
-                    <div class="info-features">
-                        <div class="feature-item">
-                            <i class="fa-solid fa-dumbbell"></i>
-                            <span>Track workouts</span>
+                    
+                    <div class="info-text-content">
+                        <h2 class="info-title">Never lose track</h2>
+                        <p class="info-description">
+                            Focus on performing your absolute best. Keep your exercises, weights, 
+                            and machine adjustments organized across multiple workouts—all in one place, 
+                            so you can get straight to work and achieve your fitness goals.
+                        </p>
+                        
+                        <div class="info-features">
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fa-solid fa-dumbbell"></i>
+                                </div>
+                                <div class="feature-text">
+                                    <h4>Track Workouts</h4>
+                                    <p>Monitor your progress with detailed workout logs</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                </div>
+                                <div class="feature-text">
+                                    <h4>Monitor Progress</h4>
+                                    <p>Visualize your fitness journey over time</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fa-solid fa-target"></i>
+                                </div>
+                                <div class="feature-text">
+                                    <h4>Achieve Goals</h4>
+                                    <p>Stay motivated and reach your fitness targets</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="feature-item">
-                            <i class="fa-solid fa-chart-line"></i>
-                            <span>Monitor progress</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fa-solid fa-target"></i>
-                            <span>Achieve goals</span>
+
+                        <div class="info-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">10K+</span>
+                                <span class="stat-label">Workouts Tracked</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">500+</span>
+                                <span class="stat-label">Active Users</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">98%</span>
+                                <span class="stat-label">User Satisfaction</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -157,7 +237,116 @@
     </div>
 </div>
 
-<!-- JavaScript -->
-<script type="text/javascript" src="/static/js/alert.js"></script>
+<!-- Enhanced JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Password toggle functionality
+        const passwordToggle = document.querySelector('.password-toggle');
+        const passwordInput = document.getElementById('signin-password');
+        
+        if (passwordToggle && passwordInput) {
+            passwordToggle.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            });
+        }
+
+        // Enhanced form validation
+        const form = document.querySelector('.auth-form');
+        const inputs = form.querySelectorAll('.form-input');
+        
+        inputs.forEach(input => {
+            // Add input event listeners for real-time validation
+            input.addEventListener('input', function() {
+                validateInput(this);
+            });
+            
+            input.addEventListener('blur', function() {
+                validateInput(this);
+            });
+            
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.parentElement.classList.remove('focused');
+                }
+            });
+        });
+        
+        function validateInput(input) {
+            const wrapper = input.parentElement;
+            const isValid = input.checkValidity();
+            
+            wrapper.classList.toggle('valid', isValid && input.value.length > 0);
+            wrapper.classList.toggle('invalid', !isValid && input.value.length > 0);
+        }
+
+        // Animate floating elements
+        const floatingElements = document.querySelectorAll('.floating-element');
+        floatingElements.forEach((element, index) => {
+            element.style.animationDelay = `${index * 0.5}s`;
+        });
+
+        // Auto-dismiss alerts after 5 seconds
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-20px)';
+                    setTimeout(() => alert.remove(), 300);
+                }
+            }, 5000);
+        });
+
+        // Enhanced button interactions
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                // Create ripple effect
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.classList.add('ripple');
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+    });
+</script>
+
+<style>
+    /* Ripple effect */
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.6);
+        transform: scale(0);
+        animation: ripple-animation 0.6s linear;
+        pointer-events: none;
+    }
+    
+    @keyframes ripple-animation {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+</style>
 
 {% endblock %}
