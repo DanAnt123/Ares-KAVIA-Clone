@@ -450,8 +450,9 @@ def clear_workout_history():
         # This will cascade to delete all associated exercise logs
         deleted_count = WorkoutSession.query.filter_by(user_id=current_user.id).delete()
         
-        # Commit the transaction (Flask-SQLAlchemy handles transaction automatically)
-        db.session.commit()
+        # Only commit if there were actually records to delete
+        if deleted_count > 0:
+            db.session.commit()
         
         return jsonify({
             "success": True,
