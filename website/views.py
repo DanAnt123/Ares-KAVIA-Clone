@@ -427,6 +427,50 @@ def get_workout_history():
 
 
 # PUBLIC_INTERFACE
+@views.route("/api/workout/history/clear", methods=["DELETE"])
+@login_required
+def clear_workout_history():
+    """
+    Delete all workout sessions for the current user.
+    This will cascade to delete all associated exercise logs.
+    Returns JSON response with count of deleted sessions and success status.
+    """
+    try:
+        # Start a transaction to ensure data consistency
+        with db.session.begin():
+            # Get count of sessions before deletion for response
+            session_count = WorkoutSession.query.filter_by(user_id=current_user.id).count()
+            
+            if session_count == 0:
+                return jsonify({
+                    "success": True,
+                    "message": "No workout history to clear",
+                    "sessions_deleted": 0
+                }), 200
+            
+            # Delete all workout sessions for the current user
+            # This will cascade to delete all associated exercise logs
+            deleted_count = WorkoutSession.query.filter_by(user_id=current_user.id).delete()
+            
+            # Commit the transaction
+            db.session.commit()
+            
+            return jsonify({
+                "success": True,
+                "message": f"Successfully cleared all workout history",
+                "sessions_deleted": deleted_count
+            }), 200
+            
+    except Exception as e:
+        # Rollback transaction on error
+        db.session.rollback()
+        return jsonify({
+            "success": False,
+            "error": f"Failed to clear workout history: {str(e)}"
+        }), 500
+
+
+# PUBLIC_INTERFACE
 @views.route("/api/workout/history", methods=["POST"])
 @login_required
 def log_workout_session():
