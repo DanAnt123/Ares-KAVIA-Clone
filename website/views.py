@@ -50,46 +50,6 @@ def get_workout_completion_status(workout_id, user_id):
 
 
 # PUBLIC_INTERFACE
-def get_last_session_data_for_workout(workout_id, user_id):
-    """
-    Get the last session data for each exercise in a workout.
-    Returns previous weights/reps to display to user.
-    
-    Args:
-        workout_id (int): ID of the workout
-        user_id (int): ID of the user
-        
-    Returns:
-        dict: Exercise names mapped to their last session data
-    """
-    try:
-        # Get the most recent workout session for this workout
-        latest_session = (WorkoutSession.query
-                         .filter_by(user_id=user_id, workout_id=workout_id)
-                         .order_by(WorkoutSession.timestamp.desc())
-                         .first())
-        
-        if not latest_session:
-            return {}
-        
-        # Get all exercise logs from the latest session
-        exercise_data = {}
-        for log in latest_session.exercise_logs:
-            exercise_data[log.exercise_name] = {
-                'weight': log.weight,
-                'reps': log.reps,
-                'details': log.details,
-                'timestamp': latest_session.timestamp
-            }
-        
-        return exercise_data
-        
-    except Exception as e:
-        print(f"Error getting last session data: {str(e)}")
-        return {}
-
-
-# PUBLIC_INTERFACE
 def _create_top_set_log(exercise, workout_id, user_id):
     """
     Create a workout session log entry when a top set is completed (has both weight and reps).
@@ -1142,27 +1102,16 @@ def workout():
 
         requested_workout = request.form.get("workout")
         
-        # Get last session data for all user workouts
-        last_session_data = {}
-        for user_workout in current_user.workouts:
-            last_session_data[user_workout.id] = get_last_session_data_for_workout(user_workout.id, current_user.id)
-        
         return render_template(
             "workout.html",
             user=current_user,
             requested_workout=requested_workout,
-            displayRequested="True",
-            last_session_data=last_session_data
+            displayRequested="True"
         )
 
-    # GET - Standard template rendering (removed AJAX progress requests)
+    # GET - Standard template rendering
     
-    # GET - Get last session data for all user workouts
-    last_session_data = {}
-    for user_workout in current_user.workouts:
-        last_session_data[user_workout.id] = get_last_session_data_for_workout(user_workout.id, current_user.id)
-    
-    return render_template("workout.html", user=current_user, last_session_data=last_session_data)
+    return render_template("workout.html", user=current_user)
 
 
 def _get_top_set_for_exercise(exercise_logs):
