@@ -28,7 +28,6 @@
                             <div class="brand-logo-glow"></div>
                         </div>
                         <h1 class="brand-title">Welcome Back</h1>
-                        <p class="brand-subtitle">Sign in to continue your fitness journey</p>
                     </div>
 
                     <!-- Alert messages -->
@@ -62,31 +61,27 @@
                             <div class="form-group">
                                 <label for="signin-email" class="form-label">
                                     <i class="fa-solid fa-envelope"></i>
-                                    Email Address
-                                    <span class="required">*</span>
+                                    Email
                                 </label>
                                 <div class="input-wrapper">
                                     <input
                                         id="signin-email"
                                         class="form-input"
                                         type="email"
-                                        placeholder="Enter your email address"
+                                        placeholder="Enter your email"
                                         name="email"
                                         maxlength="50"
                                         required
                                         autocomplete="username"
-                                        aria-describedby="email-help"
                                     />
                                     <div class="input-focus-line"></div>
                                 </div>
-                                <small id="email-help" class="field-help">We'll never share your email with anyone else.</small>
                             </div>
 
                             <div class="form-group">
                                 <label for="signin-password" class="form-label">
                                     <i class="fa-solid fa-lock"></i>
                                     Password
-                                    <span class="required">*</span>
                                 </label>
                                 <div class="input-wrapper">
                                     <input
@@ -98,14 +93,12 @@
                                         maxlength="50"
                                         required
                                         autocomplete="current-password"
-                                        aria-describedby="password-help"
                                     />
                                     <button type="button" class="password-toggle" aria-label="Toggle password visibility">
                                         <i class="fa-solid fa-eye"></i>
                                     </button>
                                     <div class="input-focus-line"></div>
                                 </div>
-                                <small id="password-help" class="field-help">Your password is securely encrypted.</small>
                             </div>
 
                             <div class="form-options">
@@ -119,32 +112,21 @@
                                 <a href="#" class="forgot-password">Forgot password?</a>
                             </div>
 
-                            <button class="btn btn-primary auth-submit-btn" type="submit">
-                                <div class="btn-content">
+                            <div class="auth-buttons">
+                                <button class="btn btn-primary auth-submit-btn" type="submit">
                                     <i class="fa-solid fa-sign-in-alt"></i>
                                     <span>Sign In</span>
-                                </div>
-                                <div class="btn-shine"></div>
-                            </button>
+                                </button>
                         </form>
-
-                        <!-- Divider -->
-                        <div class="auth-divider">
-                            <div class="divider-line"></div>
-                            <span class="divider-text">or continue with</span>
-                            <div class="divider-line"></div>
-                        </div>
 
                         <!-- Demo user option -->
                         <form class="auth-form" method="POST">
                             <button class="btn btn-secondary auth-demo-btn" name="demo_user" type="submit">
-                                <div class="btn-content">
-                                    <i class="fa-solid fa-user-circle"></i>
-                                    <span>Try Demo Account</span>
-                                </div>
-                                <div class="btn-shine"></div>
+                                <i class="fa-solid fa-user-circle"></i>
+                                <span>Demo</span>
                             </button>
                         </form>
+                            </div>
                     </div>
 
                     <!-- Sign up link -->
