@@ -117,24 +117,84 @@ function fetchWeightProgression(exerciseName) {
      * Fetch weight progression data for a specific exercise and render line chart.
      * @param {string} exerciseName - Name of the exercise to track
      */
-    const url = `/api/progress/weight-progression/${encodeURIComponent(exerciseName)}`;
+    if (!exerciseName || exerciseName.trim() === '') {
+        console.warn('fetchWeightProgression called with empty exercise name');
+        showChartMessage('weight-progression-chart', 'Please select an exercise to view weight progression');
+        return;
+    }
     
-    fetch(url)
+    console.log(`Fetching weight progression for exercise: "${exerciseName}"`);
+    
+    const url = `/api/progress/weight-progression/${encodeURIComponent(exerciseName.trim())}`;
+    console.log(`API URL: ${url}`);
+    
+    // Show loading state
+    const canvas = document.getElementById('weight-progression-chart');
+    const placeholder = document.getElementById('weight-progression-placeholder');
+    if (canvas && placeholder) {
+        placeholder.innerHTML = `
+            <div class="chart-loading">
+                <i class="fa fa-spinner fa-spin"></i>
+                <p>Loading weight progression for ${exerciseName}...</p>
+            </div>
+        `;
+    }
+    
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin' // Include cookies for authentication
+    })
         .then(response => {
+            console.log(`API response status: ${response.status}`);
+            if (response.status === 401) {
+                throw new Error('Authentication required. Please log in.');
+            }
+            if (response.status === 404) { 
+                throw new Error(`Exercise "${exerciseName}" not found or no weight data available.`);
+            }
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
             }
             return response.json();
         })
         .then(data => {
+            console.log('Received weight progression data:', data);
+            
             if (data.error) {
                 throw new Error(data.error);
             }
+            
+            // Validate data structure
+            if (!data.exercise_name) {
+                throw new Error('Invalid response: missing exercise_name');
+            }
+            
+            if (!Array.isArray(data.data_points)) {
+                throw new Error('Invalid response: data_points should be an array');
+            }
+            
             renderWeightProgressionChart(data);
         })
         .catch(error => {
             console.error('Error fetching weight progression:', error);
-            showChartError('weight-progression-chart', `Failed to load weight progression for ${exerciseName}`);
+            
+            let errorMessage = `Failed to load weight progression for "${exerciseName}"`;
+            
+            if (error.message.includes('Authentication required')) {
+                errorMessage = 'Please log in to view weight progression data.';
+            } else if (error.message.includes('not found')) {
+                errorMessage = error.message;
+            } else if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+                errorMessage = 'Network error. Please check your connection and try again.';
+            } else {
+                errorMessage += `\n\nError details: ${error.message}`;
+            }
+            
+            showChartError('weight-progression-chart', errorMessage);
         });
 }
 
@@ -267,52 +327,160 @@ function renderWeightProgressionChart(data) {
      * Render weight progression line chart for a specific exercise.
      * @param {Object} data - Weight progression data from API
      */
+    console.log('Rendering weight progression chart with data:', data);
+    
     if (!data.data_points || data.data_points.length === 0) {
-        showChartMessage('weight-progression-chart', `No weight data available for ${data.exercise_name}`);
+        let message = `No weight data available for ${data.exercise_name}`;
+        
+        // Add debug information if available
+        if (data.debug_info) {
+            message += `\n\nDebug Info:`;
+            message += `\n- Searched for: "${data.debug_info.searched_name}"`;
+            message += `\n- Available exercises: ${data.debug_info.total_available}`;
+        }
+        
+        if (data.available_exercises && data.available_exercises.length > 0) {
+            message += `\n\nAvailable exercises with weight data:`;
+            data.available_exercises.slice(0, 5).forEach(ex => {
+                message += `\n- ${ex}`;
+            });
+            if (data.available_exercises.length > 5) {
+                message += `\n... and ${data.available_exercises.length - 5} more`;
+            }
+        }
+        
+        showChartMessage('weight-progression-chart', message);
         return;
     }
     
+    console.log(`Rendering chart with ${data.data_points.length} data points`);
+    
+    // Prepare chart data - ensure we have multiple points for a proper trend line
     const chartData = {
         labels: data.data_points.map(point => point.formatted_date),
         datasets: [{
             label: `${data.exercise_name} (kg)`,
             data: data.data_points.map(point => point.weight),
             borderColor: CHART_COLORS.primary,
-            backgroundColor: CHART_COLORS.primary + '20',
-            fill: true,
-            tension: 0.4,
+            backgroundColor: data.data_points.length === 1 ? CHART_COLORS.primary : CHART_COLORS.primary + '20',
+            fill: data.data_points.length > 1, // Only fill if we have multiple points
+            tension: data.data_points.length > 2 ? 0.4 : 0, // Smooth curve only with 3+ points
             pointBackgroundColor: CHART_COLORS.primary,
             pointBorderColor: '#fff',
             pointBorderWidth: 2,
-            pointRadius: 6
+            pointRadius: data.data_points.length === 1 ? 8 : 6, // Larger points for single data point
+            pointHoverRadius: data.data_points.length === 1 ? 10 : 8
         }]
     };
+    
+    // Calculate dynamic Y-axis range for better visualization
+    const weights = data.data_points.map(point => point.weight);
+    const minWeight = Math.min(...weights);
+    const maxWeight = Math.max(...weights);
+    const weightRange = maxWeight - minWeight;
+    const padding = Math.max(weightRange * 0.1, 5); // 10% padding or minimum 5kg
     
     const options = {
         plugins: {
             title: {
                 display: true,
-                text: `Weight Progression: ${data.exercise_name}`
+                text: `Weight Progression: ${data.exercise_name}`,
+                font: {
+                    size: 16,
+                    weight: 'bold'
+                }
+            },
+            legend: {
+                display: true,
+                labels: {
+                    usePointStyle: true
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const point = data.data_points[context.dataIndex];
+                        let label = `Weight: ${context.parsed.y}kg`;
+                        if (point.session_count && point.session_count > 1) {
+                            label += ` (${point.session_count} sessions this day)`;
+                        }
+                        return label;
+                    },
+                    afterLabel: function(context) {
+                        const point = data.data_points[context.dataIndex];
+                        if (context.dataIndex > 0) {
+                            const prevWeight = data.data_points[context.dataIndex - 1].weight;
+                            const change = context.parsed.y - prevWeight;
+                            if (change !== 0) {
+                                const changeText = change > 0 ? `+${change.toFixed(1)}kg` : `${change.toFixed(1)}kg`;
+                                return `Change: ${changeText}`;
+                            }
+                        }
+                        return null;
+                    }
+                }
             }
         },
         scales: {
             y: {
-                beginAtZero: false,
+                min: data.data_points.length === 1 ? 0 : Math.max(0, minWeight - padding),
+                max: maxWeight + padding,
                 title: {
                     display: true,
-                    text: 'Weight (kg)'
+                    text: 'Weight (kg)',
+                    font: {
+                        size: 12,
+                        weight: 'bold'
+                    }
+                },
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.1)'
                 }
             },
             x: {
                 title: {
                     display: true,
-                    text: 'Date'
+                    text: 'Date',
+                    font: {
+                        size: 12,
+                        weight: 'bold'
+                    }
+                },
+                grid: {
+                    display: false
                 }
+            }
+        },
+        interaction: {
+            intersect: false,
+            mode: 'index'
+        },
+        elements: {
+            line: {
+                borderWidth: data.data_points.length === 1 ? 0 : 3 // No line for single point
             }
         }
     };
     
+    // Add progression stats to chart subtitle if available
+    if (data.progression_stats && data.data_points.length > 1) {
+        const stats = data.progression_stats;
+        const subtitle = `Total progression: ${stats.total_progression > 0 ? '+' : ''}${stats.total_progression}kg (${stats.progression_percentage > 0 ? '+' : ''}${stats.progression_percentage}%) | Average: ${stats.average_weight}kg`;
+        
+        options.plugins.subtitle = {
+            display: true,
+            text: subtitle,
+            font: {
+                size: 12
+            },
+            color: stats.total_progression >= 0 ? CHART_COLORS.success : CHART_COLORS.danger
+        };
+    }
+    
     renderChart('weight-progression-chart', 'line', chartData, options);
+    
+    // Log successful render
+    console.log(`Successfully rendered weight progression chart for ${data.exercise_name} with ${data.data_points.length} data points`);
 }
 
 function renderVolumeTrendsChart(data) {
