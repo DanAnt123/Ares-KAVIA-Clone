@@ -65,8 +65,6 @@ class CustomDropdown {
         // Hide original select
         this.originalSelect.style.display = 'none';
         this.originalSelect.classList.add('original-select');
-        
-        console.log('CustomDropdown initialized successfully');
     }
     
     /**
@@ -197,28 +195,8 @@ class CustomDropdown {
         
         optionElement.appendChild(optionContent);
         
-        // Add direct click listener for better reliability with proper event handling
-        optionElement.addEventListener('click', (e) => {
-            console.log('Direct option click handler triggered:', e.target);
-            e.preventDefault();
-            e.stopPropagation();
-            if (!optionElement.classList.contains('disabled')) {
-                console.log('Selecting option via direct handler, index:', index);
-                this.selectOption(index);
-                this.close();
-            }
-        });
-        
-        // Add mousedown listener as backup
-        optionElement.addEventListener('mousedown', (e) => {
-            console.log('Option mousedown triggered:', e.target);
-            e.preventDefault();
-            if (!optionElement.classList.contains('disabled')) {
-                console.log('Selecting option via mousedown handler, index:', index);
-                this.selectOption(index);
-                this.close();
-            }
-        });
+        // Store the index for event delegation
+        optionElement.setAttribute('data-option-index', index);
         
         return optionElement;
     }
@@ -255,13 +233,9 @@ class CustomDropdown {
         // Keyboard navigation
         this.container.addEventListener('keydown', this.handleKeydown);
         
-        // Option clicks - use event delegation for better reliability
+        // Single event listener for option selection using event delegation
         this.menu.addEventListener('click', this.handleOptionClick);
-        this.menu.addEventListener('mousedown', this.handleOptionClick);
-        
-        // Add touchstart for mobile devices
-        this.menu.addEventListener('touchstart', this.handleOptionClick);
-        
+=======
         // Ensure menu container has proper pointer events
         this.menu.style.pointerEvents = 'auto';
         
@@ -288,7 +262,7 @@ class CustomDropdown {
             attributeFilter: ['selected', 'disabled']
         });
         
-        console.log('Event listeners attached for dropdown:', this.originalSelect.id);
+
     }
     
     /**
@@ -309,24 +283,18 @@ class CustomDropdown {
      * Handle option click
      */
     handleOptionClick(event) {
-        // Allow the event to bubble up for debugging
-        console.log('Option clicked:', event.target);
-        
         event.preventDefault();
         event.stopPropagation();
         
         const optionElement = event.target.closest('.dropdown-option');
-        console.log('Option element found:', optionElement);
         
         if (!optionElement || optionElement.classList.contains('disabled')) {
-            console.log('Option element invalid or disabled');
             return;
         }
         
-        const index = parseInt(optionElement.getAttribute('data-index'));
-        console.log('Option index:', index);
+        const index = parseInt(optionElement.getAttribute('data-option-index'));
         
-        if (index >= 0) {
+        if (!isNaN(index) && index >= 0) {
             this.selectOption(index);
             this.close();
         }
@@ -459,9 +427,6 @@ class CustomDropdown {
         
         // Announce to screen readers
         this.announceToScreenReader('Options expanded');
-        
-        console.log('Dropdown opened, menu pointer events:', this.menu.style.pointerEvents);
-        console.log('Options available:', this.optionElements.length);
     }
     
     /**
@@ -480,8 +445,6 @@ class CustomDropdown {
         
         // Announce to screen readers
         this.announceToScreenReader('Options collapsed');
-        
-        console.log('Dropdown closed');
     }
     
     /**
@@ -530,8 +493,6 @@ class CustomDropdown {
         
         // Announce to screen readers
         this.announceToScreenReader(`Selected ${text}`);
-        
-        console.log(`Option selected: ${text} (${value})`);
     }
     
     /**
@@ -773,8 +734,6 @@ class CustomDropdown {
         if (this.announcer && this.announcer.parentNode) {
             this.announcer.parentNode.removeChild(this.announcer);
         }
-        
-        console.log('CustomDropdown destroyed');
     }
     
     /**
@@ -848,24 +807,8 @@ function initializeCustomDropdown(selectElement, options = {}) {
         const dropdown = new CustomDropdown(selectElement, options);
         window.customDropdowns.set(selectElement, dropdown);
         
-        // Verify dropdown was created successfully
-        if (dropdown.container && dropdown.menu && dropdown.optionElements) {
-            console.log('Dropdown created successfully for:', selectElement.id);
-            console.log('Options count:', dropdown.optionElements.length);
-            
-            // Force pointer events as failsafe
-            dropdown.menu.style.pointerEvents = 'auto';
-            dropdown.optionElements.forEach(option => {
-                option.style.pointerEvents = 'auto';
-            });
-            
-            return dropdown;
-        } else {
-            console.error('Dropdown creation incomplete for:', selectElement.id);
-            return null;
-        }
+        return dropdown;
     } catch (error) {
-        console.error('Error creating dropdown for:', selectElement.id, error);
         return null;
     }
 }
@@ -875,8 +818,6 @@ function initializeCustomDropdown(selectElement, options = {}) {
  */
 function initializeDropdowns() {
     const selectElements = document.querySelectorAll('select.custom-dropdown, select[data-custom-dropdown]');
-    
-    console.log(`Found ${selectElements.length} dropdown elements to initialize`);
     
     selectElements.forEach(select => {
         // Extract options from data attributes
@@ -894,17 +835,8 @@ function initializeDropdowns() {
             options.maxHeight = parseInt(select.dataset.maxHeight);
         }
         
-        console.log(`Initializing dropdown for select element:`, select.id, options);
-        const dropdown = initializeCustomDropdown(select, options);
-        
-        if (dropdown) {
-            console.log(`Successfully initialized dropdown for:`, select.id);
-        } else {
-            console.error(`Failed to initialize dropdown for:`, select.id);
-        }
+        initializeCustomDropdown(select, options);
     });
-    
-    console.log(`Initialization complete. Total dropdowns: ${window.customDropdowns ? window.customDropdowns.size : 0}`);
 }
 
 /**
@@ -915,18 +847,14 @@ function initializeCategoryDropdown() {
     const categorySelect = document.getElementById('category_id');
     
     if (categorySelect) {
-        const dropdown = initializeCustomDropdown(categorySelect, {
+        return initializeCustomDropdown(categorySelect, {
             placeholder: 'Choose a category...',
             searchable: false,
             maxHeight: 250
         });
-        
-        console.log('Category dropdown initialized successfully');
-        return dropdown;
-    } else {
-        console.warn('Category select element not found');
-        return null;
     }
+    
+    return null;
 }
 
 // Auto-initialize when DOM is ready

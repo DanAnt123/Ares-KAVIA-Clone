@@ -182,14 +182,7 @@
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
-  pointer-events: auto !important;
-}
-
-/* Failsafe: Ensure all dropdown elements are clickable when open */
-.custom-dropdown-container.open .dropdown-menu,
-.custom-dropdown-container.open .dropdown-option,
-.custom-dropdown-container.open .dropdown-option * {
-  pointer-events: auto !important;
+  pointer-events: auto;
 }
 
 /* Dropdown menu backdrop */
@@ -237,12 +230,10 @@
   border-bottom: 1px solid var(--tertiary);
   position: relative;
   overflow: hidden;
-  pointer-events: auto !important;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  z-index: 1;
 }
 
 /* Remove border from last option */

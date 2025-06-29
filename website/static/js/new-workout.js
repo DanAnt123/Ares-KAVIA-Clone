@@ -45,57 +45,23 @@ var categoryDropdown = null;
 
 // Initialize custom dropdown when available
 function initializeCategoryDropdownInteraction() {
-    // Wait for custom dropdown to be initialized with multiple retries
+    // Wait for custom dropdown to be initialized
     let retryCount = 0;
-    const maxRetries = 20; // Increased retry count
+    const maxRetries = 10;
     
     function tryInitialize() {
-        console.log(`Initialization attempt ${retryCount + 1}/${maxRetries}`);
-        
         if (window.customDropdowns && window.customDropdowns.has(categorySelect)) {
             categoryDropdown = window.customDropdowns.get(categorySelect);
-            console.log('Custom dropdown integration ready');
-            
-            // Add comprehensive debugging
-            if (categoryDropdown && categoryDropdown.menu) {
-                console.log('Dropdown menu element:', categoryDropdown.menu);
-                console.log('Dropdown options count:', categoryDropdown.optionElements.length);
-                
-                // Add multiple event listeners for debugging
-                categoryDropdown.menu.addEventListener('click', function(e) {
-                    console.log('Menu clicked (bubble):', e.target, e.currentTarget);
-                }, false);
-                
-                categoryDropdown.menu.addEventListener('click', function(e) {
-                    console.log('Menu clicked (capture):', e.target, e.currentTarget);
-                }, true);
-                
-                // Force pointer events on menu
-                categoryDropdown.menu.style.pointerEvents = 'auto';
-                
-                // Check each option
-                categoryDropdown.optionElements.forEach((option, index) => {
-                    console.log(`Option ${index}:`, option.textContent, option.style.pointerEvents);
-                    option.style.pointerEvents = 'auto';
-                });
-            }
-            
             return true;
         } else if (retryCount < maxRetries) {
             retryCount++;
-            setTimeout(tryInitialize, 200); // Increased delay
+            setTimeout(tryInitialize, 100);
             return false;
         } else {
             // Fallback to native select behavior
             console.warn('Custom dropdown initialization failed, using native select fallback');
             if (categorySelect) {
                 categorySelect.style.display = 'block';
-                categorySelect.addEventListener("focus", function() {
-                    categorySelect.size = Math.min(categorySelect.options.length, 8);
-                });
-                categorySelect.addEventListener("blur", function() {
-                    categorySelect.size = 1;
-                });
             }
             return false;
         }
@@ -106,7 +72,6 @@ function initializeCategoryDropdownInteraction() {
     // Listen for changes regardless of dropdown type
     if (categorySelect) {
         categorySelect.addEventListener("change", function() {
-            console.log('Category changed:', categorySelect.value);
             if (categorySelect.value) {
                 const newCategoryName = document.getElementById('new_category_name');
                 const newCategoryDesc = document.getElementById('new_category_description');
